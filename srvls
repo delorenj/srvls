@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+"""srvls — background-task inventory for big-chungus.
+
+One place to see every cron job, systemd service/timer (system + user),
+docker container, and pm2 process. The antidote to "what is killing my
+server now".
+
+Modes:
+  srvls                 unified table
+  srvls --json          machine-readable inventory
+  srvls --prom          Prometheus textfile exposition
+  srvls --md            markdown snapshot (for nightly inventory commits)
+  srvls --fzf           interactive: preview=inspect, ctrl-s stop, ctrl-r restart, ctrl-x disable
+  srvls inspect T NAME  detail view for one item (used by fzf preview)
+  srvls stop|restart|start|disable T NAME
+
+Types: cron, sys-svc, sys-timer, usr-svc, usr-timer, docker, pm2
+"""
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+HOME = os.path.expanduser("~")
+
+
+def run(cmd, timeout=15):
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        return p.stdout
+    except Exception:
+        return ""
+
+
+# ---------------------------------------------------------------- collectors
+
+def collect_cron():
+    items = []
+
+    def parse(text, source):
+        for ln in text.splitlines():
+            ln = ln.strip()
+            if not ln or ln.startswith("#") or re.match(r"^[A-Z_]+=", ln):
+                continue
+            parts = ln.split(None, 5)
+            if len(parts) < 6:
+                continue
+            sched = " ".join(parts[:5])
+            cmd = parts[5]
+            # /etc/cron.d lines have a user field after the schedule
+            if source.startswith("/etc/cron"):
+                sub = cmd.split(None, 1)
+                if len(sub) == 2 and re.match(r"^[a-z_][a-z0-9_-]*$", sub[0]):
+                    cmd = sub[1]
+            items.append({
+                "type": "cron", "name": cmd.split()[0].rsplit("/", 1)[-1],
+                "state": "scheduled", "schedule": sched,
+                "source": source, "detail": cmd,
+            })
+
+    parse(run(["crontab", "-l"]), "crontab:" + os.environ.get("USER", "user"))
+    parse(run(["sudo", "-n", "crontab", "-l"]), "crontab:root")
+    for d in ("/etc/crontab",):
+        if os.path.isfile(d):
+            with open(d) as fh:
+                parse(fh.read(), d)
+    if os.path.isdir("/etc/cron.d"):
+        for f in sorted(os.listdir("/etc/cron.d")):
+            p = os.path.join("/etc/cron.d", f)
+            if os.path.isfile(p):
+                try:
+                    with open(p) as fh:
+                        parse(fh.read(), p)
+                except PermissionError:
+                    pass
+    return items
+
+
+def _systemd(scope):
+    """scope: 'system' or 'user'"""
+    flag = [] if scope == "system" else ["--user"]
+    t = "sys" if scope == "system" else "usr"
+    items = []
+
+    out = run(["systemctl"] + flag + ["list-units", "--type=service", "--all",
+                                      "--output=json", "--no-pager"])
+    try:
+        units = json.loads(out or "[]")
+    except json.JSONDecodeError:
+        units = []
+    # unit-file paths + enablement
+    files = {}
+    out2 = run(["systemctl"] + flag + ["list-unit-files", "--type=service",
+                                       "--output=json", "--no-pager"])
+    try:
+        for f in json.loads(out2 or "[]"):
+            files[f["unit_file"]] = f.get("state", "")
+    except json.JSONDecodeError:
+        pass
+
+    for u in units:
+        name = u.get("unit", "")
+        active, sub = u.get("active", ""), u.get("sub", "")
+        if active == "inactive" and files.get(name, "") not in ("enabled", "enabled-runtime"):
+            continue  # skip dead one-shots that aren't enabled
+        items.append({
+            "type": f"{t}-svc", "name": name,
+            "state": f"{active}/{sub}",
+            "schedule": "", "source": files.get(name, ""),
+            "detail": u.get("description", ""),
+        })
+
+    out3 = run(["systemctl"] + flag + ["list-timers", "--all",
+                                       "--output=json", "--no-pager"])
+    try:
+        timers = json.loads(out3 or "[]")
+    except json.JSONDecodeError:
+        timers = []
+    for tm in timers:
+        nxt = tm.get("next")
+        nxt_s = ""
+        if nxt:
+            try:
+                nxt_s = datetime.fromtimestamp(nxt / 1_000_000).strftime("%m-%d %H:%M")
+            except (TypeError, ValueError, OSError):
+                pass
+        items.append({
+            "type": f"{t}-timer", "name": tm.get("unit", ""),
+            "state": "waiting" if nxt else "inactive",
+            "schedule": f"next {nxt_s}" if nxt_s else "",
+            "source": tm.get("activates", ""),
+            "detail": "",
+        })
+    return items
+
+
+def collect_docker():
+    items = []
+    out = run(["docker", "ps", "-a", "--format", "{{.ID}}"], timeout=20)
+    ids = out.split()
+    if not ids:
+        return items
+    fmt = ("{{.Name}}\t{{.State.Status}}\t"
+           "{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t"
+           "{{.HostConfig.RestartPolicy.Name}}\t"
+           "{{index .Config.Labels \"com.docker.compose.project\"}}\t"
+           "{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t"
+           "{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}")
+    out = run(["docker", "inspect", "--format", fmt] + ids, timeout=30)
+    for ln in out.splitlines():
+        f = ln.split("\t")
+        if len(f) < 7:
+            continue
+        name, status, health, policy, proj, wd, hc = f[:7]
+        items.append({
+            "type": "docker", "name": name.lstrip("/"),
+            "state": status + (f"({health})" if health != "-" else ""),
+            "schedule": f"hc:{hc}" if hc != "-" else "",
+            "source": wd or proj,
+            "detail": f"restart={policy}",
+        })
+    return items
+
+
+def collect_pm2():
+    items = []
+    if not shutil.which("pm2"):
+        return items
+    try:
+        procs = json.loads(run(["pm2", "jlist"], timeout=20) or "[]")
+    except json.JSONDecodeError:
+        return items
+    for p in procs:
+        env = p.get("pm2_env", {})
+        items.append({
+            "type": "pm2", "name": p.get("name", "?"),
+            "state": env.get("status", "?"),
+            "schedule": f"restarts:{env.get('restart_time', 0)}",
+            "source": env.get("pm_cwd", ""),
+            "detail": env.get("pm_exec_path", ""),
+        })
+    return items
+
+
+def collect_all():
+    return collect_cron() + _systemd("system") + _systemd("user") \
+        + collect_docker() + collect_pm2()
+
+
+# ------------------------------------------------------------------- outputs
+
+def out_table(items):
+    w_t = max((len(i["type"]) for i in items), default=4)
+    w_n = min(max((len(i["name"]) for i in items), default=4), 52)
+    w_s = min(max((len(i["state"]) for i in items), default=5), 22)
+    hdr = f"{'TYPE':<{w_t}}  {'NAME':<{w_n}}  {'STATE':<{w_s}}  {'SCHED':<16}  SOURCE"
+    print(hdr)
+    print("-" * len(hdr))
+    for i in items:
+        print(f"{i['type']:<{w_t}}  {i['name'][:w_n]:<{w_n}}  "
+              f"{i['state'][:w_s]:<{w_s}}  {i['schedule'][:16]:<16}  {i['source']}")
+    print(f"\n{len(items)} items "
+          f"({sum(1 for i in items if 'failed' in i['state'])} failed, "
+          f"{sum(1 for i in items if 'unhealthy' in i['state'])} unhealthy)")
+
+
+def out_prom(items):
+    counts = {}
+    for i in items:
+        key = (i["type"], i["state"].split("/")[0].split("(")[0])
+        counts[key] = counts.get(key, 0) + 1
+    print("# HELP srvls_items Background task inventory counts by type and state")
+    print("# TYPE srvls_items gauge")
+    for (t, s), n in sorted(counts.items()):
+        print(f'srvls_items{{type="{t}",state="{s}"}} {n}')
+    print("# HELP srvls_unit_problem Units in failed/unhealthy/restarting/errored state (1=problem)")
+    print("# TYPE srvls_unit_problem gauge")
+    for i in items:
+        st = i["state"]
+        if "failed" in st or "unhealthy" in st or "restarting" in st or st == "errored":
+            name = i["name"].replace('"', "")
+            print(f'srvls_unit_problem{{type="{i["type"]}",name="{name}"}} 1')
+    la1, la5, la15 = os.getloadavg()
+    print("# HELP srvls_loadavg System load average")
+    print("# TYPE srvls_loadavg gauge")
+    for label, v in (("1m", la1), ("5m", la5), ("15m", la15)):
+        print(f'srvls_loadavg{{window="{label}"}} {v:.2f}')
+    print("# HELP srvls_collect_timestamp_seconds Unix time of this collection")
+    print("# TYPE srvls_collect_timestamp_seconds gauge")
+    print(f"srvls_collect_timestamp_seconds {int(datetime.now(timezone.utc).timestamp())}")
+
+
+def out_md(items):
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    print(f"# Background Task Inventory — {now}\n")
+    by_type = {}
+    for i in items:
+        by_type.setdefault(i["type"], []).append(i)
+    for t in sorted(by_type):
+        rows = by_type[t]
+        print(f"## {t} ({len(rows)})\n")
+        print("| name | state | schedule | source |")
+        print("|---|---|---|---|")
+        for i in sorted(rows, key=lambda x: x["name"]):
+            print(f"| {i['name']} | {i['state']} | {i['schedule']} | {i['source']} |")
+        print()
+
+
+# ------------------------------------------------------------------- actions
+
+def _unit_cmd(typ, name, verb):
+    if typ in ("usr-svc", "usr-timer"):
+        return ["systemctl", "--user", verb, name]
+    if typ in ("sys-svc", "sys-timer"):
+        return ["sudo", "systemctl", verb, name]
+    if typ == "docker":
+        return ["docker", verb if verb != "disable" else "stop", name]
+    if typ == "pm2":
+        return ["pm2", verb if verb != "disable" else "delete", name]
+    return None
+
+
+def action(verb, typ, name):
+    if typ == "cron":
+        print("cron entries: edit with `crontab -e` (line shown in inspect)")
+        return 1
+    cmd = _unit_cmd(typ, name, verb)
+    if not cmd:
+        print(f"no {verb} for type {typ}")
+        return 1
+    p = subprocess.run(cmd)
+    return p.returncode
+
+
+def _show(cmd, lines=None, cols=None, merge_err=False, timeout=15):
+    """Run cmd (list form, never a shell) and print its output, truncated
+    to `lines` rows / `cols` columns. stderr is dropped unless merge_err."""
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    except Exception:
+        return
+    out = (p.stdout or "") + ((p.stderr or "") if merge_err else "")
+    rows = out.splitlines()
+    if lines is not None:
+        rows = rows[:lines]
+    if cols is not None:
+        rows = [r[:cols] for r in rows]
+    for r in rows:
+        print(r)
+
+
+def inspect(typ, name):
+    if typ == "docker":
+        _show(["docker", "inspect", name, "--format",
+               "{{.Name}} {{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}}\n"
+               "image: {{.Config.Image}}\n"
+               'compose: {{index .Config.Labels "com.docker.compose.project.working_dir"}}'])
+        print("--- recent logs ---")
+        _show(["docker", "logs", "--tail", "15", name], cols=200, merge_err=True)
+    elif typ in ("usr-svc", "usr-timer"):
+        _show(["systemctl", "--user", "status", name, "--no-pager", "-n", "8"], lines=30)
+    elif typ in ("sys-svc", "sys-timer"):
+        _show(["systemctl", "status", name, "--no-pager", "-n", "8"], lines=30)
+    elif typ == "pm2":
+        _show(["pm2", "describe", name], lines=30)
+    elif typ == "cron":
+        for i in collect_cron():
+            if i["name"] == name or i["detail"].startswith(name):
+                print(f"{i['source']}:  {i['schedule']}  {i['detail']}")
+    return 0
+
+
+def fzf_mode(items):
+    if not shutil.which("fzf"):
+        sys.exit("fzf not installed")
+    lines = [f"{i['type']}\t{i['name']}\t{i['state']}\t{i['source']}" for i in items]
+    me = os.path.abspath(__file__)
+    fzf = subprocess.run(
+        ["fzf", "--delimiter", "\t",
+         "--with-nth", "1,2,3",
+         "--preview", f"python3 {me} inspect {{1}} {{2}}",
+         "--preview-window", "down,60%,wrap",
+         "--header", "enter=inspect ctrl-s=stop ctrl-r=restart ctrl-x=disable",
+         "--bind", f"ctrl-s:execute(python3 {me} stop {{1}} {{2}})+reload(python3 {me} --fzf-lines)",
+         "--bind", f"ctrl-r:execute(python3 {me} restart {{1}} {{2}})+reload(python3 {me} --fzf-lines)",
+         "--bind", f"ctrl-x:execute(python3 {me} disable {{1}} {{2}})+reload(python3 {me} --fzf-lines)"],
+        input="\n".join(lines), text=True, capture_output=True)
+    sel = fzf.stdout.strip()
+    if sel:
+        t, n = sel.split("\t")[:2]
+        inspect(t, n)
+
+
+def main():
+    args = sys.argv[1:]
+    if args and args[0] in ("inspect", "stop", "restart", "disable", "start"):
+        if len(args) != 3:
+            sys.exit(f"usage: srvls {args[0]} TYPE NAME")
+        if args[0] == "inspect":
+            sys.exit(inspect(args[1], args[2]))
+        sys.exit(action(args[0], args[1], args[2]))
+
+    items = collect_all()
+    if "--json" in args:
+        print(json.dumps(items, indent=2))
+    elif "--prom" in args:
+        out_prom(items)
+    elif "--md" in args:
+        out_md(items)
+    elif "--fzf-lines" in args:
+        for i in items:
+            print(f"{i['type']}\t{i['name']}\t{i['state']}\t{i['source']}")
+    elif "--fzf" in args:
+        fzf_mode(items)
+    else:
+        out_table(items)
+
+
+if __name__ == "__main__":
+    main()

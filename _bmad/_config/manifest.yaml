@@ -1,0 +1,44 @@
+installation:
+  version: 6.10.1-next.12
+  installDate: 2026-06-10T15:10:07.786Z
+  lastUpdated: 2026-07-13T01:04:44.029Z
+modules:
+  - name: core
+    version: 6.10.1-next.12
+    installDate: 2026-06-10T15:10:07.716Z
+    lastUpdated: 2026-07-13T01:04:44.026Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmm
+    version: 6.10.1-next.12
+    installDate: 2026-06-10T15:10:07.744Z
+    lastUpdated: 2026-07-13T01:04:44.027Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmb
+    version: v1.8.1
+    installDate: 2026-06-10T15:10:07.757Z
+    lastUpdated: 2026-07-13T01:04:44.028Z
+    source: external
+    npmPackage: bmad-builder
+    repoUrl: https://github.com/bmad-code-org/bmad-builder
+    channel: pinned
+    sha: 3410d952eafe621f31fcdf4dd5efb2b06690a306
+  - name: cis
+    version: v0.2.1
+    installDate: 2026-06-10T15:10:07.763Z
+    lastUpdated: 2026-07-13T01:04:44.029Z
+    source: external
+    npmPackage: bmad-creative-intelligence-suite
+    repoUrl: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
+    channel: stable
+    sha: 07a8dd03d196a762f21c241d985293fe5b0f90e7
+ides:
+  - claude-code
+  - codex
+  - gemini
+  - opencode
+  - crush
+  - auggie
