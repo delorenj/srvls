@@ -2,9 +2,9 @@
 
 - [x] Document the project with an exhaustive BMAD scan — **COMPLETED (2026-07-13; documentation approved)**
 
-## Active work
+## Completed work
 
-- [ ] Rust + ratatui architecture spine and implementation epics/stories — **CLAIMED by Taskforce Ferris (Session: taskforce-ferris)**
+- [x] Rust + ratatui architecture spine and implementation epics/stories — **COMPLETED (2026-07-15; architecture reviewed and 23 stories validated)**
 
 ## Planned work
 
