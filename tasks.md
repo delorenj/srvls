@@ -26,9 +26,9 @@
   - [ ] Reconcile and validate the architecture spine — **IN PROGRESS by Team Argus**
     - [x] Reconcile canonical PRD and UX contracts against the architecture — **COMPLETED by Agent Buttercup (Session: agent-buttercup-architecture-inputs; Commit: 672b4a7; Verdict: RECONCILIATION REQUIRED and incorporated)**
     - [x] Reconcile live compatibility, readiness, and operational limits — **COMPLETED by Codemaster Zigzag (Sessions: codemaster-zigzag-architecture-live, codemaster-zigzag-architecture-live-recovery; Commit: d00b91a; Verdict: CHANGES REQUIRED and incorporated)**
-    - [ ] Validate the reconciled spine against the complete good-spine rubric — **CLAIMED by Bartholomew the Builder (Session: bartholomew-architecture-rubric)**
-    - [ ] Verify every technology and current-version claim — **CLAIMED by WidgetWhisperer (Session: widgetwhisperer-architecture-tech)**
-    - [ ] Adversarially test two-unit implementation divergence — **CLAIMED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-divergence)**
+    - [x] Validate the reconciled spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-rubric; Commit: f7ef3d9; Verdict: CHANGES REQUIRED and incorporated)**
+    - [x] Verify every technology and current-version claim — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-architecture-tech; Recovery panes: recovery, recovery-write; Commit: cc8e217; Verdict: CHANGES REQUIRED and incorporated)**
+    - [x] Adversarially test two-unit implementation divergence — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-divergence; Commit: 5201d34; Verdict: CHANGES REQUIRED and incorporated)**
 
 ## Planned work
 
