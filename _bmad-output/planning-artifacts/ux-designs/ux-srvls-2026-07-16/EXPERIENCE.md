@@ -1,6 +1,6 @@
 ---
 name: srvls
-status: draft
+status: final
 description: "Behavioral contract for the srvls terminal morning handoff, Runtime Promise reconciliation, and exact-target lifecycle control."
 sources:
   - ../../prds/prd-srvls-2026-07-16/prd.md
@@ -111,6 +111,30 @@ change.
 - filtered-empty names every active constraint and offers **Clear all**.
 - Refresh reapplies the same constraints to the new generation.
 
+**UX-IA-12 — Configuration error and provenance.** Configuration is validated
+before collection, TUI initialization, or mutation. A human diagnostic names
+the invalid field, rejected value or redaction, source, expected type, valid
+range or allowed values, effective precedence chain, built-in default, and one
+correction path. The same value treatment appears in runtime-detail for valid
+policy: **effective value**, **source**, **overrode**, **default**, and **valid
+range**. Architecture owns the schema, source classes, precedence rules, and
+bounds; UX owns their visible labels and ordering.
+
+- Interactive startup failure occurs before raw mode or alternate screen. It
+  writes a bounded diagnostic to stderr and exits nonzero. When no machine
+  format is requested, stdout is empty. The diagnostic points to
+  **srvls config validate --linear** and **srvls config explain --linear**.
+- Explicit machine validation uses **srvls config validate --json**. It emits
+  one deterministic error envelope on stdout and human context only on stderr,
+  then exits nonzero. No Promise, Snapshot, collection, or action side effect
+  occurs.
+- Human validation and explanation use the machine-independent linear contract
+  in UX-IP-11. They list values in canonical field order and visibly distinguish
+  defaults, effective sources, and overridden sources.
+- v1 does not hot-reload policy. After correction, the operator reruns the
+  original command; successful validation then proceeds normally. A prior
+  invalid run cannot leave partial local state.
+
 ## Voice and Tone
 
 **UX-VT-1 — Calm, exact, accountable.** srvls reports what it knows, what it
@@ -161,7 +185,7 @@ Visual tokens live in DESIGN.md. Names in this table are exact and exhaustive.
 | UX-CP-10 | confirmation-dialog | {components.confirmation-dialog} | Captures identity and generation, focuses Cancel, names resolved operation and risk, handles typed unknown acknowledgement, ignores repeat shortcuts, and refuses stale targets. |
 | UX-CP-11 | operation-status | {components.operation-status} | Tracks one operation independently of navigation and refresh. Pending and verifying are phases; terminal state is exactly one canonical Action Outcome. |
 | UX-CP-12 | baseline-dialog | {components.baseline-dialog} | Shows eligibility and Evidence Window impact. Override requires reason and acknowledgement. Acceptance changes only the baseline pointer and audit history. |
-| UX-CP-13 | help-overlay | {components.help-overlay} | Documents global keys, conditional direct actions, confirmation behavior, ASCII/NO_COLOR modes, table/Markdown alternatives, and exit behavior. |
+| UX-CP-13 | help-overlay | {components.help-overlay} | Documents global keys, conditional direct actions, confirmation behavior, NO_COLOR and --ascii controls, the complete --linear path, legacy table/Markdown compatibility views, and active-operation exit behavior. |
 | UX-CP-14 | finding-marker | {components.finding-marker} | Renders every applicable finding as text and optional ASCII abbreviation. Labels coexist and never imply action safety. |
 | UX-CP-15 | machine-result | {components.machine-result} | Human rendering and machine envelope share canonical field names and outcomes. stdout remains deterministic; stderr carries human diagnostics. |
 | UX-CP-16 | install-phase | {components.install-phase} | Emits persistent phase start/result lines for staging, checksum, smoke, activation, consumer validation, and recovery. Failure stops forward activation and names the known-good target. |
@@ -173,26 +197,27 @@ Visual tokens live in DESIGN.md. Names in this table are exact and exhaustive.
 | ID | State | Treatment and allowed interaction |
 | --- | --- | --- |
 | UX-ST-1 | loading | With no prior Snapshot, render the Brief shell, loading text, elapsed time, and completed/total Collector scopes. Navigation to help and quit remains available. |
-| UX-ST-1 | refreshing | Keep the last committed Snapshot visible and marked stale-while-refreshing. Show new-generation progress separately. Navigation remains active; actions on stale truth are disabled. |
-| UX-ST-1 | stale | Name last successful refresh time, failed refresh reason, and affected scope. Do not claim current Host truth or allow mutation. |
-| UX-ST-2 | partial-failure | Keep successful evidence usable. The completeness-banner names each incomplete scope and every conclusion withheld because of it. |
-| UX-ST-2 | unavailable-Provider | Preserve other Providers. The unavailable Provider has outcome, effective obligation, bounded diagnostic, and retry guidance. |
-| UX-ST-3 | empty | Only after sufficient required collection: “No Runtime Promises or Observations were found.” Completeness remains visible. |
-| UX-ST-3 | filtered-empty | Name active query and facets, show unfiltered item count, and focus **Clear all**. |
-| UX-ST-4 | pending-action | operation-status persists by operation ID while the operator navigates. Duplicate submit is suppressed; resource truth is not changed optimistically. |
-| UX-ST-5 | verified | Terminal outcome. State the fresh evidence that proves the expected effect. |
-| UX-ST-5 | executed-unverified | Terminal outcome. State that execution occurred, why verification is insufficient, and the next safe step. |
-| UX-ST-5 | refused | Terminal outcome. No mutation occurred; show reason such as stale-identity, unsupported, unsafe, ambiguous, or unauthorized. |
-| UX-ST-5 | timed-out | Terminal outcome. State which bounded phase timed out and whether execution may have occurred; never imply rollback unless verified. |
-| UX-ST-5 | failed | Terminal outcome. State the failed operation or local invariant, bounded diagnostic, and next safe step. |
-| UX-ST-6 | stale-identity before execution | Refuse without mutation, close confirmation, preserve the old target details for comparison, and focus Refresh. |
-| UX-ST-6 | replacement after execution | Classify as executed-unverified, show old and replacement immutable evidence, and prohibit automatic retry. |
-| UX-ST-7 | baseline-unavailable | Show first-run, incompatible, incomplete, missing, or unreadable reason. Changes remain “since no accepted baseline” rather than zero. |
-| UX-ST-10 | redacted or truncated detail | Put a notice before the affected block, name the applied architecture-owned bound, escape control bytes visibly, and keep search/scroll within captured content. |
+| UX-ST-2 | refreshing | Keep the last committed Snapshot visible and marked stale-while-refreshing. Show new-generation progress separately. Navigation remains active; actions on stale truth are disabled. |
+| UX-ST-3 | stale | Name last successful refresh time, failed refresh reason, and affected scope. Do not claim current Host truth or allow mutation. |
+| UX-ST-4 | partial-failure | Keep successful evidence usable. The completeness-banner names each incomplete scope and every conclusion withheld because of it. |
+| UX-ST-5 | unavailable-Provider | Preserve other Providers. The unavailable Provider has outcome, effective obligation, bounded diagnostic, and retry guidance. |
+| UX-ST-6 | empty | Only after sufficient required collection: “No Runtime Promises or Observations were found.” Completeness remains visible. |
+| UX-ST-7 | filtered-empty | Name active query and facets, show unfiltered item count, and focus **Clear all**. |
+| UX-ST-8 | pending-action | operation-status persists by operation ID while the operator navigates. Duplicate submit is suppressed; resource truth is not changed optimistically. |
+| UX-ST-9 | verified | Terminal outcome. State the fresh evidence that proves the expected effect. |
+| UX-ST-10 | executed-unverified | Terminal outcome. State that execution occurred, why verification is insufficient, and the next safe step. |
+| UX-ST-11 | refused | Terminal outcome. No mutation occurred; show reason such as stale-identity, unsupported, unsafe, ambiguous, or unauthorized. |
+| UX-ST-12 | timed-out | Terminal outcome. State which bounded phase timed out and whether execution may have occurred; never imply rollback unless verified. |
+| UX-ST-13 | failed | Terminal outcome. State the failed operation or local invariant, bounded diagnostic, and next safe step. |
+| UX-ST-14 | stale-identity before execution | Refuse without mutation, close confirmation, preserve the old target details for comparison, and focus Refresh. |
+| UX-ST-15 | replacement after execution | Classify as executed-unverified, show old and replacement immutable evidence, and prohibit automatic retry. |
+| UX-ST-16 | baseline-unavailable | Show first-run, incompatible, incomplete, missing, or unreadable reason. Changes remain “since no accepted baseline” rather than zero. |
+| UX-ST-17 | redacted or truncated detail | Put a notice before the affected block, name the applied architecture-owned bound, escape control bytes visibly, and keep search/scroll within captured content. |
+| UX-ST-18 | invalid-configuration | Before side effects or TUI entry, name field, rejected value or redaction, source, expected type, valid range, precedence, default, correction command, and nonzero exit. Machine mode emits one deterministic error envelope. |
 
 ### Selection and focus recovery
 
-**UX-ST-9 — Stable focus.**
+**UX-ST-19 — Stable focus.**
 
 - Initial focus is the first attention-row. If none exists, use the first item
   in the first Stack, then Ungrouped, then completeness-banner.
@@ -205,11 +230,11 @@ Visual tokens live in DESIGN.md. Names in this table are exact and exhaustive.
 - Closing an overlay restores the element that opened it if it still exists;
   otherwise apply the same recovery order.
 - A modal never silently retargets. Generation or identity drift yields
-  UX-ST-6.
+  UX-ST-14.
 
 ### Safety and action availability
 
-**UX-ST-8 — Conservative controls.**
+**UX-ST-20 — Conservative controls.**
 
 | Target state | Availability |
 | --- | --- |
@@ -241,6 +266,16 @@ Assessment, expiry, closure, and labels never authorize the operation.
 - The deprecated fzf flag enters the TUI without an external fzf dependency
   and emits a deprecation diagnostic on stderr.
 - The legacy fzf-lines helper is removed only through the compatibility ledger.
+- A nonempty NO_COLOR environment variable disables color only. The explicit
+  --ascii flag selects deterministic ASCII markers for all human TUI and linear
+  output; it does not alter JSON, Prometheus, or other machine schemas.
+- TERM=dumb selects non-interactive table output and implies ASCII for that
+  human rendering. Explicit format selection wins over automatic routing;
+  --ascii wins over terminal glyph capability. Color and glyph selection remain
+  orthogonal.
+- v1 has no animated spinner or animation mode. Loading, refresh, execution,
+  verification, and install progress use persistent words, counts, phases, and
+  elapsed time, so v1 needs no separate animation control.
 
 ### Global keyboard contract
 
@@ -258,8 +293,8 @@ Assessment, expiry, closure, and labels never authorize the operation.
 | a | Open action-menu for an exact target. | Ignored while a confirmation or operation submit is active. |
 | b | Open baseline-dialog. | Ignored while another modal is open. |
 | question mark | Open help-overlay. | Help may open from non-text overlays, one level only. |
-| Esc | Return one level; at base, clear a transient status before doing nothing. | Cancel or close the topmost overlay and restore prior focus. |
-| q | Quit only from the base Brief after terminal restoration. | Treated as input or ignored; it never bypasses confirmation. |
+| Esc | Return one level; at base, clear a transient status before doing nothing. | Cancel or close the topmost overlay and restore prior focus; it never cancels a submitted operation. |
+| q | Quit from the base Brief only when no lifecycle operation is pending, executing, or verifying. Otherwise show the operation IDs and **quit unavailable while operations are active**. | Treated as input or ignored; it never bypasses confirmation. |
 
 **UX-IP-3 — Search and filter.** Behavior is defined by UX-IA-11. Search
 results are stable for identical data and constraints. The filter-bar never
@@ -354,6 +389,73 @@ identity, Lease state where applicable, evidence/completeness where applicable,
 reason code, and retry correlation. Field errors identify exact fields and
 create no partial record. Human diagnostics remain on stderr.
 
+**UX-IP-10 — In-flight exit and signal disposition.** Submitted lifecycle
+operations never detach from an interactive srvls process in v1. Terminal
+restoration is unconditional, but the observable outcome depends on phase:
+
+| Phase when exit is requested | q and Esc | First Ctrl-C, SIGINT, or SIGTERM | Repeated signal |
+| --- | --- | --- | --- |
+| Plan or confirmation, before submit | q is ignored in the modal; Esc cancels with no operation record because execution was never submitted. From the base Brief, q exits. | Cancel the unsubmitted plan, restore the terminal, and exit nonzero without an Action Outcome. | Restore the terminal again and exit; no Provider child exists. |
+| Pending or revalidating, before Provider invocation | q is unavailable; Esc changes navigation only. | Cancel the queued operation, persist refused with reason operator-exit-before-execution, reap any setup child, restore the terminal, and exit. | Force the same bounded reaping path; never change refused to success. |
+| Executing a Provider operation | q is unavailable; Esc changes navigation only. | Begin Architecture-bounded graceful shutdown. Do not blindly forward the terminal signal. The typed Adapter requests cancellation only when the Provider supports it, otherwise waits for and reaps the child. Persist failed only when evidence proves no effect; otherwise persist executed-unverified. Restore the terminal at the shutdown bound. | Force Adapter termination and reaping at the same bound, persist executed-unverified whenever effect is uncertain, then restore and exit. |
+| Verifying after Provider execution | q is unavailable; Esc changes navigation only. | Stop verification, persist executed-unverified with reason operator-exit-during-verification, retain execution evidence, restore the terminal, and exit. | Preserve the same outcome, force bounded verifier reaping, restore, and exit. |
+| Terminal Action Outcome present | q exits from the base Brief; Esc only navigates. | Persist the existing outcome, restore the terminal, and exit. | Outcome is unchanged; restoration remains unconditional. |
+
+Every submitted operation and terminal outcome is persisted in local audit
+history before process exit and can be retrieved by
+**srvls action status --operation OPERATION_ID --linear** or the deterministic
+machine equivalent with --json. Architecture owns the numeric shutdown grace,
+typed Adapter cancellation capability, durable write boundary, and child
+termination/reaping implementation. SIGKILL cannot be handled and is outside
+the restoration contract.
+
+**UX-IP-11 — Human-linear operator path.** The legacy table and existing
+--md output remain compatibility surfaces. The additive --linear surface is the
+first-class screen-reader and no-cursor path:
+
+1. **srvls brief --linear** prints the full Brief as stable labeled sections:
+   Evidence Window, completeness and obligations, all eight morning answers,
+   changes, attention items, Stack/Ungrouped context, exact IDs, canonical
+   states, all labels, and safety summaries.
+2. The same command accepts repeatable --project, --agent, --provider, and
+   --finding facets plus --query. Facets compose by UX-IA-11 and the output
+   restates every active constraint.
+3. **srvls inspect --id CANONICAL_ID --linear** prints runtime-detail,
+   evidence-table, and provider-detail as bounded labeled sections, including
+   supports, contradicts, missing, redaction, and truncation.
+4. **srvls action plan --target CANONICAL_ID --operation VERB --linear**
+   performs no mutation and prints exact identity, resolved Provider operation,
+   privilege, expected effect, limits, safety, reasons, captured generation,
+   plan ID, and confirmation requirements.
+5. **srvls action execute --plan PLAN_ID --confirm-target CANONICAL_ID
+   --linear** submits the captured exact plan. Unknown safety additionally
+   requires --ack-unknown VERB. Known unsafe refuses. The command prints the
+   operation ID, phase updates on stderr, and exactly one canonical Action
+   Outcome on stdout.
+6. **srvls action status --operation OPERATION_ID --linear** retrieves the
+   durable outcome, evidence, reason, and next safe step without cursor motion.
+
+Linear stdout uses deterministic ASCII headings, one label-value field per
+line, no ANSI, cursor control, animation, icons, or human diagnostics. It is
+human-readable, with labeled identity and outcome fields that do not require
+inference from prose. JSON remains the Agent/machine surface.
+
+**SR-A11Y-1 — Linear Morning Handoff.** Run the six-step path with TERM=dumb
+and NO_COLOR against fixtures for complete, incomplete,
+destructive-confirmation, and all Action Outcomes. A
+keyboard-and-terminal-screen-reader operator must answer all eight Brief
+questions, locate withheld conclusions, inspect exact evidence, review safety,
+submit an exact plan, and retrieve the outcome.
+
+**UX-IP-12 — Configuration validation and recovery.** Human startup and
+**srvls config validate --linear** follow UX-IA-12 and UX-IP-11. Machine
+validation uses **srvls config validate --json** with a deterministic error
+envelope and exits nonzero. **srvls config explain --linear** lists every
+UX-visible policy in canonical order with effective value, units, built-in
+default, valid range, winning source, and overridden-source chain. Invalid
+values never clamp or fall back silently; correction plus command restart is
+the only v1 recovery.
+
 ## Accessibility Floor
 
 **UX-A11Y-1 — Semantic independence.** Provider, identity, state, health,
@@ -369,10 +471,13 @@ Confirmation defaults to Cancel, Esc cancels, and q cannot bypass a modal.
 
 **UX-A11Y-3 — Terminal assistive alternatives.** srvls uses ordinary text
 cells rather than graphics. Because alternate-screen TUIs vary across terminal
-screen readers, redirected table and Markdown are first-class linear
-alternatives; JSON is the machine alternative. TERM=dumb automatically selects
-the undecorated table. These modes preserve the same canonical state words and
-do not require color or Unicode.
+screen readers, **srvls brief --linear** and the exact UX-IP-11 command sequence
+are the first-class human-linear alternative; JSON is the machine alternative.
+The redirected legacy table and existing Markdown output remain compatible but
+do not claim full Brief parity. TERM=dumb automatically selects the undecorated
+legacy table unless the operator explicitly requests --linear. All human-linear
+commands preserve canonical state words and require no color, Unicode, cursor
+motion, or alternate screen.
 
 **UX-A11Y-4 — Hostile and sensitive text.** C0, DEL, ESC, bidirectional
 controls, and invalid byte sequences from names, commands, diagnostics, and
@@ -383,13 +488,16 @@ Secrets and sensitive arguments are excluded or visibly redacted.
 
 **UX-A11Y-5 — Progress and motion.** The TUI uses no required animation.
 Loading, refreshing, pending, and verifying show words, elapsed time, and
-counts. Optional spinners stop under reduced/no-animation configuration and
-never replace the text. Terminal restoration is required for normal exit,
-error, panic, Ctrl-C, SIGINT, and SIGTERM.
+counts. v1 has no animated spinner or animation mode. Terminal restoration is
+required for normal exit, error, panic, Ctrl-C, SIGINT, and SIGTERM; submitted
+operation disposition follows UX-IP-10.
 
 Acceptance covers color on/off, Unicode/ASCII, monochrome, keyboard-only,
-60-by-20 geometry, redirected stdout, TERM=dumb, hostile controls, and terminal
-restoration.
+60-by-20 geometry, redirected stdout, TERM=dumb, hostile controls, terminal
+restoration, and SR-A11Y-1. Exact mode invocations include
+**NO_COLOR=1 srvls --tui**, **srvls --tui --ascii**,
+**NO_COLOR=1 srvls --tui --ascii**, **TERM=dumb srvls**, and
+**TERM=dumb NO_COLOR=1 srvls brief --linear**.
 
 ## Responsive & Platform
 
@@ -402,13 +510,13 @@ measured after terminal initialization and on every resize.
 | UX-RP-2 | At least 80 by 24 but below full | Compact layout: brief-summary, completeness-banner, and one primary Explorer pane. runtime-detail and overlays occupy the primary pane; Esc returns. |
 | UX-RP-3 | At least 60 by 20 but below compact | Narrow layout: one list or detail at a time; labels wrap; secondary timestamps and policy provenance move into detail; help and overlays scroll. Exact identity, states, labels, completeness, focus, and action safety remain. |
 | UX-RP-4 | Below 60 columns or 20 rows at startup | Do not enter the full alternate-screen experience. Restore the terminal and print current geometry, minimum 60 by 20, and guidance to resize or use table/Markdown. |
-| UX-RP-5 | Resize below minimum while active | Preserve model and focus, replace content with a text-only resize diagnostic, keep q and resize active, and restore the prior surface when geometry recovers. |
+| UX-RP-5 | Resize below minimum while active | Preserve model, focus, modal, and operation state. The diagnostic names the hidden underlying surface. Modal semantics have priority: Esc cancels the underlying modal; q is unavailable until the base Brief is restored. With no modal, q exits only when UX-IP-10 reports no active operation; otherwise show active operation IDs and the quit-unavailable reason. Resize always remains active and restores the prior surface when geometry recovers. |
 | UX-RP-6 | Redirected stream or TERM=dumb | Emit deterministic legacy table unless an explicit non-interactive format wins. No ANSI, icon, cursor control, progress, or human diagnostic enters stdout. |
 
 Primary lists never scroll horizontally. In narrow mode the collapse order is
 optional symbols, redundant badges, secondary timestamps, policy provenance,
 then side-by-side detail. Exact target identity and canonical states are never
-the truncation victim. Resizing preserves focus through UX-ST-9.
+the truncation victim. Resizing preserves focus through UX-ST-19.
 
 ## Inspiration & Anti-patterns
 
@@ -456,11 +564,11 @@ iterations after warm-up, and p95 on the Architecture-published canonical Host.
 | --- | --- | --- | --- | --- |
 | UX-BUD-1 | Local key, focus, overlay, and filter feedback | 100 ms p95 maximum | 50–150 ms p95 | Focus marker, query text, or overlay is visible within the budget under the canonical fixture. |
 | UX-BUD-2 | Refresh acknowledgement | 100 ms maximum | 50–150 ms | refreshing text, new generation ID, elapsed zero point, and Collector count appear without clearing the prior Snapshot. |
-| UX-BUD-2 | Slow-refresh disclosure | 2,000 ms | 1,000–5,000 ms | At threshold, incomplete Collector names, elapsed time, and effective obligations are visible; navigation remains within UX-BUD-1. |
-| UX-BUD-3 | Action-submit acknowledgement | 100 ms maximum | 50–150 ms | operation-status and operation ID appear, submit controls disable, and duplicate input is suppressed. |
-| UX-BUD-3 | Pending progress refresh | 1,000 ms | 500–2,000 ms | Phase and elapsed time update at least this often without animation dependence. |
-| UX-BUD-4 | Terminal outcome rendering | 100 ms maximum after architecture emits outcome | 50–150 ms | Exactly one outcome, evidence, reason, and next safe step render together. |
-| UX-BUD-5 | Resize response | 100 ms p95 | 50–150 ms p95 | Correct layout or below-minimum diagnostic replaces the prior frame while identity focus is preserved. |
+| UX-BUD-3 | Slow-refresh disclosure | 2,000 ms | 1,000–5,000 ms | At threshold, incomplete Collector names, elapsed time, and effective obligations are visible; navigation remains within UX-BUD-1. |
+| UX-BUD-4 | Action-submit acknowledgement | 100 ms maximum | 50–150 ms | operation-status and operation ID appear, submit controls disable, and duplicate input is suppressed. |
+| UX-BUD-5 | Pending progress refresh | 1,000 ms | 500–2,000 ms | Phase and elapsed time update at least this often without animation dependence. |
+| UX-BUD-6 | Terminal outcome rendering | 100 ms maximum after architecture emits outcome | 50–150 ms | Exactly one outcome, evidence, reason, and next safe step render together. |
+| UX-BUD-7 | Resize response | 100 ms p95 | 50–150 ms p95 | Correct layout or below-minimum diagnostic replaces the prior frame while identity focus is preserved. |
 
 Defaults are built-in policy values with provenance **srvls UX default**.
 Architecture may expose validated configuration only within the listed ranges;
@@ -623,13 +731,13 @@ the incomplete obligations. Cancel leaves the baseline unchanged.
 | UJ-6: Jarad upgrades and recovers | UX-IP-8, UX-CP-16; Key Flow UJ-6 |
 | SM-1: Complete morning answer set. | UX-CP-1, UX-CP-2; UJ-1 |
 | SM-2: Reconciliation correctness. | UX-FND-2, UX-CP-14; canonical fixtures |
-| SM-3: Safe action truthfulness. | UX-ST-8, UX-IP-5, UX-IP-7 |
+| SM-3: Safe action truthfulness. | UX-ST-20, UX-IP-5, UX-IP-7 |
 | SM-4: Compatibility closure. | UX-FND-6, UX-IP-1, UX-RP-6 |
 | SM-5: Agent lifecycle closure. | UX-IP-9; UJ-2 |
-| SM-6: Explainable operator decisions. | UX-CP-5 through UX-CP-9; UJ-1, UJ-3, UJ-4, UJ-5 |
+| SM-6: Explainable operator decisions. | UX-CP-5 through UX-CP-9, UX-IP-11; UJ-1, UJ-3, UJ-4, UJ-5 |
 | SM-C1: Do not optimize anomaly count. | UX-FND-4; evidence and precision fixtures |
-| SM-C2: Do not optimize speed by hiding incompleteness. | UX-CP-2, UX-ST-2, UX-BUD-2 |
-| SM-C3: Do not optimize cleanup volume. | UX-FND-5, UX-ST-8 |
+| SM-C2: Do not optimize speed by hiding incompleteness. | UX-CP-2, UX-ST-4, UX-ST-5, UX-BUD-2, UX-BUD-3 |
+| SM-C3: Do not optimize cleanup volume. | UX-FND-5, UX-ST-20 |
 
 ### Functional requirements
 
@@ -648,8 +756,8 @@ the incomplete obligations. Cancel leaves the baseline unchanged.
 | FR-11: Collect PM2 work | UX-CP-2, UX-CP-7 |
 | FR-12: Collect direct Host processes | UX-CP-5, UX-CP-7, UX-A11Y-4 |
 | FR-13: Normalize Observations | UX-FND-2, UX-CP-3, UX-CP-5 |
-| FR-14: Report collection completeness | UX-CP-2, UX-ST-2 |
-| FR-15: Inspect bounded Provider detail | UX-CP-6, UX-CP-7, UX-ST-10 |
+| FR-14: Report collection completeness | UX-CP-2, UX-ST-4, UX-ST-5 |
+| FR-15: Inspect bounded Provider detail | UX-CP-6, UX-CP-7, UX-ST-17 |
 | FR-16: Preserve compatibility surfaces | UX-FND-6, UX-IP-1, UX-RP-6 |
 | FR-17: Support strict collection policy | UX-CP-15, UX-IP-9 |
 | FR-18: Correlate Runtime Promises and Observations | UX-CP-5, UX-CP-6 |
@@ -660,22 +768,22 @@ the incomplete obligations. Cancel leaves the baseline unchanged.
 | FR-23: Identify stale Runtimes | UX-CP-14, UX-CP-5 |
 | FR-24: Identify hot Runtimes | UX-CP-14, UX-CP-5, UJ-5 |
 | FR-25: Identify unmanaged and abandoned Runtimes | UX-CP-14, UX-CP-5, UJ-4 |
-| FR-26: Explain findings and Safe-to-stop Assessment | UX-CP-5, UX-CP-6, UX-ST-8 |
+| FR-26: Explain findings and Safe-to-stop Assessment | UX-CP-5, UX-CP-6, UX-ST-20 |
 | FR-27: Detect change through bounded Snapshots | UX-IA-7, UX-IP-6, baseline supporting flow |
 | FR-28: Produce the Brief | UX-IA-1, UX-CP-1, UJ-1 |
 | FR-29: Organize attention and Stack context | UX-IA-2, UX-CP-3, UX-CP-4 |
 | FR-30: Select interactive or non-interactive presentation | UX-IP-1, UX-RP-6 |
-| FR-31: Navigate and refine the TUI | UX-IA-11, UX-IP-2, UX-IP-3, UX-ST-9 |
+| FR-31: Navigate and refine the TUI | UX-IA-11, UX-IP-2, UX-IP-3, UX-ST-19 |
 | FR-32: Inspect intent and truth together | UX-IA-3, UX-CP-5, UX-CP-6 |
 | FR-33: Communicate without color or Unicode dependence | UX-A11Y-1, UX-A11Y-3 |
-| FR-34: Represent application and terminal states explicitly | UX-ST-1 through UX-ST-10, UX-RP-1 through UX-RP-5 |
+| FR-34: Represent application and terminal states explicitly | UX-ST-1 through UX-ST-18, UX-RP-1 through UX-RP-5 |
 | FR-35: Provide a discoverable Action Menu | UX-IA-6, UX-CP-9, UX-IP-4 |
 | FR-36: Plan supported lifecycle actions | UX-CP-9, UX-IP-7 |
-| FR-37: Revalidate identity before mutation | UX-FND-3, UX-ST-6, UX-IP-5 |
-| FR-38: Confirm destructive and uncertain actions | UX-CP-10, UX-ST-8, UX-IP-5 |
-| FR-39: Isolate asynchronous operations | UX-CP-11, UX-ST-4, UX-IP-7 |
-| FR-40: Verify and report action outcomes | UX-ST-5, UX-IP-7, UX-CP-15 |
-| FR-41: Keep groups read-only and privilege scoped | UX-FND-5, UX-CP-4, UX-ST-8 |
+| FR-37: Revalidate identity before mutation | UX-FND-3, UX-ST-14, UX-ST-15, UX-IP-5 |
+| FR-38: Confirm destructive and uncertain actions | UX-CP-10, UX-ST-20, UX-IP-5 |
+| FR-39: Isolate asynchronous operations | UX-CP-11, UX-ST-8, UX-IP-7, UX-IP-10 |
+| FR-40: Verify and report action outcomes | UX-ST-9 through UX-ST-13, UX-IP-7, UX-IP-10, UX-CP-15 |
+| FR-41: Keep groups read-only and privilege scoped | UX-FND-5, UX-CP-4, UX-ST-20 |
 | FR-42: Build and install a verifiable release | UX-CP-16, UX-IP-8, UJ-6 |
 | FR-43: Upgrade, validate automation, and roll back | UX-CP-16, UX-IP-8, UJ-6 |
 
@@ -683,22 +791,22 @@ the incomplete obligations. Cancel leaves the baseline unchanged.
 
 | Source requirement | UX coverage |
 | --- | --- |
-| NFR-1: Deterministic domain outcomes | UX-FND-2, UX-IA-11, UX-ST-9 |
-| NFR-2: Honest partial truth | UX-FND-4, UX-CP-2, UX-ST-2 |
-| NFR-3: Bounded refresh behavior | UX-ST-1, UX-BUD-2 |
+| NFR-1: Deterministic domain outcomes | UX-FND-2, UX-IA-11, UX-ST-19 |
+| NFR-2: Honest partial truth | UX-FND-4, UX-CP-2, UX-ST-4, UX-ST-5 |
+| NFR-3: Bounded refresh behavior | UX-ST-1 through UX-ST-3, UX-BUD-2, UX-BUD-3 |
 | NFR-4: Host command safety | UX-A11Y-4, UX-IP-7 |
-| NFR-5: Least privilege | UX-CP-9, UX-CP-10, UX-ST-8 |
-| NFR-6: Terminal restoration | UX-A11Y-5, UX-RP-4 |
-| NFR-7: Clean machine interfaces | UX-CP-15, UX-IP-1, UX-IP-9 |
-| NFR-8: Accessible terminal communication | UX-A11Y-1 through UX-A11Y-5, UX-RP-1 through UX-RP-6 |
-| NFR-9: Atomic and durable local state | UX-ST-7, UX-IP-6, recovery copy |
+| NFR-5: Least privilege | UX-CP-9, UX-CP-10, UX-ST-20 |
+| NFR-6: Terminal restoration | UX-A11Y-5, UX-RP-4, UX-IP-10 |
+| NFR-7: Clean machine interfaces | UX-CP-15, UX-IP-1, UX-IP-9, UX-IP-11 |
+| NFR-8: Accessible terminal communication | UX-A11Y-1 through UX-A11Y-5, UX-RP-1 through UX-RP-6, UX-IP-11, SR-A11Y-1 |
+| NFR-9: Atomic and durable local state | UX-ST-16, UX-IP-6, UX-IP-10, recovery copy |
 | NFR-10: Defensible Lease time semantics | UX-FND-2, UX-VT-3, UX-CP-5 |
-| NFR-11: Local data minimization | UX-ST-10, UX-A11Y-4 |
-| NFR-12: Concurrency correctness | UX-FND-3, UX-ST-4, UX-ST-6, UX-IP-7 |
-| NFR-13: Testability without Host mutation | UX-BUD-1 through UX-BUD-5; state, accessibility, and journey fixtures |
+| NFR-11: Local data minimization | UX-ST-17, UX-A11Y-4 |
+| NFR-12: Concurrency correctness | UX-FND-3, UX-ST-8, UX-ST-14, UX-ST-15, UX-IP-7, UX-IP-10 |
+| NFR-13: Testability without Host mutation | UX-BUD-1 through UX-BUD-7; state, SR-A11Y-1, accessibility, and journey fixtures |
 | NFR-14: Brownfield compatibility | UX-FND-6, UX-IP-1, UX-RP-6 |
 | NFR-15: Supported release baseline | UX-IP-8, UX-CP-16, UJ-6 |
-| NFR-16: Configurable policy without hidden defaults | UX-VT-3, UX-CP-5, Operational Acceptance Budgets |
+| NFR-16: Configurable policy without hidden defaults | UX-IA-12, UX-ST-18, UX-IP-12, UX-VT-3, UX-CP-5, Operational Acceptance Budgets |
 
 Every canonical UJ, FR, NFR, SM, and safeguard has a named UX contract,
 surface, behavior, or acceptance path. Architecture owns the remaining

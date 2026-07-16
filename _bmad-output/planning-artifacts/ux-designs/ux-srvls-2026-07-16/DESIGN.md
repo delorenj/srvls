@@ -1,7 +1,7 @@
 ---
 name: srvls
 description: "Visual identity contract for the srvls terminal morning handoff and runtime reconciliation experience."
-status: draft
+status: final
 sources:
   - ../../prds/prd-srvls-2026-07-16/prd.md
   - ../../prds/prd-srvls-2026-07-16/addendum.md
@@ -143,9 +143,10 @@ least 3:1. Because the operator may choose any terminal theme, acceptance does
 not rely on contrast alone: the no-style rendering must remain complete and
 usable.
 
-NO_COLOR disables semantic colors. ASCII mode replaces decorative Unicode
-without changing layout meaning. A theme may never hide, reorder, abbreviate
-away, or rename a state.
+NO_COLOR disables semantic colors and does not change glyphs. The explicit
+--ascii flag replaces decorative Unicode without changing layout meaning;
+TERM=dumb implies ASCII for its non-interactive table. A theme may never hide,
+reorder, abbreviate away, or rename a state.
 
 ## Typography
 
@@ -309,8 +310,8 @@ stdout has no borders, color, icons, progress, or prose diagnostics.
 Uses {components.install-phase}. Each phase is a persistent text row:
 **stage**, **checksum**, **compatibility smoke**, **activate**, **validate
 consumers**, and **rollback or retain known-good**. A phase has one of pending,
-running, passed, failed, or skipped-with-reason. A spinner may supplement
-running but never replace the word.
+running, passed, failed, or skipped-with-reason. v1 uses no spinner or animated
+progress treatment.
 
 ## Do's and Don'ts
 
