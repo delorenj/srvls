@@ -321,4 +321,3 @@ the following items:
   Architecture-owned operational bounds they depend on.
 - Traceability to **SM-1** through **SM-6** and safeguards **SM-C1** through
   **SM-C3**.
-

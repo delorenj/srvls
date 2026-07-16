@@ -17,6 +17,8 @@
   - [x] Verify the remediated PRD against the rubric and adversarial blockers — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-prd; Commit: 9a71199)**
   - [x] Finalize the canonical PRD and downstream constraint addendum — **COMPLETED by Team Argus (2026-07-16)**
   - [ ] Create and validate canonical `DESIGN.md` and `EXPERIENCE.md` UX spines — **IN PROGRESS by Team Argus**
+    - [x] Extract canonical PRD UX evidence — **COMPLETED by Bartholomew the Builder (Session: bartholomew-ux; Commit: 08eb2ad)**
+    - [x] Extract legacy and live UX evidence — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-ux; Commit: 1412dca)**
 
 ## Planned work
 
