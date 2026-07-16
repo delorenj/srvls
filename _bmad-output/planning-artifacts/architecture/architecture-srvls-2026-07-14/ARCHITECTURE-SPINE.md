@@ -239,7 +239,10 @@ flowchart LR
 - **Prevents:** automation breakage, inaccessible interaction, and side effects
   before invalid configuration is reported
 - **Rule:** raw argv selects one profile before clap, configuration, collection,
-  or any other side effect. First match wins: argv[1] in `config | promise |
+  or any other side effect. The exact internal token `__srvls-worker-v1` is
+  reserved first and selects only the authenticated AD-25 worker profile; it is
+  never a public command or compatibility surface. Public first match then
+  wins: argv[1] in `config | promise |
   brief | baseline | action | release`, then `inspect --id`, owns its complete
   tail as a canonical namespace; argv[1] in `inspect | start | stop | restart |
   disable` selects the frozen legacy action profile before that profile performs
@@ -322,9 +325,10 @@ flowchart LR
   OperationId lane,
   complete a durable outcome regardless of newer global refreshes, and may
   replace global truth only when their generation remains latest. All
-  potentially blocking Provider file, `/proc`, and command work runs in a
-  supervised invocation of the same binary, so the parent can cut a scope
-  without stranding a worker thread.
+  potentially blocking Provider file, `/proc`, and command work runs through
+  the authenticated AD-25 same-binary worker protocol, so the parent can cut a
+  scope without stranding a worker thread. No other internal subprocess route
+  is conforming.
 
   A coordinator-owned atomic result registry accepts a report only before both
   its scope deadline and generation cutoff; equality is `timed-out`, and reducer
@@ -363,6 +367,13 @@ flowchart LR
   scope and diagnostic IDs, timeout equality, generation CAS, AD-22 plan and
   launch handoffs, policy fingerprint bytes, every AD-23 crash phase, upgrade
   quiescence, sidecar restore, and the storage-unavailable shutdown exception.
+  Property and crash fixtures additionally freeze AD-24 canonical JSON and
+  Scope bytes, producer-local diagnostic allocation, exact process ownership
+  suppression, concurrent baseline and operation changes, three-sample hot
+  history under retention, atomic CollectionPlan admission, the AD-25
+  handshake and frame grammar, ordinary entry during a crashed upgrade, every
+  pending release effect, torn manifests, release-event mapping,
+  timer-triggered managed consumers, and rollback after successful validation.
   The existing Python smoke suite and named timer checks
   remain live opt-in integration lanes and CI requires no Host service.
 
@@ -377,20 +388,26 @@ flowchart LR
   story. Required gates are
   `cargo fmt --check`, locked clippy with warnings denied, locked all-target
   tests at MSRV and stable, compatibility goldens, migration tests, and release
-  asset smoke. Build in a pinned glibc-2.42 image and verify symbol versions.
+  asset smoke. Build in a pinned glibc-2.42 image. Release CI runs
+  `readelf --version-info` against the final artifact, fails when any imported
+  `GLIBC_*` version exceeds `GLIBC_2.42`, and smoke-tests that exact artifact in
+  the pinned oldest-supported glibc-2.42 runtime image.
   The release tarball and SHA-256 contain one versioned binary. `srvls release`
   is the sole install, upgrade, validation, status, and rollback process owner;
   AD-23 owns its crash and state contract. Installer smoke uses an isolated
   state directory. Preflight inventories the resolved shell command plus every
   managed and foreign absolute consumer path, including unit `ExecStart`
   values. A foreign bypass needs an explicit disposition; `--force` never
-  silently rewrites it. Managed links and unit definitions are staged with
-  their matching database backup, atomically activated, daemon-reloaded, and
-  validated read-only. Failure restores binary link, state, consumer definitions,
-  and daemon state together, then reruns exact legacy exports, `srvls-metrics`,
-  `srvls-snapshot`, timers, and every named consumer check. The prior target and
-  recovery material remain until those checks pass. Split crates only after
-  three independent consumers.
+  silently rewrites it. Every managed absolute `ExecStart`, including
+  `srvls-metrics.service` and `srvls-snapshot.service`, is rewritten to the
+  canonical activated binary. After `systemctl --user daemon-reload`, release
+  reads back the loaded `ExecStart` and executable target, observes each paired
+  timer's `LastTrigger` advance, and requires its triggered service to report
+  `Result=success` and `ExecMainStatus=0`. Failure restores the binary, link,
+  database state, unit and timer definitions, enablement, and daemon state as
+  one AD-23 recovery result, then reruns exact legacy exports and every named
+  consumer check. The prior target and recovery material remain until those
+  checks pass. Split crates only after three independent consumers.
 
 ### AD-13 — Identity is typed, exact, and generation-bound
 
@@ -403,16 +420,21 @@ flowchart LR
   sequence allocated in state. `ScopeIdV1` is a tagged Provider locator with
   Provider-specific exact fields; its normalized canonical ordering forms
   ScopeManifestV1. `DiagnosticId` is `(GenerationId, ScopeIdV1,
-  canonical_ordinal)`, where the coordinator assigns the ordinal before worker
-  dispatch. `ObservationId` is a typed tuple of ScopeIdV1, native locator,
+  producer_tag, canonical_ordinal)`, where `producer_tag` is `worker` or
+  `coordinator`. Each producer forms `DiagnosticCandidateV1` with stable code,
+  canonical subject bytes, source ordinal, AD-24 canonical parameter bytes,
+  and duplicate occurrence; after its evidence exists it sorts that exact
+  tuple and assigns gap-free `u32` ordinals. Observations reference final
+  worker IDs. The reducer rejects duplicate or gapped IDs and never remaps
+  them. `ObservationId` is a typed tuple of ScopeIdV1, native locator,
   occurrence, and required birth evidence with AD-24 canonical display encoding:
   full systemd unit; immutable Docker container ID; PM2 home, numeric ID,
   creation or uptime origin, and executable/name fingerprint; cron source,
   zero-based physical line, exact schedule/user/command hash, and duplicate
   occurrence; or Linux boot ID, PID, process start time, and executable or
-  command fingerprint. Workers retain bounded process ownership hints; the
-  AD-21 reducer alone deduplicates Provider-owned children and `srvls` itself
-  after eligible reports close. Inspection and action carry the typed identity and source
+  command fingerprint. Workers emit AD-21 typed process ownership hints; the
+  reducer alone deduplicates Provider-owned children and `srvls` itself after
+  eligible reports close. Inspection and action carry the typed identity and source
   generation; executors re-resolve every component before mutation. Display
   names, row indexes, groups, and weak correlations are never identity.
 
@@ -467,10 +489,14 @@ flowchart LR
 - **Rule:** one bundled SQLite database at
   `${XDG_STATE_HOME:-~/.local/state}/srvls/state.sqlite3` implements repository
   ports; directory mode is `0700` and database and sidecars are `0600`. The
-  adapter sets and verifies `foreign_keys=ON` (`1`) before any transaction on
-  every connection, `journal_mode=WAL`, `synchronous=FULL` (`2`), and AD-20 busy
-  timeout.
-  Writers use `BEGIN IMMEDIATE`, revision compare-and-swap, and deterministic ID
+  adapter establishes `journal_mode=WAL` during controlled initialization and
+  fails closed unless readback is exactly `wal`. Every fresh or existing
+  connection then sets `synchronous=FULL` and verifies numeric readback `2`,
+  sets `foreign_keys=ON` and verifies readback `1`, and applies the AD-20 busy
+  timeout, in that order and before any transaction. Only after those checks
+  may a writer use `BEGIN IMMEDIATE`; mismatched or unavailable readback never
+  degrades silently. Fresh- and existing-database fixtures own the sequence.
+  Writers use revision compare-and-swap and deterministic ID
   order; schema migration takes an exclusive lock. Promise event sequence plus
   current projection, ActionPlan creation or consumption, every operation phase
   plus its evidence, baseline acceptance plus audit event, and complete
@@ -662,22 +688,56 @@ schema and tested as contracts, not duplicated constants.
   baselines, resource evidence
 - **Prevents:** mixed-time findings, obligation drift, worker/reducer shape
   mismatch, cutoff races, and two meanings of current
-- **Rule:** one consistent repository read creates `CollectionPlanV1` with
-  GenerationId, generation-start boot sample, BootIdentity, HostIdentityV1,
-  Promise projection revisions and current event sequences, complete
-  PolicySnapshotV1, and ordered ScopeManifestV1 with frozen obligations. V1
-  ScopeId variants are cron user/root/system, systemd user/system, Docker
-  resolved endpoint plus context, PM2 normalized `PM2_HOME`, and process
-  HostIdentity. Their provider tag and canonical AD-24 bytes define equality and
-  ordering everywhere. Workers receive and echo the exact ScopeId, obligation,
-  deadline, and coordinator-assigned diagnostic range; reduction rejects a
-  mismatch and never consults newer Promise or policy state. Reports register
-  atomically before both half-open deadlines. The reducer alone performs
-  cross-Provider attribution and deduplication after all eligible reports,
-  materializes Findings under the frozen decision version, and requests the
-  AD-16 transaction. Later Promise writes belong to the next generation. A
-  superseded generation may retain CollectionAttempt and candidate evidence but
-  cannot move either repository or displayed current truth.
+- **Rule:** one AD-16 `BEGIN IMMEDIATE` admission transaction allocates the
+  gap-free GenerationId; reads Promise/event, baseline, operation,
+  prior-current, policy, scope, and resource-history cuts; inserts the complete
+  `CollectionPlanV1`; pins every referenced historical record; and updates
+  `latest_requested_generation`, or commits none of them. The plan contains:
+
+  - `ClockSampleV1`, which pairs one Linux `CLOCK_BOOTTIME` sample with one UTC
+    wall sample at the plan boundary, plus BootIdentity and HostIdentityV1;
+    later wall samples are diagnostic-only and cannot restamp the Snapshot,
+    Evidence Window, or Brief;
+  - Promise projection revisions and current event sequences, complete
+    PolicySnapshotV1, and ordered ScopeManifestV1 with frozen obligations;
+  - `AcceptedBaselineCutV1` with acceptance ID and revision, exact immutable
+    baseline Snapshot projection and SnapshotId, compatibility result and reason
+    or typed no-baseline state, and the exact immutable prior-current Snapshot
+    projection, SnapshotId, and repository revision;
+  - `OperationCutV1` with repository high-water revision and every ordered
+    nonterminal OperationId, exact target identity, phase, and row revision;
+    and
+  - `ResourceHistoryCutV1` with history revision and the ordered exact sample
+    IDs and rows required by the AD-20 hot window: ObservationId, metric, value,
+    source, boot and UTC sample, and owning SnapshotId.
+
+  V1 ScopeId variants are cron user/root/system, systemd user/system, Docker,
+  PM2, and process, with the exact AD-24 grammar. Their canonical bytes define
+  equality and ordering everywhere. Workers receive and echo the exact plan,
+  ScopeId, obligation, deadline, and capture reservation through AD-25;
+  reduction rejects a mismatch and never consults newer Promise, policy,
+  baseline, operation, current, or history state. Baseline acceptance,
+  operation changes, or retention after admission affect only the next
+  generation; referenced baseline and history rows stay pinned through
+  candidate commit or terminal failure.
+
+  Each worker emits `ProcessOwnershipHintV1`: direct boot/PID/start identity,
+  owning ObservationId and ScopeId, evidence kind `self-exact |
+  systemd-main-pid | systemd-cgroup | docker-init-pid | docker-cgroup |
+  pm2-pid-birth`, exact source record and outcome, and completeness. Only exact
+  PID-plus-birth or exact cgroup evidence suppresses a direct-process
+  Observation. Weak, partial, or absent evidence never suppresses. Conflicting
+  exact owners suppress the duplicate direct row but retain all candidate
+  owners and an `ownership-conflict` diagnostic. The reducer persists
+  `ProcessSuppressionV1` with all hints, selected owners, rule, completeness,
+  and diagnostic; without exact evidence it emits the direct row.
+
+  Reports register atomically before both half-open deadlines. The reducer
+  alone performs cross-Provider attribution and suppression after all eligible
+  reports, materializes Findings under the frozen decision version, and
+  requests the AD-16 Snapshot transaction. Later writes belong to the next
+  generation. A superseded generation may retain CollectionAttempt and
+  candidate evidence but cannot move repository or displayed current truth.
 
 ### AD-22 — Action plans and operation effects have one durable handoff
 
@@ -712,29 +772,63 @@ schema and tested as contracts, not duplicated constants.
   unowned absolute consumers, and incompatible backup methods
 - **Rule:** `application::release` owns `srvls release install | upgrade |
   validate | status | rollback`; `StateMigrationCoordinator` owns typed
-  `create_backup | migrate | restore | verify` effects. Release preflight
-  refuses before quiescence when staged files and the required backup cannot fit
-  under ARCH-LIM-19. Every stateful process holds a shared install-generation
-  admission lease. Release obtains the
-  external exclusive lease before backup and retains it through commit or
-  rollback; its candidate validator receives one inherited, read-only bypass
-  token and cannot admit lifecycle, Snapshot, baseline, plan, or operation
-  writes. A mode-0600, file-and-directory-fsynced `UpgradeTransactionV1`
-  outside SQLite binds transaction ID, old/new targets and hashes, old/new
-  schemas, backup path/hash, consumer manifest, and exactly one phase:
-  `staged | backed-up | migrated | activated | validated | rollback-started |
-  recovered | committed`. Every release entry resumes or reverses an existing
-  transaction idempotently before new work. Recovery discards `staged`, restores
-  the old pair from `backed-up | migrated`, validates `activated` and commits it
-  only on success, commits `validated`, finishes rollback from
-  `rollback-started`, and cleans terminal `recovered | committed` before a new
-  transaction. `StateBackupManifestV1` requires
+  `create_backup | migrate | restore | verify` effects. The external recovery
+  directory is `${XDG_STATE_HOME:-~/.local/state}/srvls/upgrade/`, mode `0700`,
+  with `admission.lock`, `admission-v1.json`, and `transaction-v1.json` at mode
+  `0600`, opened no-follow. `ReleaseAdmissionV1` atomically persists version,
+  install generation, `ready | recovering`, and optional transaction ID.
+
+  Before opening SQLite, every stateful entry takes and holds a shared `flock`
+  for its entire use case and verifies `ready`, matching install generation,
+  and no nonterminal transaction. Otherwise it returns typed
+  `upgrade-recovery-required`; only stateless legacy output remains available.
+  Release takes the exclusive lock, performs recovery first, sets and fsyncs
+  `recovering` with an incremented install generation before effects, and holds
+  exclusivity through commit or rollback. A crash therefore leaves persistent
+  recovery admission rather than reopening writes. Candidate validation uses
+  only an inherited transaction-bound read-only bypass and cannot admit domain
+  writes. SQLite writes compare the captured install generation.
+
+  `UpgradeTransactionV1` binds transaction ID, generations, old/new targets
+  and hashes, schemas, backup, consumer definitions and enablement, and a
+  monotonically sequenced step `stage | checksum | smoke | backup | migrate |
+  activate | consumer-validate | rollback | commit` with state `pending |
+  complete`. Its AD-24 canonical envelope includes a checksum and is replaced
+  only through a same-directory `O_EXCL` temporary file, file fsync, atomic
+  rename, and directory fsync; it is never edited in place. Each effect persists
+  `pending` before execution and `complete` only after verification.
+
+  On recovery, pending stage/checksum/smoke is cleaned or retried; pending
+  backup is verified or discarded and recreated; pending migrate or activate
+  conservatively restores the old binary/state/consumer pair; pending consumer
+  validation is rerun and then committed or rolled back; pending rollback
+  finishes restoration; and pending commit verifies the activated pair and
+  known-good bundle before terminalizing. Admission returns to `ready` only
+  after terminal commit or recovery. `StateBackupManifestV1` requires the
   SQLite backup API or an explicitly equivalent checkpointed method, no live
   restore connections, database/WAL/SHM disposition, content hashes, schema and
-  integrity verification, and file plus parent-directory fsync. Activation and
-  rollback treat executable link, database, managed unit definitions, and
-  daemon-reload state as one recovery result; foreign absolute consumers require
-  an explicit unchanged, migrated, or blocked disposition.
+  integrity verification, and file plus parent-directory fsync.
+
+  `KnownGoodReleaseV1` retains exactly one pinned prior binary, state backup,
+  managed consumer definitions and enablement, hashes, schemas, and install
+  generation. Explicit rollback creates a new UpgradeTransaction against that
+  pair; successful validation alone cannot replace it, and only the next
+  successful commit may do so. Activation and rollback treat binary, link,
+  database, unit and timer definitions, enablement, and daemon state as one
+  recovery result; foreign absolute consumers require an explicit unchanged,
+  migrated, or blocked disposition.
+
+  Durable internal transitions project `ReleaseEventV1` with transaction ID,
+  sequence, public phase `stage | checksum | smoke | activate |
+  consumer-validation | recovery | commit`, result `started | succeeded |
+  failed | resumed`, stable reason code, and manifest step. An event is emitted
+  only after the described transition is durable: `started` follows the
+  persisted pending step and `succeeded` follows its persisted complete step.
+  Forward step mapping is stage to `stage`, checksum to `checksum`, smoke to
+  `smoke`, backup/migrate/activate to `activate`, consumer-validate to
+  `consumer-validation`, and commit to `commit`; rollback and every resumed
+  nonterminal step map to `recovery`, whose first event is `resumed`. Release preflight refuses before quiescence when
+  staging plus the required backup cannot fit under ARCH-LIM-19.
 
 ### AD-24 — Shared encodings and historical contracts are canonical
 
@@ -746,12 +840,36 @@ schema and tested as contracts, not duplicated constants.
   and the validated lowercase Linux machine-id bytes; BootIdentity remains the
   kernel boot UUID and is never baseline identity. Public composite strings use
   UTF-8 NFC, leave only RFC 3986 unreserved bytes literal, use uppercase
-  percent-hex, and reject malformed or noncanonical input. `PolicySnapshotV1`
-  stores every effective typed field in schema-declaration order with durations
+  percent-hex, and reject malformed or noncanonical input. `ScopeIdV1` has this
+  exact binary grammar: version `u8=1`; variant `u8` values cron-user `1`,
+  cron-root `2`, cron-system `3`, systemd-user `4`, systemd-system `5`, Docker
+  `6`, PM2 `7`, and process `8`; big-endian `u16` component count; then
+  component-kind `u8`, big-endian `u32` byte length, and raw component bytes.
+  Component kinds are UID `1`, endpoint `2`, context `3`, path `4`, and Host
+  digest `5`. Required component sequences are cron-user `(UID)`, cron-root
+  `()`, cron-system `()`, systemd-user `(UID)`, systemd-system `()`, Docker
+  `(endpoint, context)`, PM2 `(path)`, and process `(Host digest)`; missing,
+  extra, reordered, or repeated components are invalid. UID is eight-byte
+  big-endian and Host digest is exactly 32 bytes. Docker endpoint
+  and context are exact NFC scalar strings, compare byte-for-byte with no URI
+  aliases, and reject invalid UTF-8 or NUL. PM2 home and Linux paths retain raw
+  bytes and require absolute lexical normalization: collapse empty and `.`
+  segments, reject `..` and NUL, strip trailing separators except root, and do
+  not resolve symlinks, case, or non-UTF-8 bytes. Process includes the
+  HostIdentity digest. Equality, ordering, and fingerprints use these canonical
+  bytes; display is `scope-v1:` plus AD-24 percent encoding of every byte.
+
+  `PolicySnapshotV1` stores every effective typed field in schema-declaration order with durations
   as integer nanoseconds, sizes as integer bytes, percentages as integer basis
   points, stable ASCII enum tokens, and no artifact-specific omissions. Its
-  canonical UTF-8 JSON uses that fixed key order, NFC strings, decimal integers,
-  lowercase booleans, no insignificant whitespace, and one schema version.
+  canonical UTF-8 JSON uses that fixed key order and no whitespace. Strings are
+  Unicode scalar sequences normalized to NFC: quote uses `\"` and reverse
+  solidus uses `\\`; C0 `U+0000` through `U+001F` use uppercase
+  `\u00XX`; slash is never escaped; and every other scalar is emitted as
+  literal UTF-8. Surrogates, invalid scalars, invalid UTF-8, and alternative
+  spellings are rejected. Integers use minimal decimal with no plus, leading
+  zero, or negative zero; floats are forbidden; booleans are lowercase. The
+  same grammar owns provenance, release manifests, and AD-25 frames.
   `PolicyFingerprint` is SHA-256 over domain `srvls-policy-v1`, a zero byte, and
   those bytes; provenance is excluded. `ProvenanceDigest` is SHA-256 over domain
   `srvls-provenance-v1`, a zero byte, and the schema-ordered canonical source and
@@ -760,6 +878,41 @@ schema and tested as contracts, not duplicated constants.
   result plus `decision_contract_version`; historical reads never recompute it,
   and explicit re-evaluation creates a new derived generation. Unsupported
   encoding, policy, or decision versions return a typed read-only result.
+
+### AD-25 — Same-binary workers have one authenticated wire contract
+
+- **Binds:** cli, collection, subprocesses, Provider adapters, inspection,
+  lifecycle-actions
+- **Prevents:** internal route collisions, untrusted worker invocation,
+  incompatible child envelopes, inherited configuration, and stdio ambiguity
+- **Rule:** AD-7 reserves raw argv `__srvls-worker-v1`. The child requires one
+  inherited `AF_UNIX SOCK_STREAM` on file descriptor 3 and authenticates it
+  before configuration, state, Host discovery, or effects: Linux
+  `SO_PEERCRED` must name the same UID and direct parent PID, the peer
+  `/proc/<pid>/exe` device and inode must match the child executable, and the
+  request must prove a one-time 256-bit capability supplied independently in a
+  sealed, read-only `memfd` on file descriptor 4. The child reads it once,
+  constant-time compares it with the framed request, then closes and zeroizes
+  it. Missing or failed proof is terminal. stdin, stdout, and stderr are
+  `/dev/null` and never transport.
+
+  FD 3 carries exactly one request and one result, each a big-endian `u32`
+  length followed by AD-24 canonical JSON. `WorkerRequestV1` contains protocol
+  version `1`, RequestId, one mode `collect | inspect | execute | verify`, the
+  frozen CollectionPlan and Policy identity, exact ScopeId, boot-time deadline,
+  capture reservations, capability, and typed payload. `WorkerResultV1` echoes
+  protocol and RequestId and carries the typed process result, Collector or
+  operation report, final diagnostic IDs, retained and original byte counts,
+  truncation, and duration. The child discovers neither configuration nor
+  state; everything it may use is in the authenticated request.
+
+  Exit `0` means exactly one valid result frame. Exit `64` means invalid
+  handshake, protocol, version, request, frame, trailing bytes, or a missing or
+  duplicate result; exit `70` means internal failure before a result. Parent
+  timeout or signal maps through AD-10 CommandRunner, closes the socket, and
+  discards every late frame. A malformed, mismatched, missing, duplicate, or
+  trailing result becomes typed `invalid-output`; exit status never substitutes
+  for the result envelope.
 
 ### Canonical UX acceptance Host
 
@@ -828,6 +981,7 @@ src/
     action.rs                # plans, capabilities, commands, outcomes
     contracts.rs             # canonical IDs, encodings, policy snapshots
     policy.rs                # validated policy and ARCH-LIM values
+    worker.rs                # WorkerRequest/Result and protocol invariants
   application/
     promises.rs              # declare, query, renew, close
     collect.rs               # bounded collection generations
@@ -845,11 +999,13 @@ src/
     repositories.rs
     clock.rs
     state_migration.rs
+    worker_transport.rs      # authenticated internal worker boundary
   adapters/
     host/{cron,systemd,docker,pm2,process}.rs
     process.rs               # production CommandRunner
     state/sqlite.rs          # transactions, migrations, retention, recovery
-    release.rs               # admission lock, manifest, activation, restore
+    release.rs               # admission, atomic manifest, activation, restore
+    worker.rs                # FD3/FD4 authentication, framing, child entry
     config.rs                # layered TOML and provenance
     linux_clock.rs           # monotonic time and boot identity
   presentation/
@@ -887,28 +1043,28 @@ flowchart TD
 | Canonical capability | Lives in | Governed by |
 | --- | --- | --- |
 | FR-1–FR-7 Promise lifecycle and Agent contracts | `domain::promise`, `application::promises`, state adapter | AD-2, AD-3, AD-13, AD-16, AD-17, AD-19–AD-21, AD-24 |
-| FR-8–FR-17 Host discovery and compatibility | Host adapters, `application::collect`, legacy presenters | AD-3, AD-5, AD-9–AD-11, AD-13, AD-15, AD-20–AD-21, AD-24 |
+| FR-8–FR-17 Host discovery and compatibility | Host adapters, `application::collect`, legacy presenters | AD-3, AD-5, AD-9–AD-11, AD-13, AD-15, AD-20–AD-21, AD-24–AD-25 |
 | FR-18–FR-27 reconciliation and Evidence Window | `domain::reconciliation`, `application::{reconcile,baseline}` | AD-2, AD-5, AD-13, AD-16–AD-21, AD-24 |
-| FR-28–FR-35 Brief, Stack, TUI, action discovery, and inspection | `application::brief`, grouping, action planning, presentation | AD-4–AD-8, AD-11, AD-13–AD-16, AD-18–AD-22, AD-24 and canonical UX IDs |
-| FR-36–FR-41 exact lifecycle control | `domain::action`, `application::execute`, action adapters | AD-6, AD-10, AD-13–AD-16, AD-20, AD-22, AD-24 |
+| FR-28–FR-35 Brief, Stack, TUI, action discovery, and inspection | `application::brief`, grouping, action planning, presentation | AD-4–AD-8, AD-11, AD-13–AD-16, AD-18–AD-22, AD-24–AD-25 and canonical UX IDs |
+| FR-36–FR-41 exact lifecycle control | `domain::action`, `application::execute`, action adapters | AD-6, AD-10, AD-13–AD-16, AD-20, AD-22, AD-24–AD-25 |
 | FR-42–FR-43 install, upgrade, and rollback | `application::release`, StateMigrationCoordinator, Cargo and CI | AD-3, AD-7, AD-9, AD-11–AD-12, AD-16, AD-23–AD-24 |
 
 ## Canonical Contract Traceability
 
 | Stable identifiers | Architecture landing |
 | --- | --- |
-| UJ-1 | AD-5, AD-7, AD-18, AD-20–AD-21, AD-24; Brief and Evidence Window projections |
+| UJ-1 | AD-5, AD-7, AD-18, AD-20–AD-21, AD-24–AD-25; Brief and Evidence Window projections |
 | UJ-2 | AD-13, AD-16–AD-17, AD-19–AD-21, AD-24; Promise application service |
-| UJ-3 | AD-5–AD-6, AD-13, AD-18, AD-20–AD-22; inspection and Promise-origin Start |
-| UJ-4 | AD-6, AD-13–AD-16, AD-18, AD-20–AD-22, AD-24; exact-target action pipeline |
-| UJ-5 | AD-4, AD-18, AD-20; multi-label findings and Stack context |
+| UJ-3 | AD-5–AD-6, AD-13, AD-18, AD-20–AD-22, AD-25; inspection and Promise-origin Start |
+| UJ-4 | AD-6, AD-13–AD-16, AD-18, AD-20–AD-22, AD-24–AD-25; exact-target action pipeline |
+| UJ-5 | AD-4–AD-5, AD-16, AD-18, AD-20–AD-21, AD-25; retained resource history, multi-label findings, and Stack context |
 | UJ-6 | AD-3, AD-7, AD-9, AD-11–AD-12, AD-16, AD-23–AD-24; staged activation and paired recovery |
 | NFR-1–NFR-2 | AD-2, AD-5, AD-11, AD-18, AD-21, AD-24 |
-| NFR-3–NFR-7 | AD-3, AD-6–AD-10, AD-14–AD-15, AD-20–AD-22 |
+| NFR-3–NFR-7 | AD-3, AD-6–AD-10, AD-14–AD-15, AD-20–AD-22, AD-25 |
 | NFR-8 | AD-7, AD-8, AD-11, AD-14, UX-A11Y-1–UX-A11Y-5, SR-A11Y-1 |
-| NFR-9–NFR-12 | AD-10, AD-13–AD-24 |
+| NFR-9–NFR-12 | AD-10, AD-13–AD-25 |
 | NFR-13–NFR-16 | AD-9, AD-11–AD-12, AD-19–AD-20, AD-23–AD-24 |
-| SM-1–SM-2 | AD-5, AD-11, AD-18, AD-21, AD-24; canonical Brief and reconciliation fixtures |
+| SM-1–SM-2 | AD-5, AD-11, AD-18, AD-21, AD-24–AD-25; canonical Brief and reconciliation fixtures |
 | SM-3 | AD-6, AD-11, AD-13–AD-16, AD-20, AD-22; FR-40 precedence fixtures |
 | SM-4 | AD-7, AD-9, AD-11–AD-12, AD-23; every layered-oracle lane and consumer assertion |
 | SM-5 | AD-11, AD-13, AD-16, AD-17; idempotent Agent lifecycle fixtures |
