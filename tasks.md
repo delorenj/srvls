@@ -23,6 +23,8 @@
     - [x] Adversarially review terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-a11y; Commit: c125fb2; Verdict: FAIL, remediated)**
     - [x] Verify the remediated UX spines against the full BMAD rubric — **COMPLETED by Doctor Von Code (Session: doctor-von-code-ux-acceptance; Commit: d21d718; Verdict: PASS)**
     - [x] Verify remediated terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-acceptance; Commit: c2c2f18; Verdict: PASS)**
+  - [ ] Reconcile and validate the architecture spine — **IN PROGRESS by Team Argus**
+    - [ ] Reconcile canonical PRD and UX contracts against the architecture — **CLAIMED by Agent Buttercup (Session: agent-buttercup-architecture-inputs)**
 
 ## Planned work
 
