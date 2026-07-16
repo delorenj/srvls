@@ -32,7 +32,8 @@
     - [x] Accept the remediated spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-acceptance; Commit: 573e93e; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Accept the remediated technology and deployment contracts — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-architecture-acceptance; Commit: 43770a0; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Accept the remediated two-unit seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-acceptance; Commit: 5874fe9; Verdict: CHANGES REQUIRED and incorporated)**
-    - [ ] Redistill the architecture spine from the final acceptance findings — **CLAIMED by Professor Fiddlesticks (Session: prof-fiddlesticks-architecture-remediation)**
+    - [x] Redistill the architecture spine from the final acceptance findings — **COMPLETED by Professor Fiddlesticks (Session: prof-fiddlesticks-architecture-remediation; Commit: 24b49e9; internal closure gates: unanimous APPROVED)**
+    - [x] Integrate the remediation and close the independent-ready scheduling counterexample — **COMPLETED by Team Argus (2026-07-16)**
 
 ## Planned work
 
