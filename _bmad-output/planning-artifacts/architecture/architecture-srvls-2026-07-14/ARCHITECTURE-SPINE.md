@@ -318,81 +318,94 @@ flowchart LR
 - **Binds:** collection, tui, lifecycle-actions, subprocesses
 - **Prevents:** sequential refresh latency, stale overwrite, runaway children,
   and a second runtime architecture
-- **Rule:** a fixed collection pool uses deterministic longest-processing-time
-  scheduling over the frozen AD-21 ScopeManifest: sort scopes by descending
-  configured deadline then ScopeIdV1. Runtime and configuration use the same
-  dispatch-epoch transition:
+- **Rule:** a fixed collection pool executes exactly one frozen
+  `DispatchScheduleV1` compiled over the AD-21 ScopeManifest and effective
+  AD-20 policy. Configuration and runtime each derive the AD-24 canonical
+  schedule bytes and require byte-for-byte equality; neither may reconstruct an
+  event-driven schedule from observed completion, failure, or Ready times. The
+  deterministic compiler is:
 
-  1. while the spawn gate is open, choose the earliest effective time with one
-     or more free slots; immediately after a barrier, use its close time;
-  2. collect every slot free at or before that time in ascending worker-ID order;
-  3. take up to that many queued scopes from the frozen LPT order as one batch;
-  4. before any spawn, sample one `dispatch_epoch_boot_ns`; allocate each
-     member's request ID and capability; and set its absolute scope deadline to
-     that sample plus its configured budget;
-  5. in worker-ID order, initiate spawn and dedicated-process-group setup for
-     every still-before-deadline member, then drive each AD-25 Hello/Ready lane
-     concurrently. A member owns its slot from the shared epoch until its own
-     report terminalizes; another member's spawn, Ready, or failure state never
-     delays a ready non-process request;
-  6. when a non-process member becomes authenticated-ready strictly before both
-     deadlines, dispatch its WorkerRequestV1 immediately. Ready events observed
-     at the same boot-nanosecond dispatch in ascending worker-ID order. A member
-     that reaches either deadline first receives the one AD-25 `worker-timeout`
-     report without a request, independently of its batch siblings;
-  7. when a still-live process-scope member becomes authenticated-ready and is
-     strictly before both deadlines, first require every selected member's
-     parent-side spawn attempt to have returned either no child PID, a complete
-     SpawnedWorkerRootV1, or an UnrootableSpawnV1; this requirement does not wait
-     for another child's Ready. Close the worker-spawn gate, then resolve every
-     coordinator-owned AD-13 UnrootableSpawnV1 from current or superseded
-     generations. Each must have its exact owned child reaped and any known
-     dedicated group proven empty before the process request. An earlier process
-     worker failure uses its normal AD-25 report; if a spawn outcome or absence
-     proof is still unresolved at either deadline, the process member receives
-     `worker-timeout`. Both paths perform no Host-read and reopen the gate. Only
-     after the proof freeze every complete existing and batch spawned root whose
-     group is not proven empty, then dispatch the process WorkerRequestV1;
-  8. while the process Host-read gate is closed, live workers and their process
-     groups continue but completed slots remain idle; and
-  9. when the half-open process cut closes, or the process member terminalizes
-     before Host-read, reopen the gate. Whenever the gate is open, each newly
-     free slot starts the next epoch without waiting for its earlier batch peers.
+  1. number worker slots `0..collection.max_concurrency-1`; sort every frozen
+     scope once by descending configured budget, then unsigned ScopeIdV1 bytes,
+     and reject a duplicate or missing scope or arithmetic overflow;
+  2. initialize every worker's full-budget availability offset to zero and the
+     reserved process-gate end to zero. While scopes remain, choose
+     `epoch_offset = max(process_gate_end, minimum worker availability)`, collect
+     every worker whose availability is at or before that offset in ascending
+     worker-ID order, and assign up to that many queued scopes in LPT order;
+  3. for each assigned member freeze worker ID, ScopeIdV1, epoch offset,
+     configured budget, and terminal offset `epoch offset + budget`, then move
+     that worker's availability to the terminal offset. If the batch contains
+     the single process scope, freeze its reserved process-gate interval as
+     `[epoch offset, process terminal offset)` and move `process_gate_end` to
+     that end; no later reservation epoch may fall inside the interval;
+  4. persist epochs by ascending offset, members by ascending worker ID, the
+     complete LPT ScopeId order, every per-scope budget and terminal offset, the
+     process-gate interval, and `full_budget_makespan = max(member terminal
+     offset)`. Freeze the effective scheduler margin as
+     `max(configured scheduler margin, 1 ns)` and the generation-cutoff offset as
+     exactly `full_budget_makespan + effective scheduler margin`.
 
-  The coordinator sends every Hello and observes every Ready or terminal
-  outcome concurrently against that member's absolute deadline. A silent child,
-  exit 77, malformed or replayed Ready, failed peer proof, or setup failure
-  consumes only its own slot and cannot hold a ready sibling's request or a
-  later open-gate epoch. AD-25 synthesizes one terminal report for each failed
-  member. A failed member with a complete
-  SpawnedWorkerRootV1 remains in SelfProcessSetV1 until its group is proven
-  empty and never receives a request. A child that cannot construct that exact
-  root enters the process Host-read absence barrier above instead of an
-  invented partial root. A failed slot is free at the next open-gate epoch.
+  AD-21 admission samples one `ClockSampleV1` before any worker spawn; its boot
+  nanoseconds are the sole generation schedule origin. Runtime re-derives and
+  canonical-encodes `DispatchScheduleV1` from the persisted PolicySnapshotV1 and
+  ScopeManifestV1, compares those bytes and the AD-24 schedule fingerprint with
+  the persisted plan, and refuses the CollectionAttempt before spawn on any
+  mismatch. It then executes only these reservations:
 
-  Scope time starts at the pre-spawn dispatch epoch. Spawn, process-group setup,
-  Hello/Ready authentication, request transfer, Provider work, result transfer,
-  and failure decision all consume that one configured scope budget; setup never
-  extends it. The generation cutoff includes queue and that complete budget.
-  Provider children remain inside their owning ready worker process group and
-  do not acquire independent worker slots.
+  1. a worker that terminalizes, fails, or becomes Ready before its next
+     reservation remains held; no observation advances a reservation epoch. At
+     each absolute epoch `schedule origin + epoch offset`, deadline-equality
+     transitions for prior reservations occur first, then the coordinator
+     initiates that epoch's reserved batch in ascending worker-ID order. A late
+     coordinator may reduce the remaining member budget but may not move its
+     absolute deadline;
+  2. before each spawn allocate that member's request ID and capability. Set its
+     absolute scope deadline to `schedule origin + epoch offset + budget` and
+     the absolute generation cutoff to `schedule origin + generation-cutoff
+     offset`; every addition is checked. Spawn, process-group setup, Hello/Ready
+     authentication, request transfer, Provider work, result transfer, and the
+     failure decision all consume that one reserved budget;
+  3. drive every AD-25 lane concurrently. A non-process member authenticated
+     Ready strictly before both deadlines receives its WorkerRequestV1
+     immediately and never waits for any sibling's spawn, Ready, failure, or
+     result. Simultaneous Ready events dispatch in ascending worker-ID order. A
+     silent or failed member receives its one AD-25 report and cannot delay an
+     authenticated Ready non-process member's request. It may affect the process
+     request only through the same-epoch spawn-outcome rule and AD-13
+     root/absence proof below;
+  4. a still-live Ready process member may close the worker-spawn gate only after
+     **every member reserved for that same epoch** has a parent-side spawn
+     outcome of no child PID, complete SpawnedWorkerRootV1, or
+     UnrootableSpawnV1. It never waits for any other member's Ready or result.
+     After closing the gate, resolve every coordinator-owned AD-13
+     UnrootableSpawnV1 from current or superseded generations: exact child reap
+     and, for a known group, zero exact-group members are required. If an absence
+     proof misses either deadline, synthesize `worker-timeout`, perform no
+     process Host-read, and reopen the gate. Otherwise freeze every complete
+     existing and same-epoch root whose group is not proven empty and dispatch
+     the process request;
+  5. the actual process Host-read gate remains closed through that member's
+     half-open process cut. It may reopen when the process terminalizes or fails
+     before Host-read, but early reopening still cannot advance a reservation.
+     The schedule reserves no other spawn epoch inside the frozen process-gate
+     interval; every early-free slot is held until its own next reservation.
 
-  Configuration consumes those exact epoch transitions in an event-by-event
-  worst-case simulation: every independent scope's complete setup-plus-work
-  lane consumes its full configured deadline; successful setup consumes part of
-  rather than adds to that deadline; Ready delay or failure never extends a
-  sibling lane; the process scope closes worker spawn only for its remaining
-  Host-read interval through its absolute deadline, with zero-cost successful
-  setup plus full Provider work as the dominating per-lane bound; slots that
-  finish under the barrier remain idle; and each free slot resumes queued LPT
-  dispatch immediately whenever the gate is open. Configuration also enumerates
-  Ready, silent, and setup-failure patterns and must produce the same bound;
-  because those patterns consume only the affected lane, none may exceed the
-  full-deadline LPT trace. Because report admission is half-open, it
-  rejects a generation cutoff below the barrier-aware makespan plus
-  `max(AD-20 scheduler margin, 1 ns)`; a configured zero margin therefore still
-  supplies exactly one nanosecond of cutoff headroom. Global
-  refresh has monotonic generation IDs persisted with
+  A failed member with a complete SpawnedWorkerRootV1 remains in
+  SelfProcessSetV1 until its group is proven empty and never receives a request.
+  A child that cannot construct that exact root enters the process Host-read
+  absence barrier instead of an invented partial root. Provider children remain
+  inside their owning ready worker process group and do not acquire independent
+  worker slots.
+
+  The reservation proof is mechanical: no member starts before its frozen epoch;
+  every member's terminal cut is no later than `origin + epoch offset + budget`;
+  every such terminal offset is at most `full_budget_makespan`; unresolved
+  process barriers time out rather than add time; and early outcomes never move
+  later epochs. Runtime scope-terminal time therefore cannot exceed the reserved
+  full-budget trace. The exact generation cutoff is the origin plus that
+  makespan plus the effective scheduler margin. Global refresh has monotonic
+  generation IDs persisted with
   `latest_requested_generation`. New requests coalesce latest-wins: cancel
   undispatched superseded scopes, request typed cancellation of running old
   scopes, retain attempt diagnostics, and admit only the newest queued
@@ -408,7 +421,10 @@ flowchart LR
 
   A coordinator-owned atomic result registry accepts a report only before both
   its scope deadline and generation cutoff; equality is `timed-out`, and reducer
-  mailbox order is irrelevant. `CommandRunner` reserves stdout and stderr
+  mailbox order is irrelevant. A timer observed after equality uses the earlier
+  absolute deadline as its canonical terminal and failure-evidence cut; observed
+  scheduler lateness is separate bounded operational evidence and never extends
+  a scope or changes its report bytes. `CommandRunner` reserves stdout and stderr
   independently against generation, scope, then child capture ledgers under one
   coordinator before spawn, drains
   both streams after their retained cap, and frees raw bytes and reservations
@@ -442,19 +458,40 @@ flowchart LR
   ratatui `TestBackend`. Cross-unit contract fixtures freeze the AD-21 read cut,
   atomic plan admission, concurrent baseline acceptance, nonterminal-operation
   admission, retention, three-sample hot-history races, immutable baseline
-  comparison rows, zero post-admission baseline lookups, and barrier-aware LPT
-  scheduling with the 60-second process/seven 1-second scope zero-margin
-  counterexample, the process scope in every LPT position, and near-deadline
-  Host reads. The default `[30,20,15,15,10,10,10,process=10]` lane keeps the
-  30-second member silent through its deadline while ready shorter members
-  dispatch and free their slots independently; runtime and configuration must
-  still derive the 35-second makespan and the configured five-second margin. A
-  zero-margin lane proves the mandatory one-nanosecond half-open
-  headroom, and multi-batch virtual-clock lanes inject nonzero
-  spawn/Hello/Ready time and prove that setup subtracts from Provider time
-  without moving a scope completion beyond its pre-spawn deadline. Runtime
-  and configuration compare the same batch assignment, Ready/failure outcome,
-  root-freeze, dispatch-epoch, barrier, and completion-bound trace.
+  comparison rows, zero post-admission baseline lookups, and byte-identical
+  configuration/admission/runtime `DispatchScheduleV1` compilation. The default
+  `[30,20,15,15,10,10,10,process=10]` four-worker schedule reserves epochs at
+  `0,15,20,25` seconds and a process gate `[25,35)`; its 30-second member remains
+  silent through its deadline while authenticated Ready non-process siblings
+  dispatch immediately. Runtime and configuration must retain the exact
+  35-second full-budget makespan and derive the 40-second cutoff from the
+  five-second margin.
+
+  A deterministic virtual-clock regression uses four workers and budgets
+  `systemd-user=20`, `systemd-system=20`, `Docker=20`, `PM2=20`, `process=10`,
+  and cron user/root/system `=9` seconds. It freezes epoch zero for the four
+  20-second members and epoch 20 for process plus all three cron members, with
+  process gate `[20,30)`, full-budget makespan 30 seconds, and cutoff 35 seconds.
+  When the worker-zero 20-second lane terminalizes at `20 s - 1 ns`, its slot is
+  held until the reserved 20-second epoch: process cannot spawn or close the gate
+  one nanosecond early. At 20 seconds the batch spawns in worker-ID order;
+  authenticated cron requests remain per-member immediate, process waits only
+  for all four parent-side spawn outcomes, and every scope terminalizes by its
+  frozen absolute deadline. Across the full-budget and one-nanosecond-early
+  traces, the fixture asserts identical schedule bytes, worker assignments,
+  epoch offsets, budgets, gate interval, request-not-before bounds, full-budget
+  makespan, and cutoff. It separately asserts each trace's exact duration
+  evidence, terminal reports, strict exit, Snapshot, and Brief; earlier causal
+  evidence may change those bytes but may not change a reservation or create a
+  generation-cutoff timeout.
+
+  The 60-second process/seven 1-second zero-margin case still proves the
+  mandatory one-nanosecond half-open headroom, process scope placement is covered
+  in every LPT position, and multi-batch virtual clocks inject nonzero
+  spawn/Hello/Ready time to prove setup subtracts from Provider time without
+  changing any reservation or absolute deadline. Runtime, configuration, and
+  persisted CollectionPlan compare the same canonical schedule bytes rather than
+  comparing event-dependent traces.
   Property suites own
   byte-complete AD-24 policy JSON, ScopeId/ScopeManifest grammars, non-UTF-8 path
   normalization, arbitrary valid diagnostic subjects and parameters,
@@ -638,10 +675,11 @@ flowchart LR
   and reopens the gate. Later reap evidence cannot revise that report or
   Snapshot.
 
-  Before a process request, the coordinator has resolved every selected
-  member's parent-side spawn outcome and every unrootable-child absence barrier,
-  then snapshots every complete existing and batch spawned group not proven
-  empty. Non-process requests do not wait for unrelated Ready/failure outcomes.
+  Before a process request, the coordinator has resolved every member reserved
+  for that same AD-10 epoch to one parent-side spawn outcome and every
+  unrootable-child absence barrier, then snapshots every complete existing and
+  same-epoch spawned group not proven empty. Non-process requests do not wait
+  for unrelated Ready/failure outcomes.
   The gate remains closed through the half-open process Host-read cut. A later
   worker root cannot appear, and every earlier possibly-live internal process is
   either carried in the process assignment or proven absent.
@@ -897,8 +935,8 @@ flowchart LR
 | ID | Configuration | Built-in default | Valid range and invariant |
 | --- | --- | --- | --- |
 | ARCH-LIM-1 | `collection.max_concurrency` | 4 workers | 1–8 |
-| ARCH-LIM-2 | `collection.deadline.*` | cron user/root/system 10 s each; system/user systemd 15 s each; Docker 30 s; PM2 20 s; process 10 s | 1–60 s each; one pre-spawn-epoch budget covers worker setup/authentication, request, Host work, result, and failure decision for its scope |
-| ARCH-LIM-3 | `collection.generation_cutoff`, `collection.scheduler_margin` | 40 s and 5 s | cutoff 10–120 s; margin 0–30 s; cutoff must be at least exact barrier-aware one-shot LPT makespan plus `max(margin, 1 ns)` for half-open admission |
+| ARCH-LIM-2 | `collection.deadline.*` | cron user/root/system 10 s each; system/user systemd 15 s each; Docker 30 s; PM2 20 s; process 10 s | 1–60 s each; one reserved-epoch budget covers worker setup/authentication, request, Host work, result, and failure decision for its scope |
+| ARCH-LIM-3 | `collection.scheduler_margin`; derived `collection.generation_cutoff` | 5 s; derived 40 s | margin 0–30 s; effective margin is `max(configured margin, 1 ns)`; cutoff is not independently configurable and equals the frozen DispatchScheduleV1 full-budget makespan plus effective margin |
 | ARCH-LIM-4 | `process.child_stdout_bytes`, `process.child_stderr_bytes` | 4 MiB and 256 KiB | stdout 64 KiB–16 MiB; stderr 16 KiB–1 MiB; separate counts, truncation, and draining |
 | ARCH-LIM-5 | `inspection.max_bytes`, `inspection.max_lines` | 256 KiB and 200 lines | 4 KiB–2 MiB and 10–2,000 lines; earlier bound wins and is disclosed |
 | ARCH-LIM-6 | `retention.snapshot_days`, `retention.snapshot_count` | 14 days and 256 historical | 2–90 days and 16–4,096; both apply; current and Accepted Baseline are pinned |
@@ -921,14 +959,18 @@ flowchart LR
 | ARCH-LIM-23 | derived `action.total_decision_bound` | systemd 143 s; Docker 88 s; PM2 73 s; process 53 s; Launch Mechanism 163 s | revalidation + selected execution + verification + graceful + forced observation + finalization attempt; read-only decision budget, never a universal process-exit, durable-write, or reap bound |
 
 For ARCH-LIM-3, default jobs are
-`[30, 20, 15, 15, 10, 10, 10, 10]`. AD-10 assigns them to four workers for an
-exact barrier-aware 35-second makespan: the process scope is the final
-equal-deadline dispatch, so its closed spawn gate has no queued successor. The
-five-second margin yields the 40-second cutoff. Configuration rejects, for
-example, one 60-second process scope plus seven 1-second scopes, four workers,
-and zero margin at a 60-second cutoff because the barrier-aware makespan is 61
-seconds; even a 61-second cutoff lacks the required one-nanosecond half-open
-headroom, while 61 seconds plus one nanosecond is admissible.
+`[30, 20, 15, 15, 10, 10, 10, 10]`. AD-10 freezes four-worker reservation
+epochs `0,15,20,25` seconds and process gate `[25,35)`, for an exact 35-second
+full-budget makespan even when the 30-second sibling remains silent. The
+five-second effective margin yields the exact 40-second cutoff. For the
+four-worker near-tie regression `[20,20,20,20,process=10,9,9,9]`, epoch 20
+reserves process plus all three 9-second members, making the frozen makespan 30
+seconds and cutoff 35 seconds even if one initial lane completes at
+`20 s - 1 ns`. A 60-second process scope plus seven 1-second scopes reserves the
+second batch after its `[0,60)` process gate and therefore has makespan 61
+seconds; with configured zero margin its derived cutoff is 61 seconds plus one
+nanosecond. No independent cutoff override can admit a value below the compiled
+schedule.
 For ARCH-LIM-23, configuration validation computes the same formula exposed by
 config explanation, action planning, confirmation, status, linear, and machine
 surfaces. Both derived calculations are generated from the typed configuration
@@ -944,12 +986,19 @@ schema and tested as contracts, not duplicated constants.
   `BEGIN IMMEDIATE` transaction it either performs every following step or
   commits none: allocate the next gap-free GenerationId; capture one
   `ClockSampleV1` pairing suspend-inclusive boot nanoseconds with UTC wall
-  nanoseconds plus BootIdentity and derive the absolute generation-cutoff boot
-  nanoseconds from that sample and the effective ARCH-LIM-3 cutoff; read one
+  nanoseconds plus BootIdentity, whose boot value is the sole generation
+  schedule origin sampled before worker spawn; read one
   `current_repository_revision`; freeze Promise
   projection revisions and current event sequences; insert the complete
-  PolicySnapshotV1; and build the ordered ScopeManifestV1 with effective
-  obligations. The same read also creates:
+  PolicySnapshotV1; build the ordered ScopeManifestV1 with effective
+  obligations; invoke the AD-10 configuration compiler over that exact policy
+  and manifest; and require its AD-24 canonical DispatchScheduleV1 bytes and
+  fingerprint to equal an independent admission derivation. The transaction
+  derives the absolute generation cutoff by checked addition of the schedule
+  origin and the frozen schedule's generation-cutoff offset. A schedule byte,
+  fingerprint, scope, budget, assignment, offset, gate, makespan, margin, or
+  cutoff mismatch aborts the transaction before any GenerationId becomes
+  visible. The same read also creates:
 
   - `AcceptedBaselineCutV1`: explicit `none | accepted`; `none` contains no
     comparison projection, while `accepted` contains the acceptance ID and
@@ -974,12 +1023,13 @@ schema and tested as contracts, not duplicated constants.
   - the prior-current Snapshot ID plus current-pointer revision at that same
     current repository revision.
 
-  The admission transaction inserts that complete `CollectionPlanV1`, its AD-24
-  canonical bytes, and `CollectionPlanFingerprint = SHA-256(domain
+  The admission transaction inserts that complete `CollectionPlanV1`, the
+  canonical DispatchScheduleV1 bytes and fingerprint embedded within it, its
+  AD-24 canonical plan bytes, and `CollectionPlanFingerprint = SHA-256(domain
   "srvls-collection-plan-v1", zero byte, canonical plan bytes)`, pins its
   accepted baseline and resource-history references, and updates
-  `latest_requested_generation`. A crash cannot expose a GenerationId, pin,
-  plan, or latest-requested pointer without the other three. Baseline
+  `latest_requested_generation`. A crash cannot expose a GenerationId, schedule,
+  pin, plan, or latest-requested pointer without all of them. Baseline
   acceptance, operation changes, new resource samples, current-pointer changes,
   and retention committed after admission affect only the next generation;
   retention cannot prune a plan pin before its terminal Snapshot or
@@ -990,12 +1040,18 @@ schema and tested as contracts, not duplicated constants.
   V1 ScopeId variants are cron user/root/system, systemd user/system, Docker
   endpoint plus context, PM2 `PM2_HOME`, and process HostIdentity. AD-24 bytes
   define equality, ordering, fingerprints, persistence, and worker validation.
-  AD-25 workers receive a bounded CollectionScopeRequestV1, not the complete
-  plan: it carries the CollectionPlanFingerprint and current repository
-  revision plus only that scope's frozen identity, obligation, deadline,
-  capture reservations, SelfProcessSetV1, and typed Provider inputs. Workers
-  echo the exact plan fingerprint and assignment and return
-  DiagnosticCandidateV1 values; reduction rejects any mismatch. Baseline,
+  AD-25 workers receive a bounded WorkerRequestV1, not the complete
+  plan: it carries the CollectionPlanFingerprint and DispatchScheduleFingerprint,
+  current repository revision, and only that scope's frozen identity,
+  obligation, worker ID, schedule origin, reservation epoch offset, budget,
+  full-budget makespan, generation-cutoff offset, absolute deadlines, capture
+  reservations, SelfProcessSetV1, and typed Provider inputs. Workers echo the
+  exact plan, schedule, and assignment fingerprints and return
+  DiagnosticCandidateV1 values; reduction rejects any mismatch. Before the
+  first spawn, runtime independently recompiles and canonical-encodes the
+  schedule from the persisted PolicySnapshotV1 and ScopeManifestV1 and requires
+  byte equality with the embedded schedule; mismatch creates a failed
+  CollectionAttempt with no worker and no current-pointer change. Baseline,
   operation, resource-history, Promise, and current-pointer cuts remain solely
   in the persisted parent/reducer plan. Reports register atomically before both
   half-open deadlines. The reducer alone performs cross-Provider attribution
@@ -1283,21 +1339,48 @@ schema and tested as contracts, not duplicated constants.
   `srvls-provenance-v1`, a zero byte, and the schema-ordered canonical source and
   override chain under the same JSON grammar.
 
+  `DispatchScheduleV1` has no boot-time origin and therefore has identical bytes
+  in configuration, admission, and runtime. Its CanonicalJsonV1 fields are, in
+  this exact key order: `schema` with token `srvls-dispatch-schedule-v1`;
+  `worker_count`; `lpt_scope_order`; `epochs`; `full_budget_makespan_ns`;
+  `effective_scheduler_margin_ns`; and `generation_cutoff_offset_ns`. Every
+  value after `schema` is an unsigned integer except the two arrays. LPT ScopeIds
+  are uppercase-percent canonical bytes in AD-10 order and contain every
+  ScopeManifest member exactly once.
+
+  Each epoch object has exact key order `epoch_offset_ns`, `members`,
+  `process_gate`. Epochs sort by offset and have no duplicate offset. Members
+  sort by worker ID and have exact key order `worker_id`, `scope_id`,
+  `budget_ns`, `terminal_offset_ns`; the two times and worker ID are unsigned.
+  `process_gate` is exactly `{"kind":"absent"}` or, for the one
+  process member in that epoch, `{"kind":"reserved","scope_id":<ScopeIdV1>,
+  "start_offset_ns":<unsigned>,"end_offset_ns":<unsigned>}` in that field order.
+  The reserved start equals the epoch offset and the end equals that process
+  member's terminal offset; no later epoch lies strictly inside the interval.
+  Every terminal offset equals epoch offset plus budget, the makespan equals the
+  maximum terminal offset, the effective margin equals `max(configured margin,
+  1 ns)`, and the cutoff offset equals makespan plus effective margin, all under
+  checked `u64` arithmetic. Any mismatch is noncanonical.
+  `DispatchScheduleFingerprint` is SHA-256 over domain
+  `srvls-dispatch-schedule-v1`, a zero byte, and those complete schedule bytes.
+
   `CollectionPlanV1` canonical bytes are CanonicalJsonV1 with fields in this
-  order: schema version, GenerationId, ClockSampleV1 boot identity/boot
-  nanoseconds/UTC-wall nanoseconds, absolute generation-cutoff boot nanoseconds,
-  current repository revision, Promise cut,
-  PolicySnapshotV1 and fingerprint, ScopeManifestV1 and fingerprint,
-  AcceptedBaselineCutV1, OperationCutV1, ResourceHistoryCutV1, prior-current
-  Snapshot tagged optional, current-pointer revision, and every collection
-  deadline and reservation. Nested rows retain the explicit AD-21 identity sort
+  exact top-level key order: `schema_version`; `generation_id`; `clock_sample`;
+  `current_repository_revision`; `promise_cut`; `policy_snapshot`;
+  `policy_fingerprint`; `scope_manifest`; `scope_manifest_fingerprint`;
+  `dispatch_schedule`; `dispatch_schedule_fingerprint`;
+  `absolute_generation_cutoff_boot_ns`; `accepted_baseline_cut`;
+  `operation_cut`; `resource_history_cut`; `prior_current_snapshot`; and
+  `current_pointer_revision`. `clock_sample` has exact key order
+  `boot_identity`, `schedule_origin_boot_ns`, `utc_wall_ns`. Nested rows retain
+  the explicit AD-21 identity sort
   and encode canonical binary identities as uppercase-percent strings; row
-  revisions, sequences, clocks, and reservations are unsigned integers; UUIDs
-  and fingerprints use the encodings above; `none | accepted` and every other
-  union is a `{"kind":<stable token>,...}` object with exactly the fields of
-  that variant. This complete stream, including the embedded baseline
-  comparison projection but excluding no admitted field, is the sole input to
-  CollectionPlanFingerprint.
+  revisions, sequences, clocks, offsets, budgets, and reservations are unsigned
+  integers; UUIDs and fingerprints use the encodings above; `none | accepted`
+  and every other union is a `{"kind":<stable token>,...}` object with exactly
+  the fields of that variant. This complete stream, including the embedded
+  baseline comparison projection but excluding no admitted field, is the sole
+  input to CollectionPlanFingerprint.
 
   `ScopeIdV1` canonical bytes are `0x01 || provider_tag || fields`, with these
   fixed tags and fields: `0x01` cron-user plus `uid:u32be`; `0x02` cron-root;
@@ -1354,11 +1437,19 @@ schema and tested as contracts, not duplicated constants.
 
   `WorkerHelloV1` is one CanonicalJsonV1 object in this exact order and with no
   optional fields: protocol string `srvls-worker-v1`; kind string `hello`;
-  request ID; 64-lowercase-hex capability; unsigned dispatch-epoch and absolute
-  scope-deadline and generation-cutoff `CLOCK_BOOTTIME` nanoseconds; and
-  expected-worker object containing unsigned PID, boot-start ticks, executable
-  device, executable inode, and process-group ID. After validating the parent
-  and Hello, the child sends
+  request ID; 64-lowercase-hex capability; 64-lowercase-hex
+  DispatchScheduleFingerprint; unsigned worker ID; schedule-origin boot
+  nanoseconds; reservation-epoch offset nanoseconds; reservation-budget
+  nanoseconds; full-budget makespan nanoseconds; generation-cutoff offset
+  nanoseconds; absolute scope-deadline and generation-cutoff `CLOCK_BOOTTIME`
+  nanoseconds; and expected-worker object containing unsigned PID, boot-start
+  ticks, executable device, executable inode, and process-group ID. The child
+  rejects before Ready unless checked arithmetic proves the reservation epoch is
+  `origin + offset`, the scope deadline is `origin + offset + budget`, and the
+  cutoff is `origin + cutoff offset`; its observed boot time may not precede the
+  reservation epoch, `offset + budget <= full-budget makespan`, and
+  `full-budget makespan < cutoff offset`. After validating the parent and Hello,
+  the child sends
   exactly one `WorkerReadyV1` via `sendmsg`. Its object order is protocol string
   `srvls-worker-v1`; kind string `ready`; the exact request ID and capability;
   and its observed worker object with those same five fields. The first Ready
@@ -1378,14 +1469,19 @@ schema and tested as contracts, not duplicated constants.
   `frame-invalid`, subject to the deadline-first and bare-exit rules below.
 
   A still-before-deadline ready non-process worker receives WorkerRequestV1
-  without waiting for another batch member; simultaneous Ready events use
-  ascending worker-ID order. A ready process worker receives its request only
-  after AD-10 freezes all representable roots and resolves every unrootable-child
-  absence barrier. Request ID plus
+  without waiting for another batch member's spawn, Ready, failure, or result;
+  simultaneous Ready events use ascending worker-ID order. A ready process
+  worker may close the spawn gate only after every member in its exact frozen
+  reservation epoch has a parent-side spawn outcome, never after waiting for an
+  unrelated Ready. It receives its request only after AD-10 freezes all
+  representable roots and resolves every unrootable-child absence barrier.
+  Request ID plus
   capability is consumed by the one Hello/Ready/Request/Result exchange;
-  the worker rejects unless request ID, capability, dispatch epoch, scope
-  deadline, and generation cutoff equal Hello byte-for-byte. Cross-worker or
-  later replay is a protocol mismatch. A request one byte over
+  the worker rejects unless request ID, capability, schedule fingerprint, worker
+  ID, schedule origin, reservation offset and budget, makespan, cutoff offset,
+  scope deadline, and generation cutoff equal Hello byte-for-byte and repeat the
+  same checked arithmetic. Cross-worker or later replay is a protocol mismatch.
+  A request one byte over
   its limit is not sent; its Ready but still-idle worker is terminated and the
   repository records `worker-request-too-large`. A result declared one byte
   over its limit is not allocated or parsed; the worker is terminated with
@@ -1407,15 +1503,17 @@ schema and tested as contracts, not duplicated constants.
   exit `64 | 70 | 77`, or abnormal exit/signal failure produces exactly one
   coordinator-synthesized AD-5 CollectorReportV1. It carries the frozen
   generation, scope, and obligation; zero Observations and zero trusted capture
-  bytes; exact boot-nanosecond elapsed duration from the pre-spawn
-  dispatch_epoch_boot_ns to the failure-evidence cut; and no untrusted partial
-  WorkerResult field.
+  bytes; exact boot-nanosecond elapsed duration from the absolute reserved epoch
+  `schedule_origin_boot_ns + reservation_epoch_offset_ns` to the
+  failure-evidence cut; and no untrusted partial WorkerResult field.
 
   `WorkerTransportFailureV1` primary-reason selection is first-match and total.
   The coordinator records one `failure_evidence_cut_boot_ns` at the event that
-  first makes the failure decidable. At equality with or after either absolute
-  deadline, `worker-timeout` wins over every other fact and produces outcome
-  `timed-out`. Strictly before both deadlines, outcome is `invalid-output` and
+  first makes a non-timeout failure decidable. At equality with or after either
+  absolute deadline, `worker-timeout` wins over every other fact, produces
+  outcome `timed-out`, and freezes the cut to the earlier exact absolute
+  deadline even when the timer is observed later. Strictly before both
+  deadlines, outcome is `invalid-output` and
   the first present reason in this order wins: `worker-spawn`, `request-encode`,
   `worker-request-too-large`, `fd-peer-auth`, `worker-result-too-large`,
   `frame-invalid`, `schema-invalid`, `version-mismatch`, `identity-mismatch`,
@@ -1499,12 +1597,16 @@ schema and tested as contracts, not duplicated constants.
   `WorkerRequestV1` is a CanonicalJsonV1 object in this exact order and with no
   optional fields: protocol string `srvls-worker-v1`; lowercase-hyphenated UUID
   request ID; 64-lowercase-hex capability; mode string `collect-scope`;
-  64-lowercase-hex CollectionPlanFingerprint; unsigned current repository
-  revision; unsigned GenerationId; complete ScopeIdV1 uppercase-percent string;
-  64-lowercase-hex ScopeAssignmentFingerprint;
+  64-lowercase-hex CollectionPlanFingerprint; 64-lowercase-hex
+  DispatchScheduleFingerprint; unsigned current repository revision; unsigned
+  GenerationId; complete ScopeIdV1 uppercase-percent string; 64-lowercase-hex
+  ScopeAssignmentFingerprint;
   obligation object with stable `required | optional | not-applicable` kind and
-  stable reason token; `dispatch_epoch_boot_ns`, absolute scope deadline, and
-  absolute generation cutoff as unsigned `CLOCK_BOOTTIME` nanoseconds;
+  stable reason token; unsigned worker ID; `schedule_origin_boot_ns`;
+  `reservation_epoch_offset_ns`; `reservation_budget_ns`;
+  `full_budget_makespan_ns`; `generation_cutoff_offset_ns`; absolute scope
+  deadline; and absolute generation cutoff, with every time encoded as unsigned
+  `CLOCK_BOOTTIME`-domain or relative nanoseconds as applicable;
   capture-reservation object with unsigned stdout and stderr byte
   caps; SelfProcessSetV1 frozen-root array sorted by kind, PID, then birth, whose
   objects contain stable `coordinator | worker` kind, unsigned PID, boot-start
@@ -1536,18 +1638,28 @@ schema and tested as contracts, not duplicated constants.
   handles.
 
   `ScopeAssignmentFingerprint` is SHA-256 over domain
-  `srvls-scope-assignment-v1`, a zero byte, and the CanonicalJsonV1 bytes of, in
-  order, CollectionPlanFingerprint, repository revision, GenerationId, ScopeId,
-  obligation, dispatch epoch, scope deadline, generation cutoff, reservations,
-  SelfProcessSetV1, and
-  ProviderScopeInputV1.
+  `srvls-scope-assignment-v1`, a zero byte, and one CanonicalJsonV1 object with
+  this exact key order: `schema` with token `srvls-scope-assignment-v1`;
+  `collection_plan_fingerprint`; `dispatch_schedule_fingerprint`;
+  `current_repository_revision`; `generation_id`; `scope_id`; `obligation`;
+  `worker_id`; `schedule_origin_boot_ns`; `reservation_epoch_offset_ns`;
+  `reservation_budget_ns`; `full_budget_makespan_ns`;
+  `generation_cutoff_offset_ns`; `absolute_scope_deadline_boot_ns`;
+  `absolute_generation_cutoff_boot_ns`; `capture_reservation`;
+  `self_process_set`; and `provider_scope_input`. It has no unknown or omitted
+  key, and every value uses the identical WorkerRequestV1 encoding.
   The worker recomputes it before Host work and echoes it in its result.
 
   `WorkerResultV1` is a CanonicalJsonV1 object in this exact order: protocol,
-  request ID, capability, CollectionPlanFingerprint, current repository
-  revision, GenerationId, ScopeIdV1, ScopeAssignmentFingerprint, and one result
-  tagged object, followed by DiagnosticCandidateV1 array and capture
-  accounting. The result object is
+  request ID, capability, CollectionPlanFingerprint,
+  DispatchScheduleFingerprint, current repository revision, GenerationId,
+  ScopeIdV1, ScopeAssignmentFingerprint, reservation echo, and one result tagged
+  object, followed by DiagnosticCandidateV1 array and capture accounting. The
+  reservation echo has exact Request values and key order `worker_id`,
+  `schedule_origin_boot_ns`, `reservation_epoch_offset_ns`,
+  `reservation_budget_ns`, `full_budget_makespan_ns`,
+  `generation_cutoff_offset_ns`, `absolute_scope_deadline_boot_ns`, and
+  `absolute_generation_cutoff_boot_ns`. The result object is
   exactly one of `{"kind":"report","value":<CollectorReportV1>}`,
   `{"kind":"protocol-error","code":<stable token>}`, or
   `{"kind":"worker-error","code":<stable token>}`; no inactive member is
@@ -1559,8 +1671,9 @@ schema and tested as contracts, not duplicated constants.
   worker-group members. Capture accounting
   contains unsigned observed, retained, and truncated byte counts separately
   for stdout and stderr. Parent and reducer require byte equality for protocol,
-  request, capability, plan fingerprint, repository revision, generation,
-  scope, assignment fingerprint, deadline-bound admission, and reservations;
+  request, capability, plan and schedule fingerprints, repository revision,
+  generation, scope, assignment fingerprint, every reservation field,
+  arithmetic, and deadline-bound admission;
   no mismatched or unrequested result becomes evidence. A Result frame becomes
   syntactically trusted only after its exact declared payload is followed by
   clean EOF with no trailing byte. A `report` result additionally requires
@@ -1678,8 +1791,7 @@ src/
     process.rs               # production CommandRunner
     worker.rs                # authenticated FD3 parent/child protocol
     state/sqlite.rs          # transactions, migrations, retention, recovery
-    release.rs               # admission, atomic manifest, activation, restore
-    worker.rs                # FD3/FD4 authentication, framing, child entry
+    release.rs               # admission, FD4 validation, manifest, activate/restore
     config.rs                # layered TOML and provenance
     linux_clock.rs           # monotonic time and boot identity
   presentation/
