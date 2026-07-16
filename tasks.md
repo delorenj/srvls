@@ -16,13 +16,13 @@
   - [x] Adversarially review the PRD for operator safety and phase blockers — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer; Commit: 2bc2545)**
   - [x] Verify the remediated PRD against the rubric and adversarial blockers — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-prd; Commit: 9a71199)**
   - [x] Finalize the canonical PRD and downstream constraint addendum — **COMPLETED by Team Argus (2026-07-16)**
-  - [ ] Create and validate canonical `DESIGN.md` and `EXPERIENCE.md` UX spines — **IN PROGRESS by Team Argus**
+  - [x] Create and validate canonical `DESIGN.md` and `EXPERIENCE.md` UX spines — **COMPLETED by Team Argus (2026-07-16; rubric and accessibility acceptance PASS)**
     - [x] Extract canonical PRD UX evidence — **COMPLETED by Bartholomew the Builder (Session: bartholomew-ux; Commit: 08eb2ad)**
     - [x] Extract legacy and live UX evidence — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-ux; Commit: 1412dca)**
     - [x] Validate the UX spines against the full BMAD rubric — **COMPLETED by Doctor Von Code (Session: doctor-von-code-ux-rubric; Commit: 4ce33d7; Verdict: FAIL, remediated)**
     - [x] Adversarially review terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-a11y; Commit: c125fb2; Verdict: FAIL, remediated)**
-    - [ ] Verify the remediated UX spines against the full BMAD rubric — **CLAIMED by Doctor Von Code (Session: doctor-von-code-ux-acceptance)**
-    - [ ] Verify remediated terminal accessibility and operator safety — **CLAIMED by SyntaxSorcerer (Session: syntaxsorcerer-ux-acceptance)**
+    - [x] Verify the remediated UX spines against the full BMAD rubric — **COMPLETED by Doctor Von Code (Session: doctor-von-code-ux-acceptance; Commit: d21d718; Verdict: PASS)**
+    - [x] Verify remediated terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-acceptance; Commit: c2c2f18; Verdict: PASS)**
 
 ## Planned work
 
