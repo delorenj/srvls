@@ -1,6 +1,6 @@
 ---
 title: "srvls PRD Addendum: Downstream Design Constraints"
-status: draft
+status: final
 created: 2026-07-16
 updated: 2026-07-16
 ---

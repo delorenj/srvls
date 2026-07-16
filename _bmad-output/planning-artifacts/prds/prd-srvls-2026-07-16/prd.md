@@ -1,6 +1,6 @@
 ---
 title: "srvls: Runtime Promise Reconciliation and Morning Handoff"
-status: draft
+status: final
 created: 2026-07-16
 updated: 2026-07-16
 ---
@@ -19,7 +19,7 @@ The PRD is grounded in the supplied runtime-promise thesis, the live Python beha
 
 `srvls` is the morning handoff and reconciliation layer for runtime promises created by humans and autonomous Agents on a Linux Host. It combines declared intent—what an Agent says should remain alive, why, for whom, and until when—with fresh scoped Host Observations—what the declared Collection Obligations actually found.
 
-The product makes a machine stop feeling haunted. In one Brief, an Operator can see what Agents created overnight, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and what is duplicated, stale, abandoned, unmanaged, or resource-hot. Each finding carries Project, Agent, purpose, Launch Mechanism, expected lifetime, evidence, and a conservative Safe-to-stop Assessment.
+The product makes a machine stop feeling haunted. In one Brief, an Operator can see what Agents created overnight, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and which Runtimes carry duplicate, stale, abandoned, unmanaged, or hot findings. Each finding carries Project, Agent, purpose, Launch Mechanism, expected lifetime, evidence, and a conservative Safe-to-stop Assessment.
 
 Plane remains the source for intended work, Git remains the source for code changes, and Telemetry remains the source for events and measurements. `srvls` owns a narrower question: what should be alive now, why, who owns it, and where is it actually running?
 
@@ -212,7 +212,7 @@ An owning Agent can renew an active Lease and provide a Heartbeat associated wit
 **Consequences:**
 
 - Renewal is idempotent for a caller-supplied operation identity.
-- Late, unauthorized, malformed, released, or unknown renewals return distinct deterministic outcomes.
+- Late, unauthorized, or malformed renewals, and renewals for a released or unknown Promise ID, return distinct deterministic outcomes.
 
 #### FR-5: Release, complete, or revoke intent
 
@@ -381,7 +381,7 @@ An active Runtime Promise with the intended number of compatible running Observa
 
 #### FR-20: Identify broken intent
 
-An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when absence evidence is complete enough.
+An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when the relevant Collection Obligations provide sufficient absence evidence.
 
 **Consequences:**
 
@@ -471,7 +471,7 @@ The Brief is the primary human handoff. It presents attention before detail, kee
 
 #### FR-28: Produce the Brief
 
-`srvls` produces a Brief answering what Agents created, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and what is duplicate, stale, abandoned, unmanaged, or hot.
+`srvls` produces a Brief answering what Agents created, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and which Runtimes carry duplicate, stale, abandoned, unmanaged, or hot findings.
 
 **Consequences:**
 
@@ -548,7 +548,7 @@ Lifecycle control remains exact-target, Provider-scoped, identity-revalidated, a
 
 #### FR-36: Plan supported lifecycle actions
 
-`srvls` can plan start from an active Runtime Promise whose Launch Mechanism resolves to a supported Provider target. It can plan stop, restart, and disable or delete for individual systemd, Docker, PM2, and direct-process Observations according to Provider capability. Cron Observations remain read-only in v1.
+`srvls` can plan a start from an active Runtime Promise whose Launch Mechanism resolves to a supported Provider target. It can plan a stop, restart, and disable or delete operation for individual systemd, Docker, PM2, and direct-process Observations according to Provider capability. Cron Observations remain read-only in v1.
 
 **Consequences:**
 
@@ -600,7 +600,7 @@ The terminal decision order is deterministic:
 | 2 | `refused` | No Provider operation was launched because confirmation, capability, authorization, duplicate-operation, or immediate identity revalidation failed. Pre-execution identity drift uses reason `stale-identity`. |
 | 3 | `timed-out` | Provider execution exceeded its hard deadline, termination and reaping were attempted, and the postcondition was not verified within the bounded operation. |
 | 4 | `failed` | The Provider invocation could not start, or fresh post-action evidence disproves the planned postcondition. |
-| 5 | `executed-unverified` | A Provider operation was launched but the postcondition can be neither proved nor disproved because verification is incomplete, ambiguous, expired, or observes a replacement identity. |
+| 5 | `executed-unverified` | A Provider operation was launched but the postcondition can be neither proved nor disproved because evidence is incomplete or ambiguous, the verification window expires, or a replacement identity is observed. |
 
 Successful execution with diagnostics remains `verified` when the postcondition is proved. Post-execution replacement uses `executed-unverified` with a replacement reason; it is never reported as pre-execution `stale-identity`.
 
@@ -697,9 +697,11 @@ The Stack-first TUI, safe individual mutation, compatibility-led replacement of 
 
 ## 8. Cross-Cutting Non-Functional Requirements
 
+### 8.1 Canonical Non-Functional Requirements
+
 #### NFR-1: Deterministic domain outcomes
 
-Identical normalized inputs, policy, and baseline produce identical ordering, correlation, findings, attention rank, Safe-to-stop Assessment, and machine-readable serialization.
+Identical normalized inputs, policy, and Accepted Baseline produce identical ordering, correlation, findings, attention rank, Safe-to-stop Assessment, and machine-readable serialization.
 
 #### NFR-2: Honest partial truth
 
@@ -707,7 +709,7 @@ Collector, storage, inspection, and mutation failures remain explicit and scoped
 
 #### NFR-3: Bounded refresh behavior
 
-Collectors run with bounded concurrency, hard subprocess deadlines, bounded output, termination, and unconditional child reaping so one unavailable Provider cannot impose sequential latency or hang the Brief.
+Collectors run with bounded concurrency, hard subprocess deadlines, bounded output capture, forced termination on deadline, and unconditional child reaping so one unavailable Provider cannot impose sequential latency or hang the Brief.
 
 #### NFR-4: Host command safety
 
@@ -772,7 +774,7 @@ Lease duration, Heartbeat grace, stale policy, hot thresholds, retention, Collec
 
 ### 9.2 Privacy and Data Governance
 
-- Runtime Promise metadata should identify purpose without requiring source code, prompts, secrets, or full command output.
+- Runtime Promise metadata identifies purpose without requiring source code, prompts, secrets, or full command output.
 - Optional Plane, Git, and Telemetry references remain opaque identifiers or links.
 - Local history uses bounded retention and explicit deletion behavior.
 - Provider output and process command lines are treated as untrusted and potentially sensitive.
@@ -805,9 +807,16 @@ Lease duration, Heartbeat grace, stale policy, hot thresholds, retention, Collec
 | Migration breaks automation | Existing metrics or snapshots fail | Compatibility corpus, staged smoke, consumer validation, atomic activation, rollback |
 | Product expands into orchestration | Safety and scope explode | Non-goals, read-only groups, one-Host MVP, no auto-remediation |
 
-## 12. Open Questions
+## 12. Open Questions and Downstream Closure Obligations
 
 No phase-blocking product questions remain for UX, architecture, or epic planning. Post-MVP candidates are bounded in Section 6.3 and require new evidence before scope expansion.
+
+Two non-blocking evidence obligations have explicit owners and gates:
+
+| Closure item | Owner | Required evidence and decision | Closure gate |
+| --- | --- | --- | --- |
+| Operator-impact measure | Product Owner | Compare the current Provider-by-Provider morning reconstruction journey with the canonical Brief journey; approve a baseline, target, measurement window, and collection method without treating Host inventory counts as user impact. | Required before beta evaluation; not a blocker for UX, architecture, or implementation planning. |
+| Operational acceptance budgets | UX owns user-visible refresh and feedback expectations; Architecture owns Collector deadlines, output caps, retention, Heartbeat grace, and action-verification limits. | Use canonical-Host measurements, deterministic fixture sizes, privacy and safety constraints, and supported-Host capabilities to publish defaults, valid ranges, and acceptance checks. | Required in canonical UX and architecture contracts and their stories before implementation readiness can report `READY`. |
 
 ## 13. Assumptions Index
 
