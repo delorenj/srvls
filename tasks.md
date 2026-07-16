@@ -26,6 +26,9 @@
   - [ ] Reconcile and validate the architecture spine — **IN PROGRESS by Team Argus**
     - [x] Reconcile canonical PRD and UX contracts against the architecture — **COMPLETED by Agent Buttercup (Session: agent-buttercup-architecture-inputs; Commit: 672b4a7; Verdict: RECONCILIATION REQUIRED and incorporated)**
     - [x] Reconcile live compatibility, readiness, and operational limits — **COMPLETED by Codemaster Zigzag (Sessions: codemaster-zigzag-architecture-live, codemaster-zigzag-architecture-live-recovery; Commit: d00b91a; Verdict: CHANGES REQUIRED and incorporated)**
+    - [ ] Validate the reconciled spine against the complete good-spine rubric — **CLAIMED by Bartholomew the Builder (Session: bartholomew-architecture-rubric)**
+    - [ ] Verify every technology and current-version claim — **CLAIMED by WidgetWhisperer (Session: widgetwhisperer-architecture-tech)**
+    - [ ] Adversarially test two-unit implementation divergence — **CLAIMED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-divergence)**
 
 ## Planned work
 
