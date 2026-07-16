@@ -9,13 +9,15 @@ updated: 2026-07-16
 
 ## 0. Document Purpose
 
-This PRD is the canonical product contract for `srvls`. It defines why the product exists, the operator and Agent outcomes it must deliver, and the stable Functional Requirement (`FR-*`) and Non-Functional Requirement (`NFR-*`) identifiers consumed by UX, architecture, epics, stories, and implementation-readiness assessment. Earlier requirement identifiers in `_bmad-output/planning-artifacts/epics.md` were planning candidates without a PRD source; their reconciliation is preserved in `addendum.md`.
+This PRD is the canonical target-state product contract for `srvls`. It defines why the product exists, the operator and Agent outcomes it must deliver, and the stable Functional Requirement (`FR-*`) and Non-Functional Requirement (`NFR-*`) identifiers consumed by UX, architecture, epics, stories, and implementation-readiness assessment. Earlier requirement identifiers in `_bmad-output/planning-artifacts/epics.md` were planning candidates without a PRD source; their reconciliation is preserved in `addendum.md`.
 
-The PRD is grounded in the supplied runtime-promise thesis, the live Python CLI and smoke-test compatibility oracle, the approved Rust and ratatui direction, and the 2026-07-15 readiness findings. Implementation mechanisms remain in `addendum.md` and the architecture artifact.
+The current product is the checked-in Python inventory CLI. Runtime Promises, direct-process discovery, reconciliation, the TUI, verified actions, and release automation described here are target behavior unless explicitly labeled as a current compatibility contract. Product-visible behavior and owner-approved brownfield constraints remain in this PRD; internal implementation mechanisms remain in `addendum.md` and the architecture artifact.
+
+The PRD is grounded in the supplied runtime-promise thesis, the live Python behavior inventory, the current smoke suite, the owner-approved migration and interaction direction, and the 2026-07-15 readiness findings. The current smoke suite is integration evidence, not a sufficient migration oracle by itself; FR-16 defines the layered oracle that must exist before replacement.
 
 ## 1. Vision
 
-`srvls` is the morning handoff and reconciliation layer for runtime promises created by humans and autonomous Agents on a Linux Host. It combines declared intent—what an Agent says should remain alive, why, for whom, and until when—with discovered Host truth—what is actually scheduled or running now.
+`srvls` is the morning handoff and reconciliation layer for runtime promises created by humans and autonomous Agents on a Linux Host. It combines declared intent—what an Agent says should remain alive, why, for whom, and until when—with fresh scoped Host Observations—what the declared Collection Obligations actually found.
 
 The product makes a machine stop feeling haunted. In one Brief, an Operator can see what Agents created overnight, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and what is duplicated, stale, abandoned, unmanaged, or resource-hot. Each finding carries Project, Agent, purpose, Launch Mechanism, expected lifetime, evidence, and a conservative Safe-to-stop Assessment.
 
@@ -102,10 +104,13 @@ The primary v1 user is a solo builder-operator who runs multiple projects and Ag
 
 - **Action Menu** — Contextual TUI surface listing only lifecycle actions supported for the selected Observation. Opened with `a`.
 - **Agent** — Human-operated or autonomous actor that declares and owns a Runtime Promise. An Agent has a stable supplied identifier and display label.
-- **Brief** — Point-in-time morning handoff containing change summary, reconciliation findings, completeness, and drill-down paths.
+- **Accepted Baseline** — Snapshot an Operator explicitly accepted as the start of the next Evidence Window. Ordinary refreshes do not advance it.
+- **Brief** — Point-in-time morning handoff containing an Evidence Window, change summary, reconciliation findings, completeness, and drill-down paths.
 - **Collector** — Provider-specific read adapter that emits Observations and explicit collection diagnostics.
 - **Collection Obligation** — Per-Provider or per-source policy of `required`, `optional`, or `not-applicable` used to decide whether missing evidence makes a Brief incomplete.
 - **Durable Ownership** — An Owner and Launch Mechanism expected to remain valid beyond the creating Agent's session, such as a managed systemd unit with an accountable Project.
+- **Evidence Status** — Orthogonal conclusion about whether evidence for a Runtime Promise is `sufficient`, `incomplete`, `stale`, or `out-of-scope`.
+- **Evidence Window** — Closed comparison interval from an Accepted Baseline to the current Snapshot, with timestamps and configured timezone.
 - **Heartbeat** — Renewal evidence from an Agent that it still owns an active Runtime Promise.
 - **Host** — The single Linux machine observed and controlled by v1.
 - **Launch Mechanism** — Provider and invocation context responsible for starting and controlling a Runtime, such as systemd, Docker, PM2, cron, or a direct process.
@@ -113,12 +118,13 @@ The primary v1 user is a solo builder-operator who runs multiple projects and Ag
 - **Observation** — Provider-neutral evidence that a scheduled or running Runtime exists on the Host, with a stable Provider identity and provenance.
 - **Operator** — Human using the Brief, CLI, TUI, inspection, and lifecycle controls.
 - **Owner** — Accountable Agent or human identity responsible for a Runtime Promise.
+- **Promise Lifecycle** — Orthogonal state of a Runtime Promise: `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, or `closed`.
 - **Project** — Stable supplied identity and display label for the body of work a Runtime supports. External work or code references are optional opaque metadata.
 - **Promise ID** — Stable identifier returned when a Runtime Promise is declared.
 - **Provider** — Runtime or scheduler surface observed or controlled by `srvls`: cron, systemd, Docker, PM2, or direct Host processes in v1.
 - **Reconciliation Finding** — One or more evidence-backed classifications produced by comparing Runtime Promises, Heartbeats, Leases, and Observations. Findings may coexist.
 - **Runtime** — Scheduled or running Host resource created for a purpose.
-- **Runtime Promise** — Declaration that an Agent, working on a Project, started or expects a Runtime for a purpose and expects it to remain alive until a termination condition. It includes ownership, lifetime, Launch Mechanism, and provenance.
+- **Runtime Promise** — Declaration that an Agent, working on a Project, started or expects a Runtime for a purpose and expects its scheduled or running presence to remain true until a termination condition. It includes ownership, lifetime, Launch Mechanism, and provenance. It does not assert arbitrary business or tool outcomes in v1.
 - **Safe-to-stop Assessment** — Conservative `safe`, `unsafe`, or `unknown` conclusion with reasons. It is decision support, never a guarantee.
 - **Snapshot** — Durable, bounded point-in-time record used to compare Briefs and audit reconciliations.
 - **Stack** — Deterministic read-only grouping of related Observations based on Provider-native, Project, source-location, and conservative name evidence.
@@ -136,6 +142,32 @@ The primary v1 user is a solo builder-operator who runs multiple projects and Ag
 - **abandoned** — A running Observation remains after its ephemeral Runtime Promise Lease expired or ownership Heartbeats were lost beyond grace.
 
 These labels are not mutually exclusive. A Reconciliation Finding retains every applicable label and the evidence for each; presentation may assign an attention rank without discarding labels.
+
+### 3.2 Orthogonal Reconciliation Model
+
+Each active or historically relevant Runtime Promise is evaluated on four axes. Presentation can summarize them, but storage, filters, exports, and acceptance fixtures retain every axis.
+
+| Axis | Canonical values | Rule |
+| --- | --- | --- |
+| Promise Lifecycle | `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, `closed` | `heartbeat-late` begins when the declared renewal cadence plus grace is missed while the Lease remains valid. A Host boot-ID change expires an ephemeral Lease unless a valid renewal re-establishes ownership. |
+| Evidence Status | `sufficient`, `incomplete`, `stale`, `out-of-scope` | Required Collection Obligations must be complete and fresh for `sufficient`. Unsupported or intentionally excluded scope is `out-of-scope`, never apparent absence. |
+| Promise Outcome | `healthy`, `broken`, `unresolved`, `inactive` | `healthy` and `broken` require sufficient evidence. `unresolved` covers incomplete, stale, or out-of-scope evidence. Expired or closed intent without a surviving relevant Observation is `inactive`. |
+| Observation labels | `orphaned`, `duplicate`, `stale`, `hot`, `unmanaged`, `abandoned` | Zero or more labels attach to exact Observations. `healthy` and `broken` remain Promise outcomes while all eight thesis-required terms remain visible in the combined Reconciliation Finding vocabulary. |
+
+Evaluation order is deterministic:
+
+1. Resolve Promise Lifecycle from declaration, renewal cadence, grace, Lease, closure event, boot identity, and time evidence.
+2. Resolve Evidence Status from Collection Obligations, Collector outcomes, freshness, and supported scope.
+3. Correlate identities only within supported evidence and derive Promise Outcome.
+4. Derive every applicable Observation label without using a label as mutation authorization.
+5. Calculate attention rank and Safe-to-stop Assessment from the retained axes and evidence.
+
+Lost-Heartbeat transitions are explicit:
+
+- A late Heartbeat under a still-valid Lease yields `heartbeat-late`; a matching Observation is not yet abandoned.
+- A Lease-expired Runtime Promise with a surviving matched Observation yields abandoned.
+- A Lease-expired Runtime Promise without a surviving Observation becomes inactive history.
+- Any transition that depends on incomplete, stale, or out-of-scope evidence yields `unresolved` rather than healthy or broken.
 
 ## 4. Features and Functional Requirements
 
@@ -208,7 +240,7 @@ All declaration, query, renewal, release, and validation operations are availabl
 
 ### 4.2 Actual Host State Discovery
 
-Collectors discover actual Host truth independently of declared intent. A failed Collector reduces confidence but never erases successful evidence from other Providers. This feature realizes UJ-1, UJ-3, and UJ-5.
+Collectors discover fresh scoped Host Observations independently of declared intent. A failed Collector reduces evidence sufficiency but never erases successful evidence from other Providers. This feature realizes UJ-1, UJ-3, and UJ-5.
 
 #### FR-8: Collect cron work
 
@@ -274,6 +306,23 @@ Each refresh returns Observations together with explicit per-Collector completen
 - Every Provider scope exposes its Collection Obligation and why it applies; an active Runtime Promise referencing that scope makes it required for reconciliation.
 - Reconciliation rules that require absence evidence do not claim certainty when the relevant Collector is incomplete.
 
+##### v1 Collection Obligation policy
+
+| Provider scope | Default obligation | Promotion and failure rules |
+| --- | --- | --- |
+| Invoking user's crontab | `required` | Missing command, denial, timeout, or invalid parse makes the Brief incomplete. An absent crontab under a successful query is complete empty evidence. |
+| `/etc/crontab` and readable `/etc/cron.d` files | `required` | Unreadable discovered files or parse failure make the Brief incomplete. |
+| Root crontab | `optional` | Becomes `required` when configured as required or referenced by an active Runtime Promise. Denial is always visible. |
+| System systemd manager | `required` | Manager unavailability, denial, or invalid output makes the Brief incomplete. |
+| Invoking user's systemd manager | `required` | No running user manager is a visible complete-empty or unavailable outcome according to the manager response, never silently omitted. |
+| Other users' systemd managers | `not-applicable` | Unsupported in v1 unless an explicitly configured local scope is added; a Runtime Promise referencing an unsupported scope yields `out-of-scope`. |
+| Active local Docker context | `optional` when no CLI, endpoint, containers, or Runtime Promise is detected; otherwise `required` | Detection or an active Runtime Promise promotes the scope to `required`. Additional contexts are excluded unless explicitly configured. |
+| Invoking user's default PM2 home | `optional` when neither PM2 nor a PM2 Runtime Promise is detected; otherwise `required` | A discovered PM2 daemon, home, or active Promise promotes the scope. |
+| Other users and additional PM2 homes | `not-applicable` | Unsupported in v1 unless explicitly configured; referenced unsupported homes yield `out-of-scope`. |
+| Direct processes visible to the local principal | `required` | Process-table failure makes the Brief incomplete. Per-field permission redaction is explicit but does not erase an otherwise stable Observation. |
+
+An active Runtime Promise can promote a supported `optional` scope to `required`; it cannot make an unsupported `not-applicable` scope appear observed. The Brief lists included and excluded users, managers, daemons, contexts, homes, and permission boundaries.
+
 #### FR-15: Inspect bounded Provider detail
 
 An Operator can inspect an Observation's Provider-appropriate status, schedule, provenance, identity, and bounded log or output detail.
@@ -285,11 +334,14 @@ An Operator can inspect an Observation's Provider-appropriate status, schedule, 
 
 #### FR-16: Preserve compatibility surfaces
 
-The Rust product preserves the Python oracle's flat JSON, Prometheus, Markdown, table, inspection, executable-name, ordering, escaping, and explicit CLI-action behavior unless a deliberate deviation is recorded and tested.
+The replacement implementation preserves the established Python CLI's flat JSON, Prometheus, Markdown, table, inspection, executable-name, ordering, escaping, arguments, exit behavior, and explicit CLI-action behavior through a layered compatibility oracle unless a deliberate deviation is recorded and tested.
 
 **Consequences:**
 
-- The checked-in compatibility corpus and smoke test must pass before replacement.
+- The checked-in Python source and tests are inventoried into explicit behavioral contracts; source text alone is not an executable oracle.
+- A frozen deterministic fixture corpus covering every supported Provider, output, argument, ordering and escaping rule, partial-failure policy, and action-safety path must exist before replacement.
+- The current live-Host smoke suite validates integration behavior but cannot substitute for the fixture corpus; named deployed consumers receive separate end-to-end checks.
+- Every intentional deviation has a compatibility-ledger entry with rationale, version impact, replacement assertion, and affected-consumer disposition.
 - New Promise and reconciliation fields use additive or explicitly versioned contracts rather than silently changing legacy consumers.
 
 #### FR-17: Support strict collection policy
@@ -303,7 +355,7 @@ The Rust product preserves the Python oracle's flat JSON, Prometheus, Markdown, 
 
 ### 4.3 Reconciliation and Explainability
 
-`srvls` correlates declared intent with actual Host truth and keeps uncertainty visible. Classification is explainable, multi-label, and conservative. This feature realizes UJ-1, UJ-3, UJ-4, and UJ-5.
+`srvls` correlates declared intent with fresh scoped Host Observations and keeps uncertainty visible. Classification is explainable, multi-axis, and conservative. This feature realizes UJ-1, UJ-3, UJ-4, and UJ-5.
 
 #### FR-18: Correlate Runtime Promises and Observations
 
@@ -386,13 +438,26 @@ Every attention-worthy Reconciliation Finding exposes classification rules, iden
 - Insufficient evidence produces `unknown`, not `safe`.
 - The assessment is recalculated after refresh and before mutation.
 
+The v1 decision contract is conservative and deterministic:
+
+| Assessment | Required decision rule |
+| --- | --- |
+| `safe` | The exact Observation identity is fresh; every relevant required Collector is sufficient; no active or persistent Runtime Promise, known dependency, or other declared instance requires it; ownership, purpose, expected lifetime, and Launch Mechanism behavior are known; no Provider restart policy or manager will immediately recreate it; no conflicting operation is in flight; and the target is either intentionally released or expired, or is the exact excess instance of a duplicate set. |
+| `unsafe` | Fresh evidence proves an active or persistent Promise, known dependency, required instance, conflicting operation, or Provider recreation policy makes stopping contrary to declared intent or ineffective. |
+| `unknown` | Identity, ownership, purpose, lifetime, dependency, recreation behavior, Collector completeness, or freshness is missing, stale, ambiguous, or contradictory. |
+
+`safe` is scoped to the known runtime-liveness and manager-dependency evidence available to `srvls`; it is not a claim about arbitrary business side effects. Execution still requires FR-37 revalidation and the confirmation policy in FR-38.
+
 #### FR-27: Detect change through bounded Snapshots
 
-`srvls` stores bounded local Snapshots sufficient to report new, resolved, changed, and persisting Runtime Promises, Observations, and Reconciliation Findings since the prior successful Brief.
+`srvls` stores bounded local Snapshots sufficient to report new, resolved, changed, and persisting Runtime Promises, Observations, and Reconciliation Findings within an Evidence Window from an explicitly Accepted Baseline to the current Snapshot.
 
 **Consequences:**
 
-- A missing or incompatible baseline is stated explicitly and establishes a new baseline without inventing changes.
+- The Operator can explicitly accept a compatible current Snapshot as the next baseline through the TUI or a deterministic non-interactive command; ordinary refreshes and scheduled candidate Snapshots never advance it.
+- The Evidence Window retains the Accepted Baseline timestamp, current Snapshot timestamp, and configured timezone. TUI refreshes keep the start fixed until explicit acceptance.
+- A first run states that no baseline exists and does not invent a change set. An incompatible baseline is rejected and requires explicit acceptance of a replacement.
+- An incomplete Snapshot is ineligible for baseline acceptance by default. An explicit override records the missing scope, principal, timestamp, and reason in local audit history.
 - Retention and deletion are deterministic, configurable, and do not remove the active truth required for reconciliation.
 
 ### 4.4 Morning Brief, CLI, and TUI
@@ -406,6 +471,7 @@ The Brief is the primary human handoff. It presents attention before detail, kee
 **Consequences:**
 
 - The summary includes collection completeness and counts without hiding multi-label findings.
+- The summary names the Accepted Baseline, current Snapshot, configured timezone, and any baseline-unavailable or incomplete-window condition.
 - Every summary item drills down to Runtime Promise, Observation, and evidence detail.
 
 #### FR-29: Organize attention and Stack context
@@ -464,11 +530,11 @@ Loading, refreshing, stale, partial-failure, unavailable-Provider, empty, filter
 
 #### FR-35: Provide a discoverable Action Menu
 
-Pressing `a` on an actionable Observation opens the Action Menu with supported start, stop, restart, and disable or delete operations; direct `s`, `R`, and `x` shortcuts remain where unambiguous, and `?` documents all bindings.
+Pressing `a` on an actionable Runtime Promise or Observation opens the Action Menu with supported start, stop, restart, and disable or delete operations; direct `s`, `R`, and `x` shortcuts remain where unambiguous, and `?` documents all bindings.
 
 **Consequences:**
 
-- Start has an explicit TUI path even when the selected Runtime is not running.
+- Start has an explicit TUI path from a Runtime Promise even when no running Observation exists.
 - Unsupported or unsafe actions are absent or disabled with an explanation.
 
 ### 4.5 Safe Runtime Lifecycle Control
@@ -477,16 +543,16 @@ Lifecycle control remains exact-target, Provider-scoped, identity-revalidated, a
 
 #### FR-36: Plan supported lifecycle actions
 
-`srvls` can plan start, stop, restart, and disable or delete for individually supported cron, systemd, Docker, PM2, and direct-process Observations according to Provider capability.
+`srvls` can plan start from an active Runtime Promise whose Launch Mechanism resolves to a supported Provider target. It can plan stop, restart, and disable or delete for individual systemd, Docker, PM2, and direct-process Observations according to Provider capability. Cron Observations remain read-only in v1.
 
 **Consequences:**
 
 - A plan names the exact target, Provider-native operation, required privilege, expected effect, and unsupported limitations before execution.
-- Direct-process support is limited to identity-safe signals and cannot invent a restart path without a Launch Mechanism.
+- Direct-process support is limited to identity-safe signals and cannot invent a start or restart path without a declared Launch Mechanism.
 
 #### FR-37: Revalidate identity before mutation
 
-Immediately before execution, `srvls` re-collects or verifies the selected Observation's canonical Provider identity and relevant Snapshot generation.
+Immediately before execution, `srvls` re-collects or verifies the selected Observation's canonical Provider identity, or revalidates the Runtime Promise, absence evidence, and Provider-native start target when no Observation exists.
 
 **Consequences:**
 
@@ -560,29 +626,35 @@ An Operator can atomically upgrade `srvls`, validate existing metrics and Snapsh
 - v1 does not provide a hosted control plane, web UI, multi-user authorization system, or distributed fleet view.
 - v1 does not retain unrestricted logs, command output, secrets, or full-fidelity Telemetry.
 - v1 does not guarantee that any Runtime is safe to stop; it provides a conservative evidence-backed assessment.
-- The Rust migration does not intentionally redesign established machine-readable contracts without a compatibility-ledger decision.
+- The approved replacement does not intentionally redesign established machine-readable contracts without a compatibility-ledger decision.
 
 ## 6. MVP Scope
 
-### 6.1 In Scope
+### 6.1 Owner-Approved Inherited Constraints
+
+The Stack-first TUI, safe individual mutation, compatibility-led replacement of the Python CLI with one Rust binary, and supported install, validation, and rollback path are explicit owner-approved brownfield MVP constraints. They are not inferred from the runtime-promise thesis. Product-visible behavior remains specified here; internal mechanisms and library choices remain in `addendum.md` and the architecture artifact.
+
+### 6.2 In Scope
 
 - One Linux Host and one local Operator trust domain.
 - Runtime Promise declaration, Lease, Heartbeat, persistence, release, query, and local audit history.
 - Discovery across cron, systemd, Docker, PM2, and direct Host processes.
 - Explainable reconciliation with all eight required finding labels and lost-Heartbeat evidence.
 - Bounded Snapshots and change-since-prior-Brief reporting.
-- Interactive ratatui Brief plus deterministic table, JSON, Markdown, and Prometheus-compatible legacy outputs.
+- Interactive terminal Brief following the approved TUI direction plus deterministic table, JSON, Markdown, and Prometheus-compatible legacy outputs.
 - Exact-target, confirmed, identity-safe, verified lifecycle actions supported by each Provider.
 - Compatibility-led Rust migration, supported release artifact, atomic install or upgrade, automation validation, and rollback.
 
-### 6.2 Out of Scope for MVP
+### 6.3 Out of Scope for MVP
 
-- Remote Hosts or fleet-wide reconciliation; revisit after one-Host truth and identity contracts are proven.
+- Remote Hosts or fleet-wide reconciliation; revisit after one-Host coverage and identity contracts are proven.
 - Automatic termination after Lease expiry; revisit only with field evidence that conservative review is insufficient.
 - Multi-Operator RBAC and remote Agent authentication; revisit with a networked control plane.
 - Deep Plane, Git, or Telemetry ingestion; v1 stores optional opaque references only.
 - Browser, desktop GUI, and mobile surfaces.
 - Windows and macOS Providers.
+- Guaranteed discovery of Supervisor, Process Compose, Podman, Kubernetes or CRI, additional Docker contexts, other users' systemd managers, or additional PM2 homes. A deliberately configured scope is supported only when an existing v1 Collector can observe it and reports its obligation honestly.
+- Durable manual Stack membership corrections or persistent Operator overrides of inferred Stack membership; v1 exposes evidence, confidence, and Ungrouped items instead.
 - Stack-wide or Project-wide lifecycle actions.
 
 ## 7. Success Metrics
@@ -595,9 +667,9 @@ An Operator can atomically upgrade `srvls`, validate existing metrics and Snapsh
 
 ### Secondary
 
-- **SM-4: Compatibility closure.** The checked-in Python compatibility corpus and smoke suite pass completely, or each intentional deviation has an approved ledger entry and replacement assertion. Validates FR-16, FR-17, FR-42, and FR-43.
+- **SM-4: Compatibility closure.** The frozen deterministic compatibility corpus, current live-Host smoke suite, and named deployed-consumer checks pass completely, or each intentional deviation has an approved ledger entry and replacement assertion. Validates FR-16, FR-17, FR-42, and FR-43.
 - **SM-5: Agent lifecycle closure.** Canonical Agent scenarios can declare, retry, renew, query, release, and observe Lease expiry deterministically without human parsing. Validates FR-1 through FR-7.
-- **SM-6: Explainable operator decisions.** In each core journey fixture, the Operator can reach the evidence and exact target from the Brief without consulting a separate Provider command for basic identity or ownership context. Validates FR-26, FR-28 through FR-35, and FR-37.
+- **SM-6: Explainable operator decisions.** In each core journey fixture, the Operator can reach the evidence and exact target from the Brief without issuing native Provider discovery commands. Provider-native commands are needed only after leaving `srvls` for remediation outside supported capabilities. Validates FR-26, FR-28 through FR-35, and FR-37.
 
 ### Counter-Metrics
 
@@ -661,7 +733,7 @@ Domain rules, Collectors, correlation, presentations, actions, Lease behavior, a
 
 #### NFR-14: Brownfield compatibility
 
-Existing Python behavior and smoke tests remain the migration oracle, including the exact project-owned Prometheus families. Intentional deviations require an explicit ledger entry, version impact, and test.
+The migration oracle is layered: an explicit inventory of established Python behavior, a frozen deterministic fixture and golden corpus, the current live-Host smoke suite, and end-to-end checks for named deployed consumers, including the exact project-owned Prometheus families. Intentional deviations require an explicit ledger entry, version impact, replacement assertion, and consumer disposition.
 
 #### NFR-15: Supported release baseline
 
@@ -717,7 +789,7 @@ Lease duration, Heartbeat grace, stale policy, hot thresholds, retention, Collec
 
 ## 12. Open Questions
 
-No phase-blocking product questions remain for UX, architecture, or epic planning. Post-MVP candidates are bounded in Section 6.2 and require new evidence before scope expansion.
+No phase-blocking product questions remain for UX, architecture, or epic planning. Post-MVP candidates are bounded in Section 6.3 and require new evidence before scope expansion.
 
 ## 13. Assumptions Index
 

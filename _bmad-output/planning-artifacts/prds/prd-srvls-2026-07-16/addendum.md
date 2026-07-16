@@ -17,7 +17,7 @@ This addendum preserves user-supplied implementation direction and readiness cor
 - Keep a hexagonal core: domain and application policy do not depend on host commands, terminal rendering, argument parsing, or export serialization.
 - Use an Elm-style ratatui shell with explicit model, message, update, view, and effect boundaries.
 - Keep Strategy, Adapter, and Command as explicit variation seams; prefer composition for normalized inventory and reconciliation projections.
-- Treat the checked-in Python CLI and `tests/test_smoke.sh` as the compatibility oracle for the migration. Any deliberate deviation belongs in an explicit compatibility ledger.
+- Build a layered migration oracle from the checked-in Python behavior inventory, a frozen deterministic fixture and golden corpus, `tests/test_smoke.sh` as live-Host integration evidence, and end-to-end checks for named deployed consumers. Any deliberate deviation belongs in an explicit compatibility ledger.
 - Preserve deterministic non-interactive table, JSON, Prometheus, Markdown, inspection, executable-name, and explicit-action behavior until an approved requirement changes it.
 
 ## Mandatory Planning Corrections
@@ -47,12 +47,12 @@ The 2026-07-15 epic artifact used non-canonical `FR1` through `FR18` identifiers
 | FR12 | FR-15, FR-32 | Bounded Provider detail preserved and linked to declared intent |
 | FR13 | FR-35 through FR-40 | Individual lifecycle actions preserved and decomposed into interaction, planning, identity, execution, and verification contracts |
 | FR14 | FR-37 through FR-41 | Confirmation, stale protection, and read-only groups preserved |
-| FR15 | FR-16 | Python-oracle compatibility preserved |
+| FR15 | FR-16 | Layered Python-behavior compatibility preserved |
 | FR16 | FR-30 | Deprecated `--fzf` alias and `--fzf-lines` removal preserved |
 | FR17 | FR-14, FR-17 | Partial diagnostics and strict outcome policy preserved |
 | FR18 | FR-42, FR-43 | Release, install, validation, upgrade, and rollback preserved and split |
 
-Legacy `NFR1` through `NFR10` are reconciled into canonical `NFR-1` through `NFR-16` plus the Approved Technical Direction above. The old `UX-DR1` through `UX-DR8` identifiers are superseded by the dedicated UX contract and must not remain as independent requirement sources.
+Legacy `NFR1` through `NFR10` are reconciled into canonical `NFR-1` through `NFR-16` plus the Approved Technical Direction above. The old `UX-DR1` through `UX-DR8` identifiers remain legacy candidate inputs until the dedicated UX contract is created and approved; that final UX contract will supersede them as the downstream UX source while this PRD remains the canonical product source.
 
 ## Architecture Decisions to Resolve Downstream
 
