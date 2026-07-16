@@ -24,8 +24,8 @@
     - [x] Verify the remediated UX spines against the full BMAD rubric — **COMPLETED by Doctor Von Code (Session: doctor-von-code-ux-acceptance; Commit: d21d718; Verdict: PASS)**
     - [x] Verify remediated terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-acceptance; Commit: c2c2f18; Verdict: PASS)**
   - [ ] Reconcile and validate the architecture spine — **IN PROGRESS by Team Argus**
-    - [ ] Reconcile canonical PRD and UX contracts against the architecture — **CLAIMED by Agent Buttercup (Session: agent-buttercup-architecture-inputs)**
-    - [ ] Reconcile live compatibility, readiness, and operational limits — **CLAIMED by Codemaster Zigzag (Session: codemaster-zigzag-architecture-live)**
+    - [x] Reconcile canonical PRD and UX contracts against the architecture — **COMPLETED by Agent Buttercup (Session: agent-buttercup-architecture-inputs; Commit: 672b4a7; Verdict: RECONCILIATION REQUIRED and incorporated)**
+    - [x] Reconcile live compatibility, readiness, and operational limits — **COMPLETED by Codemaster Zigzag (Sessions: codemaster-zigzag-architecture-live, codemaster-zigzag-architecture-live-recovery; Commit: d00b91a; Verdict: CHANGES REQUIRED and incorporated)**
 
 ## Planned work
 
