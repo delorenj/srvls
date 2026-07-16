@@ -19,6 +19,8 @@
   - [ ] Create and validate canonical `DESIGN.md` and `EXPERIENCE.md` UX spines — **IN PROGRESS by Team Argus**
     - [x] Extract canonical PRD UX evidence — **COMPLETED by Bartholomew the Builder (Session: bartholomew-ux; Commit: 08eb2ad)**
     - [x] Extract legacy and live UX evidence — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-ux; Commit: 1412dca)**
+    - [ ] Validate the UX spines against the full BMAD rubric — **CLAIMED by Doctor Von Code (Session: doctor-von-code-ux-rubric)**
+    - [ ] Adversarially review terminal accessibility and operator safety — **CLAIMED by SyntaxSorcerer (Session: syntaxsorcerer-ux-a11y)**
 
 ## Planned work
 
