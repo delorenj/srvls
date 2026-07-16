@@ -29,6 +29,9 @@
     - [x] Validate the reconciled spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-rubric; Commit: f7ef3d9; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Verify every technology and current-version claim — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-architecture-tech; Recovery panes: recovery, recovery-write; Commit: cc8e217; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Adversarially test two-unit implementation divergence — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-divergence; Commit: 5201d34; Verdict: CHANGES REQUIRED and incorporated)**
+    - [ ] Accept the remediated spine against the complete good-spine rubric — **CLAIMED by Bartholomew the Builder (Session: bartholomew-architecture-acceptance)**
+    - [ ] Accept the remediated technology and deployment contracts — **CLAIMED by WidgetWhisperer (Session: widgetwhisperer-architecture-acceptance)**
+    - [ ] Accept the remediated two-unit seams — **CLAIMED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-acceptance)**
 
 ## Planned work
 
