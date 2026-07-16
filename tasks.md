@@ -25,6 +25,7 @@
     - [x] Verify remediated terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-acceptance; Commit: c2c2f18; Verdict: PASS)**
   - [ ] Reconcile and validate the architecture spine — **IN PROGRESS by Team Argus**
     - [ ] Reconcile canonical PRD and UX contracts against the architecture — **CLAIMED by Agent Buttercup (Session: agent-buttercup-architecture-inputs)**
+    - [ ] Reconcile live compatibility, readiness, and operational limits — **CLAIMED by Codemaster Zigzag (Session: codemaster-zigzag-architecture-live)**
 
 ## Planned work
 
