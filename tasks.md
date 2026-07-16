@@ -37,6 +37,7 @@
     - [x] Independently accept the integrated spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-final-pass; Commit: 2484c5e; Verdict: CHANGES REQUIRED — 1 low finding)**
     - [ ] Independently accept the integrated technology and deployment contracts — **CLAIMED by WidgetWhisperer (Session: widgetwhisperer-architecture-final-pass)**
     - [x] Independently accept the integrated two-unit seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-final-pass; Commit: d00ca07; Verdict: CHANGES REQUIRED — 1 blocking finding)**
+    - [ ] Freeze the dispatch reservation schedule and remove the duplicate worker seed — **CLAIMED by Doctor Von Code (Session: doctor-von-code-architecture-schedule-remediation)**
 
 ## Planned work
 
