@@ -103,6 +103,7 @@ The primary v1 user is a solo builder-operator who runs multiple projects and Ag
 ## 3. Glossary
 
 - **Action Menu** — Contextual TUI surface listing only lifecycle actions supported for the selected Observation. Opened with `a`.
+- **Action Outcome** — Canonical terminal result of one lifecycle operation: `verified`, `executed-unverified`, `refused`, `timed-out`, or `failed`. Diagnostics and reason codes are retained metadata, not additional terminal outcomes.
 - **Agent** — Human-operated or autonomous actor that declares and owns a Runtime Promise. An Agent has a stable supplied identifier and display label.
 - **Accepted Baseline** — Snapshot an Operator explicitly accepted as the start of the next Evidence Window. Ordinary refreshes do not advance it.
 - **Brief** — Point-in-time morning handoff containing an Evidence Window, change summary, reconciliation findings, completeness, and drill-down paths.
@@ -118,7 +119,7 @@ The primary v1 user is a solo builder-operator who runs multiple projects and Ag
 - **Observation** — Provider-neutral evidence that a scheduled or running Runtime exists on the Host, with a stable Provider identity and provenance.
 - **Operator** — Human using the Brief, CLI, TUI, inspection, and lifecycle controls.
 - **Owner** — Accountable Agent or human identity responsible for a Runtime Promise.
-- **Promise Lifecycle** — Orthogonal state of a Runtime Promise: `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, or `closed`.
+- **Promise Lifecycle** — Orthogonal state of a Runtime Promise: `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, or `closed`. Every `closed` state retains exactly one reason: `released`, `completed`, or `revoked`.
 - **Project** — Stable supplied identity and display label for the body of work a Runtime supports. External work or code references are optional opaque metadata.
 - **Promise ID** — Stable identifier returned when a Runtime Promise is declared.
 - **Provider** — Runtime or scheduler surface observed or controlled by `srvls`: cron, systemd, Docker, PM2, or direct Host processes in v1.
@@ -139,7 +140,7 @@ The primary v1 user is a solo builder-operator who runs multiple projects and Ag
 - **stale** — A running Observation lacks recent use evidence under configured policy while not being proven abandoned.
 - **hot** — A Runtime exceeds a configured resource threshold or trend rule.
 - **unmanaged** — An Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism.
-- **abandoned** — A running Observation remains after its ephemeral Runtime Promise Lease expired or ownership Heartbeats were lost beyond grace.
+- **abandoned** — A running Observation remains after its Runtime Promise Lease expired, ownership Heartbeats were lost beyond grace, or intent was explicitly closed as released, completed, or revoked.
 
 These labels are not mutually exclusive. A Reconciliation Finding retains every applicable label and the evidence for each; presentation may assign an attention rank without discarding labels.
 
@@ -149,9 +150,9 @@ Each active or historically relevant Runtime Promise is evaluated on four axes. 
 
 | Axis | Canonical values | Rule |
 | --- | --- | --- |
-| Promise Lifecycle | `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, `closed` | `heartbeat-late` begins when the declared renewal cadence plus grace is missed while the Lease remains valid. A Host boot-ID change expires an ephemeral Lease unless a valid renewal re-establishes ownership. |
+| Promise Lifecycle | `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, `closed` | `heartbeat-late` begins when the declared renewal cadence plus grace is missed while the Lease remains valid. A Host boot-ID change expires an ephemeral Lease unless a valid renewal re-establishes ownership. `closed` requires a retained `released`, `completed`, or `revoked` reason. |
 | Evidence Status | `sufficient`, `incomplete`, `stale`, `out-of-scope` | Required Collection Obligations must be complete and fresh for `sufficient`. Unsupported or intentionally excluded scope is `out-of-scope`, never apparent absence. |
-| Promise Outcome | `healthy`, `broken`, `unresolved`, `inactive` | `healthy` and `broken` require sufficient evidence. `unresolved` covers incomplete, stale, or out-of-scope evidence. Expired or closed intent without a surviving relevant Observation is `inactive`. |
+| Promise Outcome | `healthy`, `broken`, `unresolved`, `inactive` | `healthy` and `broken` require sufficient evidence for active intent. `unresolved` covers active intent whose presence or absence evidence is incomplete, stale, or out-of-scope. Expired or closed intent is `inactive`; a surviving Observation is represented independently by an `abandoned` label. |
 | Observation labels | `orphaned`, `duplicate`, `stale`, `hot`, `unmanaged`, `abandoned` | Zero or more labels attach to exact Observations. `healthy` and `broken` remain Promise outcomes while all eight thesis-required terms remain visible in the combined Reconciliation Finding vocabulary. |
 
 Evaluation order is deterministic:
@@ -162,12 +163,14 @@ Evaluation order is deterministic:
 4. Derive every applicable Observation label without using a label as mutation authorization.
 5. Calculate attention rank and Safe-to-stop Assessment from the retained axes and evidence.
 
-Lost-Heartbeat transitions are explicit:
+Expiry, Heartbeat, and closure transitions are explicit:
 
 - A late Heartbeat under a still-valid Lease yields `heartbeat-late`; a matching Observation is not yet abandoned.
-- A Lease-expired Runtime Promise with a surviving matched Observation yields abandoned.
-- A Lease-expired Runtime Promise without a surviving Observation becomes inactive history.
-- Any transition that depends on incomplete, stale, or out-of-scope evidence yields `unresolved` rather than healthy or broken.
+- A Lease-expired Runtime Promise has `inactive` Promise Outcome; each fresh matched surviving Observation receives `abandoned` with reason `lease-expired`.
+- A Runtime Promise closed as `released`, `completed`, or `revoked` has `inactive` Promise Outcome; each fresh matched surviving Observation receives `abandoned` with that closure reason.
+- An inactive Promise with no matched survivor remains inactive history. That absence is asserted only when the relevant Collection Obligations are sufficient.
+- An active-intent conclusion that depends on incomplete, stale, or out-of-scope evidence yields `unresolved` rather than healthy or broken. Closed or expired intent remains `inactive`, but incomplete evidence cannot prove that no survivor exists; an `abandoned` label still requires a fresh positive identity match.
+- Closure or expiry never constitutes mutation authorization.
 
 ## 4. Features and Functional Requirements
 
@@ -218,7 +221,8 @@ An authorized Agent or Operator can mark a Runtime Promise released, completed, 
 **Consequences:**
 
 - Closing intent does not itself stop a Runtime.
-- A surviving Observation is reconciled against the closed or expired intent on the next refresh.
+- The closure event retains exactly one reason: released, completed, or revoked.
+- On the next refresh, closed intent has inactive Promise Outcome and any fresh matched surviving Observation is abandoned with the closure reason.
 
 #### FR-6: Declare explicit persistent intent
 
@@ -311,7 +315,7 @@ Each refresh returns Observations together with explicit per-Collector completen
 | Provider scope | Default obligation | Promotion and failure rules |
 | --- | --- | --- |
 | Invoking user's crontab | `required` | Missing command, denial, timeout, or invalid parse makes the Brief incomplete. An absent crontab under a successful query is complete empty evidence. |
-| `/etc/crontab` and readable `/etc/cron.d` files | `required` | Unreadable discovered files or parse failure make the Brief incomplete. |
+| `/etc/crontab` and `/etc/cron.d` | `required` | Successful `/etc/cron.d` enumeration is required. Enumeration denial or failure, an unreadable discovered file, or parse failure makes the Brief incomplete. |
 | Root crontab | `optional` | Becomes `required` when configured as required or referenced by an active Runtime Promise. Denial is always visible. |
 | System systemd manager | `required` | Manager unavailability, denial, or invalid output makes the Brief incomplete. |
 | Invoking user's systemd manager | `required` | No running user manager is a visible complete-empty or unavailable outcome according to the manager response, never silently omitted. |
@@ -422,11 +426,12 @@ When matching running Observations exceed a Runtime Promise's intended instance 
 
 #### FR-25: Identify unmanaged and abandoned Runtimes
 
-`srvls` emits unmanaged when an Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism, and abandoned when a surviving Observation outlives an ephemeral Lease or lost-Heartbeat grace.
+`srvls` emits unmanaged when an Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism, and abandoned when a surviving Observation outlives an ephemeral Lease, lost-Heartbeat grace, or intent explicitly closed as released, completed, or revoked.
 
 **Consequences:**
 
 - Persistent declarations without Durable Ownership remain unmanaged.
+- Abandoned findings retain the expiry or closure reason and the historical Promise match.
 - Lease expiry alone never stops the Runtime automatically.
 
 #### FR-26: Explain findings and Safe-to-stop Assessment
@@ -442,7 +447,7 @@ The v1 decision contract is conservative and deterministic:
 
 | Assessment | Required decision rule |
 | --- | --- |
-| `safe` | The exact Observation identity is fresh; every relevant required Collector is sufficient; no active or persistent Runtime Promise, known dependency, or other declared instance requires it; ownership, purpose, expected lifetime, and Launch Mechanism behavior are known; no Provider restart policy or manager will immediately recreate it; no conflicting operation is in flight; and the target is either intentionally released or expired, or is the exact excess instance of a duplicate set. |
+| `safe` | The exact Observation identity is fresh; every relevant required Collector is sufficient; no active or persistent Runtime Promise, known dependency, or other declared instance requires it; ownership, purpose, expected lifetime, and Launch Mechanism behavior are known; no Provider restart policy or manager will immediately recreate it; no conflicting operation is in flight; and the target is either released, completed, revoked, or expired, or is the exact excess instance of a duplicate set. |
 | `unsafe` | Fresh evidence proves an active or persistent Promise, known dependency, required instance, conflicting operation, or Provider recreation policy makes stopping contrary to declared intent or ineffective. |
 | `unknown` | Identity, ownership, purpose, lifetime, dependency, recreation behavior, Collector completeness, or freshness is missing, stale, ambiguous, or contradictory. |
 
@@ -521,7 +526,7 @@ Rows and summaries communicate Provider, identity, running state, health, freshn
 
 #### FR-34: Represent application and terminal states explicitly
 
-Loading, refreshing, stale, partial-failure, unavailable-Provider, empty, filtered-empty, pending-action, verified, unverified, refused, failed, and baseline-unavailable states each receive explicit visible treatment, including responsive behavior on small terminals.
+Loading, refreshing, stale, partial-failure, unavailable-Provider, empty, filtered-empty, pending-action, verified, executed-unverified, refused, timed-out, failed, and baseline-unavailable states each receive explicit visible treatment, including responsive behavior on small terminals.
 
 **Consequences:**
 
@@ -579,12 +584,25 @@ Each lifecycle operation has a unique operation identity, captures its source ge
 
 #### FR-40: Verify and report action outcomes
 
-After execution, `srvls` refreshes relevant truth and reports verified, unverified, refused, timed-out, failed, or completed-with-diagnostic outcomes.
+After a lifecycle operation begins, `srvls` refreshes relevant truth and reports exactly one canonical Action Outcome: `verified`, `executed-unverified`, `refused`, `timed-out`, or `failed`.
 
 **Consequences:**
 
 - Command exit alone is not treated as verified state change.
 - Machine-readable and TUI outcomes identify the operation, target, evidence, and next safe step.
+- Diagnostics and reason codes attach to any outcome without creating aliases such as `completed-with-diagnostic` or `stale`.
+
+The terminal decision order is deterministic:
+
+| Precedence | Action Outcome | Decision rule |
+| --- | --- | --- |
+| 1 | `verified` | Fresh post-action evidence proves the planned postcondition for the exact target, regardless of command diagnostics. |
+| 2 | `refused` | No Provider operation was launched because confirmation, capability, authorization, duplicate-operation, or immediate identity revalidation failed. Pre-execution identity drift uses reason `stale-identity`. |
+| 3 | `timed-out` | Provider execution exceeded its hard deadline, termination and reaping were attempted, and the postcondition was not verified within the bounded operation. |
+| 4 | `failed` | The Provider invocation could not start, or fresh post-action evidence disproves the planned postcondition. |
+| 5 | `executed-unverified` | A Provider operation was launched but the postcondition can be neither proved nor disproved because verification is incomplete, ambiguous, expired, or observes a replacement identity. |
+
+Successful execution with diagnostics remains `verified` when the postcondition is proved. Post-execution replacement uses `executed-unverified` with a replacement reason; it is never reported as pre-execution `stale-identity`.
 
 #### FR-41: Keep groups read-only and privilege scoped
 
@@ -663,7 +681,7 @@ The Stack-first TUI, safe individual mutation, compatibility-led replacement of 
 
 - **SM-1: Complete morning answer set.** In the canonical acceptance scenarios, one Brief answers all eight questions in FR-28 and exposes any incomplete evidence. Validates FR-14 and FR-18 through FR-29.
 - **SM-2: Reconciliation correctness.** Every canonical fixture for healthy, broken, orphaned, duplicate, stale, hot, unmanaged, and abandoned produces the specified labels and evidence with no silent false certainty. Validates FR-18 through FR-26.
-- **SM-3: Safe action truthfulness.** Every mutation acceptance case ends in verified, unverified, refused, timed-out, or failed; none reports verified success without post-action evidence. Validates FR-36 through FR-41.
+- **SM-3: Safe action truthfulness.** Every mutation acceptance case ends in exactly one of verified, executed-unverified, refused, timed-out, or failed according to FR-40 precedence; none reports verified success without fresh post-action evidence. Validates FR-36 through FR-41.
 
 ### Secondary
 

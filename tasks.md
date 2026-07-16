@@ -12,6 +12,8 @@
   - [x] Extract live product and compatibility evidence for the canonical PRD — **COMPLETED by Agent Buttercup (Session: agent-buttercup; Commit: f1360e3)**
   - [x] Research the current adjacent-product landscape for PRD discovery — **COMPLETED by Codemaster Zigzag (Session: codemaster-zigzag; Commit: 1bd0674)**
   - [x] Reconcile the PRD against supplied thesis and integrated evidence — **COMPLETED by Professor Fiddlesticks (Session: professor-fiddlesticks; Commit: 28ae3bb)**
+  - [ ] Score the canonical PRD with the BMAD validation rubric — **CLAIMED by Doctor Von Code (Session: doctor-von-code)**
+  - [x] Adversarially review the PRD for operator safety and phase blockers — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer; Commit: 2bc2545)**
 
 ## Planned work
 
