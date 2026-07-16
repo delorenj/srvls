@@ -34,9 +34,9 @@
     - [x] Accept the remediated two-unit seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-acceptance; Commit: 5874fe9; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Redistill the architecture spine from the final acceptance findings — **COMPLETED by Professor Fiddlesticks (Session: prof-fiddlesticks-architecture-remediation; Commit: 24b49e9; internal closure gates: unanimous APPROVED)**
     - [x] Integrate the remediation and close the independent-ready scheduling counterexample — **COMPLETED by Team Argus (2026-07-16)**
-    - [ ] Independently accept the integrated spine against the complete good-spine rubric — **CLAIMED by Bartholomew the Builder (Session: bartholomew-architecture-final-pass)**
+    - [x] Independently accept the integrated spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-final-pass; Commit: 2484c5e; Verdict: CHANGES REQUIRED — 1 low finding)**
     - [ ] Independently accept the integrated technology and deployment contracts — **CLAIMED by WidgetWhisperer (Session: widgetwhisperer-architecture-final-pass)**
-    - [ ] Independently accept the integrated two-unit seams — **CLAIMED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-final-pass)**
+    - [x] Independently accept the integrated two-unit seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-final-pass; Commit: d00ca07; Verdict: CHANGES REQUIRED — 1 blocking finding)**
 
 ## Planned work
 
