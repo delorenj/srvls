@@ -16,6 +16,7 @@
   - [x] Adversarially review the PRD for operator safety and phase blockers — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer; Commit: 2bc2545)**
   - [x] Verify the remediated PRD against the rubric and adversarial blockers — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-prd; Commit: 9a71199)**
   - [x] Finalize the canonical PRD and downstream constraint addendum — **COMPLETED by Team Argus (2026-07-16)**
+  - [ ] Create and validate canonical `DESIGN.md` and `EXPERIENCE.md` UX spines — **IN PROGRESS by Team Argus**
 
 ## Planned work
 
