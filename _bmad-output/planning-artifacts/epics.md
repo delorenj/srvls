@@ -37,7 +37,7 @@ closes the duplicate seam as set-plus-cardinality with no selected excess-safe
 member. This recorded user decision postdates and resolves those two source
 choices without changing the general precedence chain.
 
-Exactly seven user-value epics and 73 sequential stories follow. Dependencies
+Exactly seven user-value epics and 75 sequential stories follow. Dependencies
 contain only exact earlier Story IDs. Each story retains user value,
 Implementation Boundary, Requirement Mapping, Dependencies, Validation
 Expectations, Out of Scope, and exactly two concrete GWT acceptance criteria.
@@ -2388,7 +2388,7 @@ So that forbidden outward dependencies, alternate side-effect owners, and missin
 
 1. **Given** Rust 1.88 and symbolic stable with the fixed bootstrap fixture, **When** format, lint, `--locked` tests, hexagonal imports, Elm model/message/update/view/effect ownership, and Strategy/Adapter/Command seams run before Provider code, **Then** both lanes pass and every forbidden dependency/effect edge is rejected, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a Provider module imports presentation or writes Host state directly, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.1-N01's approved input bytes and boundary state, **When** a Provider module imports presentation or writes Host state directly, **Then** AC-1.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.2: Checked-in inherited behavior inventory
@@ -2409,9 +2409,9 @@ So that every inventory row names its source behavior, fixture, oracle, consumer
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/compat/manifest.json and tests/compat/SHA256SUMS, **When** the named fixture's positive scenario is executed, **Then** every inherited surface has a source behavior, fixed fixture, independent oracle, live consumer, lane, and version, while any new field is additive only in a new version and leaves inherited bytes unchanged, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/compat/manifest.json and tests/compat/SHA256SUMS, **When** AC-1.2-P01 executes its approved input bytes, **Then** every inherited surface has a source behavior, fixed fixture, independent oracle, live consumer, lane, and version, while any new field is additive only in a new version and leaves inherited bytes unchanged, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** an inherited surface or consumer has no fixed row, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.2-N01's approved input bytes and boundary state, **When** an inherited surface or consumer has no fixed row, **Then** AC-1.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.3: Two-lane compatibility oracle
@@ -2432,9 +2432,9 @@ So that the frozen corpus and live smoke compare exact bytes except for a specif
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/compat/validate.sh, **When** the named fixture's positive scenario is executed, **Then** the frozen corpus and live smoke compare exact bytes except for a specifically typed deviation row, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/compat/validate.sh, **When** AC-1.3-P01 executes its approved input bytes, **Then** the frozen corpus and live smoke compare exact bytes except for a specifically typed deviation row, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a generic semantic normalizer, self-captured golden, or unlisted difference is attempted, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.3-N01's approved input bytes and boundary state, **When** a generic semantic normalizer, self-captured golden, or unlisted difference is attempted, **Then** AC-1.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.4: Canonical encodings and typed identities
@@ -2455,9 +2455,9 @@ So that canonicalJsonV1 remains newline-free, presenters add one terminator, and
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/validate.py, **When** the named fixture's positive scenario is executed, **Then** CanonicalJsonV1 remains newline-free, presenters add one terminator, and independent encoders agree on every fixed byte, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/validate.py, **When** AC-1.4-P01 executes its approved input bytes, **Then** CanonicalJsonV1 remains newline-free, presenters add one terminator, and independent encoders agree on every fixed byte, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** an unknown key, wrong order, mutable identity field, self-generated expected byte, or trailing newline appears, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.4-N01's approved input bytes and boundary state, **When** an unknown key, wrong order, mutable identity field, self-generated expected byte, or trailing newline appears, **Then** AC-1.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.5: Typed configuration and all limits
@@ -2478,9 +2478,9 @@ So that built-in, system, user, explicit, environment, and CLI values resolve in
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/config-and-limits-v1, **When** the named fixture's positive scenario is executed, **Then** built-in, system, user, explicit, environment, and CLI values resolve in fixed order with complete provenance and exact derived cuts, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/config-and-limits-v1, **When** AC-1.5-P01 executes its approved input bytes, **Then** built-in, system, user, explicit, environment, and CLI values resolve in fixed order with complete provenance and exact derived cuts, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** an unknown, duplicate, malformed, out-of-range, hidden lower-precedence, or clamped value is supplied, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.5-N01's approved input bytes and boundary state, **When** an unknown, duplicate, malformed, out-of-range, hidden lower-precedence, or clamped value is supplied, **Then** AC-1.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.6: Fail-closed SQLite initialization
@@ -2501,9 +2501,9 @@ So that fresh and existing databases accept only the exact WAL, synchronous, for
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/sqlite-init-v1, **When** the named fixture's positive scenario is executed, **Then** fresh and existing databases accept only the exact WAL, synchronous, foreign-key, busy-timeout, schema, and permission contract, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/sqlite-init-v1, **When** AC-1.6-P01 executes its approved input bytes, **Then** fresh and existing databases accept only the exact WAL, synchronous, foreign-key, busy-timeout, schema, and permission contract, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a pragma type/value, mode, integrity, migration, or invariant mismatches, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.6-N01's approved input bytes and boundary state, **When** a pragma type/value, mode, integrity, migration, or invariant mismatches, **Then** AC-1.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.7: Atomic repositories and current-pointer CAS
@@ -2524,9 +2524,9 @@ So that later value stories can persist their own aggregates without competing s
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/repository-cas-v1, **When** the named fixture's positive scenario is executed, **Then** a typed test aggregate commits atomically and only an expected-revision CAS may advance its test current pointer, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/repository-cas-v1, **When** AC-1.7-P01 executes its approved input bytes, **Then** a typed test aggregate commits atomically and only an expected-revision CAS may advance its test current pointer, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a stale writer, late Collector, or concurrent replacement attempts a newer-truth overwrite, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.7-N01's approved input bytes and boundary state, **When** a stale writer, late Collector, or concurrent replacement attempts a newer-truth overwrite, **Then** AC-1.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.8: Deterministic retention and capacity mode
@@ -2547,9 +2547,9 @@ So that eligible unpinned rows prune oldest-first and pinned excess refuses only
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/retention-capacity-v1, **When** the named fixture's positive scenario is executed, **Then** eligible unpinned rows prune oldest-first and pinned excess refuses only the canonical new-write classes while admitted finalization continues, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/retention-capacity-v1, **When** AC-1.8-P01 executes its approved input bytes, **Then** eligible unpinned rows prune oldest-first and pinned excess refuses only the canonical new-write classes while admitted finalization continues, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a pin is selected, an archive/vacuum/reset path appears, or alternate degraded admission is chosen, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.8-N01's approved input bytes and boundary state, **When** a pin is selected, an archive/vacuum/reset path appears, or alternate degraded admission is chosen, **Then** AC-1.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.9: Bounded read-only CommandRunner
@@ -2570,9 +2570,9 @@ So that stdout/stderr drain independently, terminal result freezes at the decisi
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/command-runner-v1, **When** the named fixture's positive scenario is executed, **Then** stdout/stderr drain independently, terminal result freezes at the decision cut, and later reap evidence cannot rewrite it, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/command-runner-v1, **When** AC-1.9-P01 executes its approved input bytes, **Then** stdout/stderr drain independently, terminal result freezes at the decision cut, and later reap evidence cannot rewrite it, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** shell interpolation, mutating Provider use, unbounded capture, sequential drain, or reap-before-result is attempted, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-1.9-N01's approved input bytes and boundary state, **When** shell interpolation, mutating Provider use, unbounded capture, sequential drain, or reap-before-result is attempted, **Then** AC-1.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.10: Foundation contract gate
@@ -2593,7 +2593,7 @@ So that every registry row owned by Epic 1 is discovered and missing, duplicate,
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named fixture's positive scenario is executed, **Then** every registry row owned by Epic 1 is discovered and missing, duplicate, stale, or self-generated evidence fails closed, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** AC-1.10-P01 executes its approved input bytes, **Then** every registry row owned by Epic 1 is discovered and missing, duplicate, stale, or self-generated evidence fails closed, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the active user override, **When** canonical `epics.md` is missing, has an incoherent draft/final authority triplet, is assigned while non-final, or the retired archive matches sprint-planning discovery, **Then** the validator exits 1 naming that exact invariant; coherent review-time draft discovery and promoted-final discovery both pass with archive quarantine, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2620,7 +2620,7 @@ So that declare, revise, renew, and close bind actor and owner to verified local
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/principal-authorization-v1, **When** the named fixture's positive scenario is executed, **Then** declare, revise, renew, and close bind actor and owner to verified local credentials with deterministic unauthorized outcomes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/principal-authorization-v1, **When** AC-2.1-P01 executes its approved input bytes, **Then** declare, revise, renew, and close bind actor and owner to verified local credentials with deterministic unauthorized outcomes, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** peer uid 1000 owns the Promise, **When** peer uid 1001 attempts revise, renew, or close, **Then** each returns `unauthorized_owner`/exit 4 with no event or row change, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2645,7 +2645,7 @@ So that valid declare/revise returns the original PromiseId and Lease on retry w
 
 1. **Given** revision 3 and changed owner-approved fields, **When** expected revision 3 is revised twice with one idempotency key, **Then** revision 4 and exactly one revision event are returned both times; expected revision 2 returns `revision_conflict`/exit 4 with no write, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a required field, locator, owner, mechanism, count, or opaque-reference type is invalid, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-2.2-N01's approved input bytes and boundary state, **When** a required field, locator, owner, mechanism, count, or opaque-reference type is invalid, **Then** AC-2.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.3: Finite Leases and valid persistence
@@ -2666,7 +2666,7 @@ So that omitted lifetime creates the exact finite Lease and valid persistent int
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-lease-v1, **When** the named fixture's positive scenario is executed, **Then** omitted lifetime creates the exact finite Lease and valid persistent intent records its durable authority, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-lease-v1, **When** AC-2.3-P01 executes its approved input bytes, **Then** omitted lifetime creates the exact finite Lease and valid persistent intent records its durable authority, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** either persistence prerequisite is missing or wall rollback would extend ownership, **When** declaration is attempted, **Then** it returns `lease_prerequisite_missing`/exit 2/no write or preserves the original monotonic expiry respectively, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2689,9 +2689,9 @@ So that same actor and idempotency key returns the original renewal without dupl
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-heartbeat-v1, **When** the named fixture's positive scenario is executed, **Then** same actor and idempotency key returns the original renewal without duplicate event and never extends beyond the Lease rule, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-heartbeat-v1, **When** AC-2.4-P01 executes its approved input bytes, **Then** same actor and idempotency key returns the original renewal without duplicate event and never extends beyond the Lease rule, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** Heartbeat arrives after Lease, after close, under another owner, or across invalid boot evidence, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-2.4-N01's approved input bytes and boundary state, **When** Heartbeat arrives after Lease, after close, under another owner, or across invalid boot evidence, **Then** AC-2.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.5: Close intent without Host mutation
@@ -2712,9 +2712,9 @@ So that retry returns the same close result and history preserves one reason, ac
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-close-v1, **When** the named fixture's positive scenario is executed, **Then** retry returns the same close result and history preserves one reason, actor, sequence, and prior revision, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-close-v1, **When** AC-2.5-P01 executes its approved input bytes, **Then** retry returns the same close result and history preserves one reason, actor, sequence, and prior revision, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a second reason, unknown Promise, unauthorized actor, or Provider mutation is requested, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-2.5-N01's approved input bytes and boundary state, **When** a second reason, unknown Promise, unauthorized actor, or Provider mutation is requested, **Then** AC-2.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.6: Exact Agent lifecycle commands
@@ -2737,7 +2737,7 @@ So that each command and retry maps to one documented result/exit and references
 
 1. **Given** the Contract C-22 Agent journey fixtures, **When** declare/revise/renew/close/query run through success, retry, expiry, revocation, and next-refresh cuts, **Then** metadata is minimized and every expiry, renewal, inactive/abandoned projection, audit, result, and exit is exact, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** unknown argv, stdin payload, ANSI/progress on stdout, or an undocumented interactive gate is introduced, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-2.6-N01's approved input bytes and boundary state, **When** unknown argv, stdin payload, ANSI/progress on stdout, or an undocumented interactive gate is introduced, **Then** AC-2.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 3: See the actual work running on the Host
@@ -2762,9 +2762,9 @@ So that the plan fingerprint and all cuts are immutable before spawn and no late
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/collection-plan-v1, **When** the named fixture's positive scenario is executed, **Then** the plan fingerprint and all cuts are immutable before spawn and no later truth lookup changes obligation or input, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/collection-plan-v1, **When** AC-3.1-P01 executes its approved input bytes, **Then** the plan fingerprint and all cuts are immutable before spawn and no later truth lookup changes obligation or input, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** any cut, wall clock, policy, Promise, baseline, operation, history, or current pointer is read after admission, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.1-N01's approved input bytes and boundary state, **When** any cut, wall clock, policy, Promise, baseline, operation, history, or current pointer is read after admission, **Then** AC-3.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.2: Deterministic DispatchSchedule and reservations
@@ -2785,9 +2785,9 @@ So that epochs, worker IDs, LPT positions, process gate, makespan, margin, and c
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/dispatch-schedule-v1, **When** the named fixture's positive scenario is executed, **Then** epochs, worker IDs, LPT positions, process gate, makespan, margin, and cutoff match all three exact vectors, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/dispatch-schedule-v1, **When** AC-3.2-P01 executes its approved input bytes, **Then** epochs, worker IDs, LPT positions, process gate, makespan, margin, and cutoff match all three exact vectors, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a completion timing changes a frozen reservation or equality at a cut allocates work, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.2-N01's approved input bytes and boundary state, **When** a completion timing changes a frozen reservation or equality at a cut allocates work, **Then** AC-3.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.3: Authenticated same-binary FD3 exchange
@@ -2808,7 +2808,7 @@ So that all four frames and exact key orders interoperate and each injected fail
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/ipc-v1, **When** the named fixture's positive scenario is executed, **Then** all four frames and exact key orders interoperate and each injected failure selects one total diagnostic without post-cut rewrite, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/ipc-v1, **When** AC-3.3-P01 executes its approved input bytes, **Then** all four frames and exact key orders interoperate and each injected failure selects one total diagnostic without post-cut rewrite, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** duplicate FD, replay, credential, size, reservation, exit, signal, and reap vectors, **When** FD3 normalization runs, **Then** exactly one AD-25 precedence reason is emitted in a `timed-out` or `invalid-output` CollectorReport and late evidence cannot rewrite it, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2831,7 +2831,7 @@ So that complete and failed scopes normalize deterministic cron ObservationIdV1 
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-cron-v1, **When** the named fixture's positive scenario is executed, **Then** complete and failed scopes normalize deterministic cron ObservationIdV1 values and never expose a mutation capability, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-cron-v1, **When** AC-3.4-P01 executes its approved input bytes, **Then** complete and failed scopes normalize deterministic cron ObservationIdV1 values and never expose a mutation capability, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** permission, hostile-path, duplicate-row, malformed-schedule, and partial-source fixtures, **When** cron collection runs, **Then** usable evidence is preserved and the scope returns `denied`, `invalid-output`, or `partial` under Contract C-16 with exact provenance, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2854,7 +2854,7 @@ So that d-Bus/read-only evidence yields stable unit/timer Observations and scope
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-systemd-v1, **When** the named fixture's positive scenario is executed, **Then** D-Bus/read-only evidence yields stable unit/timer Observations and scoped failure outcomes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-systemd-v1, **When** AC-3.5-P01 executes its approved input bytes, **Then** D-Bus/read-only evidence yields stable unit/timer Observations and scoped failure outcomes, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** manager-change, missing-property, denied, and timer-conflict fixtures, **When** systemd collection runs, **Then** each remains a scoped `unavailable`, `partial`, `denied`, or `invalid-output` result with distinct diagnostic and preserved successes, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2877,9 +2877,9 @@ So that restart of the same full container identity preserves ObservationId whil
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-docker-v1, **When** the named fixture's positive scenario is executed, **Then** restart of the same full container identity preserves ObservationId while runtime evidence changes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-docker-v1, **When** AC-3.6-P01 executes its approved input bytes, **Then** restart of the same full container identity preserves ObservationId while runtime evidence changes, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a mutable timestamp, short ID, name, image, PID, or Compose label enters identity, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.6-N01's approved input bytes and boundary state, **When** a mutable timestamp, short ID, name, image, PID, or Compose label enters identity, **Then** AC-3.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.7: PM2 scope collection
@@ -2900,9 +2900,9 @@ So that pM2 restarts preserve or change identity only according to the exact bir
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-pm2-v1, **When** the named fixture's positive scenario is executed, **Then** PM2 restarts preserve or change identity only according to the exact birth tuple and retain bounded state/restart evidence, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-pm2-v1, **When** AC-3.7-P01 executes its approved input bytes, **Then** PM2 restarts preserve or change identity only according to the exact birth tuple and retain bounded state/restart evidence, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** OS PID, mutable uptime, display order, or namespace alone becomes identity, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.7-N01's approved input bytes and boundary state, **When** OS PID, mutable uptime, display order, or namespace alone becomes identity, **Then** AC-3.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.8: Direct-process collection and exact suppression
@@ -2923,7 +2923,7 @@ So that frozen SelfProcessSetV1 and ownership hints suppress exact duplicates wh
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-process-v1, **When** the named fixture's positive scenario is executed, **Then** frozen SelfProcessSetV1 and ownership hints suppress exact duplicates while unrelated or escaped processes remain observable, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-process-v1, **When** AC-3.8-P01 executes its approved input bytes, **Then** frozen SelfProcessSetV1 and ownership hints suppress exact duplicates while unrelated or escaped processes remain observable, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** weak-attribution, PID-reuse, and unresolved-child fixtures, **When** process reduction reaches its cut, **Then** weak evidence never suppresses, PID reuse yields distinct identity, and unresolved internal cleanup synthesizes `worker-timeout` without exposing or reading the child, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2946,9 +2946,9 @@ So that late/superseded reports cannot alter frozen candidate bytes and candidat
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/collection-candidate-v1, **When** the named fixture's positive scenario is executed, **Then** late/superseded reports cannot alter frozen candidate bytes and candidate creation performs no Snapshot CAS, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/collection-candidate-v1, **When** AC-3.9-P01 executes its approved input bytes, **Then** late/superseded reports cannot alter frozen candidate bytes and candidate creation performs no Snapshot CAS, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a Collector, worker reap, reducer retry, or display layer rewrites candidate truth, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.9-N01's approved input bytes and boundary state, **When** a Collector, worker reap, reducer retry, or display layer rewrites candidate truth, **Then** AC-3.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.10: Complete obligation and strict policy
@@ -2971,7 +2971,7 @@ So that default and promoted scopes retain usable successes while withheld concl
 
 1. **Given** the fixed positive fixtures in tests/fixtures/implementation/collection-obligation-v1, **When** obligation policy is compiled, **Then** invoking-user cron, /etc cron, system/user systemd, and visible direct processes are required; root cron is optional-promotable; Docker and PM2 are optional until detection or active Promise; other-user systemd and PM2 are not-applicable/out-of-scope; and only supported optional scopes may be promoted to required, **And** every complete, partial, unavailable, denied, timed-out, or invalid-output result retains duration, diagnostic, applicable reason, usable evidence, and withheld conclusions.
    **And** identical input produces the identical aggregate reason and exit.
-2. **Given** the concrete input and boundary named in this criterion, **When** incomplete evidence is treated as empty, absent, healthy, or safe, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.10-N01's approved input bytes and boundary state, **When** incomplete evidence is treated as empty, absent, healthy, or safe, **Then** AC-3.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.11: Bounded Provider evidence inspection
@@ -2994,7 +2994,7 @@ So that inspection is stable by typed ID and visibly names truncation/redaction 
 
 1. **Given** Contract C-22 cron, systemd, Docker, PM2, and direct-process fixtures, **When** complete/denied/unavailable/hostile/invalid/cross-provider cases reduce, **Then** every identity, attribution, provenance, bound, diagnostic, isolation, and withheld conclusion is exact, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** raw control bytes, unrestricted logs, secrets, row identity, or another Observation's failure leaks, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-3.11-N01's approved input bytes and boundary state, **When** raw control bytes, unrestricted logs, secrets, row identity, or another Observation's failure leaks, **Then** AC-3.11-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 4: Reconcile intended and actual runtime truth
@@ -3019,9 +3019,9 @@ So that exact Provider identity or locator anchors and ordered secondary evidenc
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-correlation-v1, **When** the named fixture's positive scenario is executed, **Then** exact Provider identity or locator anchors and ordered secondary evidence produce deterministic edges without summing or UI influence, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-correlation-v1, **When** AC-4.1-P01 executes its approved input bytes, **Then** exact Provider identity or locator anchors and ordered secondary evidence produce deterministic edges without summing or UI influence, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** provider/anchor conflict, equal maxima, weak name-only evidence, or later state lookup occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.1-N01's approved input bytes and boundary state, **When** provider/anchor conflict, equal maxima, weak name-only evidence, or later state lookup occurs, **Then** AC-4.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.2: Orthogonal lifecycle, evidence, and Promise outcomes
@@ -3042,9 +3042,9 @@ So that healthy, broken, unresolved, and inactive remain explicit and orthogonal
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-outcomes-v1, **When** the named fixture's positive scenario is executed, **Then** healthy requires intended exact count and sufficient evidence; broken requires sufficient absence; otherwise unresolved remains explicit, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-outcomes-v1, **When** AC-4.2-P01 executes its approved input bytes, **Then** healthy requires intended exact count and sufficient evidence; broken requires sufficient absence; otherwise unresolved remains explicit, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** Collector failure, near match, expired Lease, or conflicting identity is presented as healthy/broken certainty, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.2-N01's approved input bytes and boundary state, **When** Collector failure, near match, expired Lease, or conflicting identity is presented as healthy/broken certainty, **Then** AC-4.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.3: Orphan and duplicate-set findings
@@ -3065,9 +3065,9 @@ So that all duplicate members retain identity and labels while excess count is i
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-orphan-duplicate-v1, **When** the named fixture's positive scenario is executed, **Then** all duplicate members retain identity and labels while excess count is intended-count arithmetic only, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-orphan-duplicate-v1, **When** AC-4.3-P01 executes its approved input bytes, **Then** all duplicate members retain identity and labels while excess count is intended-count arithmetic only, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a member is named excess, selected for deletion, or claimed Agent-created without evidence, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.3-N01's approved input bytes and boundary state, **When** a member is named excess, selected for deletion, or claimed Agent-created without evidence, **Then** AC-4.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.4: Positive-evidence stale and hot findings
@@ -3088,9 +3088,9 @@ So that stale requires supported positive no-use evidence and hot requires enoug
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-stale-hot-v1, **When** the named fixture's positive scenario is executed, **Then** stale requires supported positive no-use evidence and hot requires enough retained timestamped samples, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-stale-hot-v1, **When** AC-4.4-P01 executes its approved input bytes, **Then** stale requires supported positive no-use evidence and hot requires enough retained timestamped samples, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** missing samples, one spike, age alone, or UI color produces a label, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.4-N01's approved input bytes and boundary state, **When** missing samples, one spike, age alone, or UI color produces a label, **Then** AC-4.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.5: Unmanaged and abandoned truth without cleanup
@@ -3111,9 +3111,9 @@ So that each label names its exact positive and missing evidence and coexists wi
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1, **When** the named fixture's positive scenario is executed, **Then** each label names its exact positive and missing evidence and coexists with other findings, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1, **When** AC-4.5-P01 executes its approved input bytes, **Then** each label names its exact positive and missing evidence and coexists with other findings, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** expiry, closure, orphan, or unmanaged state triggers mutation or deletes evidence, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.5-N01's approved input bytes and boundary state, **When** expiry, closure, orphan, or unmanaged state triggers mutation or deletes evidence, **Then** AC-4.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.6: Explainable conservative Safe-to-stop
@@ -3134,9 +3134,9 @@ So that the same frozen truth yields identical assessment/reasons and changed re
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/safe-to-stop-v1, **When** the named fixture's positive scenario is executed, **Then** the same frozen truth yields identical assessment/reasons and changed refresh truth recomputes it, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/safe-to-stop-v1, **When** AC-4.6-P01 executes its approved input bytes, **Then** the same frozen truth yields identical assessment/reasons and changed refresh truth recomputes it, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a label, group, opaque reference, expired Lease, or prior assessment authorizes mutation, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.6-N01's approved input bytes and boundary state, **When** a label, group, opaque reference, expired Lease, or prior assessment authorizes mutation, **Then** AC-4.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.7: Sole Snapshot materialization and current CAS
@@ -3157,9 +3157,9 @@ So that latest requested generation commits reports, diagnostics, Observations, 
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/snapshot-materialization-v1, **When** the named fixture's positive scenario is executed, **Then** latest requested generation commits reports, diagnostics, Observations, resources, findings, Brief material, revisions, and current together, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/snapshot-materialization-v1, **When** AC-4.7-P01 executes its approved input bytes, **Then** latest requested generation commits reports, diagnostics, Observations, resources, findings, Brief material, revisions, and current together, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a superseded candidate, partial transaction, other layer, or late report attempts current, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.7-N01's approved input bytes and boundary state, **When** a superseded candidate, partial transaction, other layer, or late report attempts current, **Then** AC-4.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.8: Explicit Accepted Baseline and Evidence Window
@@ -3181,7 +3181,7 @@ So that eligible accept and audited incomplete override update only baseline/aud
 **Acceptance Criteria:**
 
 1. **Given** an eligible complete current Snapshot and the fixed baseline-acceptance fixtures, **When** the deterministic baseline command addresses that exact Snapshot, **Then** successful confirmation changes only baseline/audit and the Brief immediately recomputes new/resolved/changed/persisting with baseline/current timestamps and configured timezone, **And** refresh, exit, scheduled candidates, and actions never advance the baseline.
-2. **Given** the concrete input and boundary named in this criterion, **When** an incomplete or incompatible Snapshot lacks every missing scope, a nonempty reason, principal, timestamp, and the exact typed word override, or when first-run/incompatible truth attempts to invent a change set, **Then** acceptance fails with baseline unchanged and no Host mutation, **And**
+2. **Given** AC-4.8-N01's approved input bytes and boundary state, **When** an incomplete or incompatible Snapshot lacks every missing scope, a nonempty reason, principal, timestamp, and the exact typed word override, or when first-run/incompatible truth attempts to invent a change set, **Then** acceptance fails with baseline unchanged and no Host mutation, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.9: Eight-question deterministic Brief
@@ -3202,9 +3202,9 @@ So that all BQ-1 through BQ-8 rows answer the exact question and withhold clean 
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-eight-questions-v1, **When** the named fixture's positive scenario is executed, **Then** all BQ-1 through BQ-8 rows answer the exact question and withhold clean claims when required evidence is incomplete, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-eight-questions-v1, **When** AC-4.9-P01 executes its approved input bytes, **Then** all BQ-1 through BQ-8 rows answer the exact question and withhold clean claims when required evidence is incomplete, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a row is missing, renamed, double-counted, or answered from display/group state, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.9-N01's approved input bytes and boundary state, **When** a row is missing, renamed, double-counted, or answered from display/group state, **Then** AC-4.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.10: Deterministic attention, Stack, and Ungrouped grouping
@@ -3219,7 +3219,7 @@ So that identical findings produce identical grouping/order and group rows remai
 
 **Dependencies:** Story 4.9.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/brief-grouping-v1; Contract C-23 rows AC-4.10-P01/N01 require an independent approval artifact before assignment.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/grouping-v1 with assertion assert_stack_ungrouped_properties; Contract C-23 rows AC-4.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Presentation styling and mutation.
 
@@ -3227,7 +3227,7 @@ So that identical findings produce identical grouping/order and group rows remai
 
 1. **Given** Contract C-22 reconciliation fixtures, **When** every correlation, coexistence, orphan, duplicate, stale, hot, broken, abandoned, Stack, and Brief case runs, **Then** its confidence, conflicts, comparison evidence, policy, history, safety separation, grouping, and drill-down IDs are exact, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a benchmark-dependent branch, group action, or hidden ambiguity is introduced, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-4.10-N01's approved input bytes and boundary state, **When** a benchmark-dependent branch, group action, or hidden ambiguity is introduced, **Then** AC-4.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 5: Navigate one accessible terminal product
@@ -3252,9 +3252,9 @@ So that bare, explicit format, TUI, deprecated fzf, help, internal worker, and n
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/presentation-routing-v1, **When** the named fixture's positive scenario is executed, **Then** bare, explicit format, TUI, deprecated fzf, help, internal worker, and namespace argv select one exact profile with clean stdout, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/presentation-routing-v1, **When** AC-5.1-P01 executes its approved input bytes, **Then** bare, explicit format, TUI, deprecated fzf, help, internal worker, and namespace argv select one exact profile with clean stdout, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** invalid config, explicit TUI failure, redirect, TERM=dumb, panic, or signal could fall through or corrupt terminal, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.1-N01's approved input bytes and boundary state, **When** invalid config, explicit TUI failure, redirect, TERM=dumb, panic, or signal could fall through or corrupt terminal, **Then** AC-5.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.2: Responsive Brief and Explorer layouts
@@ -3275,9 +3275,9 @@ So that 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exac
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-responsive-v1, **When** the named fixture's positive scenario is executed, **Then** 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exact component/layout rules, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-responsive-v1, **When** AC-5.2-P01 executes its approved input bytes, **Then** 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exact component/layout rules, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** resize loses model/focus, hides modal semantics, or turns color/icon/geometry into meaning, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.2-N01's approved input bytes and boundary state, **When** resize loses model/focus, hides modal semantics, or turns color/icon/geometry into meaning, **Then** AC-5.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.3: Keyboard, facets, focus, and exact Unicode search
@@ -3298,9 +3298,9 @@ So that valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Cle
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** the named fixture's positive scenario is executed, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** AC-5.3-P01 executes its approved input bytes, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** simple fold, NFKC, locale, lossy bytes, row-index focus, or action retargeting occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.3-N01's approved input bytes and boundary state, **When** simple fold, NFKC, locale, lossy bytes, row-index focus, or action retargeting occurs, **Then** AC-5.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.4: Runtime and evidence detail surfaces
@@ -3321,9 +3321,9 @@ So that enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggrega
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-detail-v1, **When** the named fixture's positive scenario is executed, **Then** Enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggregate and missing evidence is a visible row, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-detail-v1, **When** AC-5.4-P01 executes its approved input bytes, **Then** Enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggregate and missing evidence is a visible row, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** friendly name, group, opaque reference, or raw content becomes identity/truth, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.4-N01's approved input bytes and boundary state, **When** friendly name, group, opaque reference, or raw content becomes identity/truth, **Then** AC-5.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.5: Affirmative external-system boundary
@@ -3345,7 +3345,7 @@ So that plane intended work, Git code changes, and Telemetry events/measurements
 **Acceptance Criteria:**
 
 1. **Given** the fixed positive fixtures in tests/fixtures/implementation/external-boundary-v1, **When** opaque references are rendered, **Then** Plane remains authoritative for intended work, Git for code changes, and Telemetry for events/measurements; each reference is labeled display-only and never affects Runtime identity, health, reconciliation, safety, or mutation authority, **And** repeated runs over identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** srvls fetches, mutates, interprets health from, reconciles with, or authorizes from any reference, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.5-N01's approved input bytes and boundary state, **When** srvls fetches, mutates, interprets health from, reconciles with, or authorizes from any reference, **Then** AC-5.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.6: Nonblocking refresh and explicit application states
@@ -3366,9 +3366,9 @@ So that loading, refreshing, stale, partial-failure, unavailable-Provider, empty
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-refresh-states-v1, **When** the named fixture's positive scenario is executed, **Then** loading, refreshing, stale, partial-failure, unavailable-Provider, empty, and bounded-detail fixtures render exact recovery guidance, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-refresh-states-v1, **When** AC-5.6-P01 executes its approved input bytes, **Then** loading, refreshing, stale, partial-failure, unavailable-Provider, empty, and bounded-detail fixtures render exact recovery guidance, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** refresh blocks navigation, clears current truth, advances baseline, or presents incomplete as empty, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.6-N01's approved input bytes and boundary state, **When** refresh blocks navigation, clears current truth, advances baseline, or presents incomplete as empty, **Then** AC-5.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.7: Text-first accessibility and hostile-text safety
@@ -3389,9 +3389,9 @@ So that keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, an
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-accessibility-v1, **When** the named fixture's positive scenario is executed, **Then** keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, and motion-free fixtures preserve all meaning, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-accessibility-v1, **When** AC-5.7-P01 executes its approved input bytes, **Then** keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, and motion-free fixtures preserve all meaning, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** color, glyph, animation, cursor motion, large geometry, or trusted Host text is required, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.7-N01's approved input bytes and boundary state, **When** color, glyph, animation, cursor motion, large geometry, or trusted Host text is required, **Then** AC-5.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.8: Help and invalid-configuration recovery
@@ -3412,9 +3412,9 @@ So that question-mark/Esc restores prior focus and invalid config emits one dete
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/help-config-recovery-v1, **When** the named fixture's positive scenario is executed, **Then** question-mark/Esc restores prior focus and invalid config emits one deterministic linear/JSON error before TUI, collection, SQLite, or mutation, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/help-config-recovery-v1, **When** AC-5.8-P01 executes its approved input bytes, **Then** question-mark/Esc restores prior focus and invalid config emits one deterministic linear/JSON error before TUI, collection, SQLite, or mutation, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** help omits a key/safety/linear/exit rule or config silently clamps/hides a lower source, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-5.8-N01's approved input bytes and boundary state, **When** help omits a key/safety/linear/exit rule or config silently clamps/hides a lower source, **Then** AC-5.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.9: State/component goldens and UX budget gate
@@ -3435,9 +3435,9 @@ So that all UX-ST read-only states/components match immutable goldens and 30 pos
 
 **Acceptance Criteria:**
 
-1. **Given** the complete Contract C-22 morning/navigation fixtures, **When** entry, scan, filter, refresh, inspect, baseline, Stack, unmatched Promise/Observation, and exit run, **Then** every state/component/recovery/voice/detail row matches immutable goldens and 30 iterations meet each read-only p95, **And** repeated runs over
+1. **Given** every read-only component, finding-marker, voice, hostile-text, and geometry golden, **When** AC-5.9-P01 renders each isolated state for 30 iterations, **Then** every mapped component/voice row matches its approved bytes and UX-BUD-1/2/3/7 p95 passes without running an end-to-end route, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** AC-5.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.10: Complete morning investigation journey
@@ -3452,7 +3452,7 @@ So that I can enter, understand withheld truth, navigate, inspect, accept a base
 
 **Dependencies:** Story 5.9.
 
-**Validation Expectations:** Contract C-23 rows AC-5.10-P01/N01 are owned by tests/fixtures/implementation/morning-navigation-journey-v1 and require independent fixture approval before assignment.; Contract C-23 rows AC-5.10-P01/N01 require an independent approval artifact before assignment.
+**Validation Expectations:** Contract C-23 rows AC-5.10-P01/N01 are owned by tests/fixtures/implementation/morning-navigation-journey-v1; Contract C-23 rows AC-5.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Lifecycle actions, new Provider reads, and new presentation components.
 
@@ -3483,9 +3483,9 @@ So that all Provider-by-kind cells and lowercase encodings match the complete ma
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-kind-v1, **When** the named fixture's positive scenario is executed, **Then** all Provider-by-kind cells and lowercase encodings match the complete matrix, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-kind-v1, **When** AC-6.1-P01 executes its approved input bytes, **Then** all Provider-by-kind cells and lowercase encodings match the complete matrix, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** signal, alias, unknown, wrong case, provider-local enum, or unsupported cell is accepted, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.1-N01's approved input bytes and boundary state, **When** signal, alias, unknown, wrong case, provider-local enum, or unsupported cell is accepted, **Then** AC-6.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.2: Discoverable exact-target Action Menu
@@ -3506,9 +3506,9 @@ So that supported/unsafe/unknown/stale/pending cells render exactly and accelera
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-menu-v1, **When** the named fixture's positive scenario is executed, **Then** supported/unsafe/unknown/stale/pending cells render exactly and accelerators enter the same plan path, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-menu-v1, **When** AC-6.2-P01 executes its approved input bytes, **Then** supported/unsafe/unknown/stale/pending cells render exactly and accelerators enter the same plan path, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** row, name, group, cron, incomplete identity, or unsupported action widens a target, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.2-N01's approved input bytes and boundary state, **When** row, name, group, cron, incomplete identity, or unsupported action widens a target, **Then** AC-6.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.3: Immutable ActionPlan and complete confirmation matrix
@@ -3529,9 +3529,9 @@ So that start, Restart, Stop, Disable, Delete and every safety state select the 
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-plan-confirmation-v1, **When** the named fixture's positive scenario is executed, **Then** Start, Restart, Stop, Disable, Delete and every safety state select the exact availability/token/focus rule, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-plan-confirmation-v1, **When** AC-6.3-P01 executes its approved input bytes, **Then** Start, Restart, Stop, Disable, Delete and every safety state select the exact availability/token/focus rule, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** OperationId is allocated, Cancel is not focused, Esc submits, or confirmation can be bypassed, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.3-N01's approved input bytes and boundary state, **When** OperationId is allocated, Cancel is not focused, Esc submits, or confirmation can be bypassed, **Then** AC-6.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.4: Immediate identity, capability, and safety revalidation
@@ -3575,9 +3575,9 @@ So that available slots reserve deterministically and saturation returns pre-lau
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-pool-v1, **When** the named fixture's positive scenario is executed, **Then** available slots reserve deterministically and saturation returns pre-launch refusal without creating a running task, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-pool-v1, **When** AC-6.5-P01 executes its approved input bytes, **Then** available slots reserve deterministically and saturation returns pre-launch refusal without creating a running task, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** collection slots, late admission, hidden queue, starvation, or Provider launch consumes capacity, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.5-N01's approved input bytes and boundary state, **When** collection slots, late admission, hidden queue, starvation, or Provider launch consumes capacity, **Then** AC-6.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.6: Atomic operation admission and handoff
@@ -3598,7 +3598,7 @@ So that retry returns the same operation and phase/evidence transitions are gap-
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-admission-v1, **When** the named fixture's positive scenario is executed, **Then** retry returns the same operation and phase/evidence transitions are gap-free and architecture-native, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-admission-v1, **When** AC-6.6-P01 executes its approved input bytes, **Then** retry returns the same operation and phase/evidence transitions are gap-free and architecture-native, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** duplicate-target, expired-plan, and phase-order fixtures, **When** admission runs, **Then** duplicate returns `refused`/`duplicate-operation`, expiry returns `refused`/`plan-expired` requiring a new plan, and no launch precedes `launch-authorized`, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3615,7 +3615,7 @@ So that each supported matrix cell invokes only its exact D-Bus/socket/protocol/
 
 **Dependencies:** Story 6.6.
 
-**Validation Expectations:** The owning oracles are tests/fixtures/implementation/action-executor-v1 and tests/fixtures/implementation/provider-privilege-environment-v1; both fixture families are checked in for independent review before production implementation.; Contract C-23 rows AC-6.7-P01/N01 require an independent approval artifact before assignment.
+**Validation Expectations:** The owning oracles are tests/fixtures/implementation/action-executor-v1 and tests/fixtures/implementation/provider-privilege-environment-v1; Contract C-23 rows AC-6.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Verification and presentation.
 
@@ -3644,9 +3644,9 @@ So that 100-ms submit acknowledgement and periodic phase updates retain exact op
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-status-surface-v1, **When** the named fixture's positive scenario is executed, **Then** 100-ms submit acknowledgement and periodic phase updates retain exact operation/target and durable repository truth, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-status-surface-v1, **When** AC-6.8-P01 executes its approved input bytes, **Then** 100-ms submit acknowledgement and periodic phase updates retain exact operation/target and durable repository truth, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** focus move, refresh, resize, repeated key, or concurrent operation misattributes or hides status, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.8-N01's approved input bytes and boundary state, **When** focus move, refresh, resize, repeated key, or concurrent operation misattributes or hides status, **Then** AC-6.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.9: Fresh verification and total outcome precedence
@@ -3667,7 +3667,7 @@ So that every verification predicate and race resolves to exactly one ordered ou
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-outcome-v1, **When** the named fixture's positive scenario is executed, **Then** every verification predicate and race resolves to exactly one ordered outcome with evidence, reason, and next safe step, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-outcome-v1, **When** AC-6.9-P01 executes its approved input bytes, **Then** every verification predicate and race resolves to exactly one ordered outcome with evidence, reason, and next safe step, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** command-exit-only, diagnostic-alias, and post-launch replacement fixtures, **When** verification runs, **Then** exit alone never verifies and replacement returns `executed-unverified` with stale-identity evidence under the five-outcome precedence, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3690,9 +3690,9 @@ So that pre-launch exit refuses; executing/verifying uncertainty resolves conser
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-shutdown-recovery-v1, **When** the named fixture's positive scenario is executed, **Then** pre-launch exit refuses; executing/verifying uncertainty resolves conservatively; storage failure keeps the owner alive until terminal truth persists, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-shutdown-recovery-v1, **When** AC-6.10-P01 executes its approved input bytes, **Then** pre-launch exit refuses; executing/verifying uncertainty resolves conservatively; storage failure keeps the owner alive until terminal truth persists, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** q/Esc detaches, repeated signal changes truth, orderly exit leaves a nonterminal operation, or mutation replays, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.10-N01's approved input bytes and boundary state, **When** q/Esc detaches, repeated signal changes truth, orderly exit leaves a nonterminal operation, or mutation replays, **Then** AC-6.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.11: Human-linear and machine action parity
@@ -3713,9 +3713,9 @@ So that tUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, 
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-linear-machine-v1, **When** the named fixture's positive scenario is executed, **Then** TUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, outcome, evidence, and reasons, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-linear-machine-v1, **When** AC-6.11-P01 executes its approved input bytes, **Then** TUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, outcome, evidence, and reasons, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a surface renames a kind/outcome, accepts raw stdin, emits ANSI/progress, or bypasses confirmation, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.11-N01's approved input bytes and boundary state, **When** a surface renames a kind/outcome, accepts raw stdin, emits ANSI/progress, or bypasses confirmation, **Then** AC-6.11-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.12: Complete action and SR-A11Y-1 gate
@@ -3730,15 +3730,15 @@ So that TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate
 
 **Dependencies:** Story 6.11.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-aggregate-v1; Contract C-23 rows AC-6.12-P01/N01 require an independent approval artifact before assignment.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-accessibility-budget-v1 with assertion assert_action_budgets_and_accessibility; Contract C-23 rows AC-6.12-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Release implementation.
 
 **Acceptance Criteria:**
 
-1. **Given** Contract C-22 TUI, TERM=dumb, NO_COLOR, linear, JSON, raw-mode, modal, refresh, and replacement fixtures, **When** the full plan-to-outcome journey runs, **Then** no privilege prompt occurs, navigation stays responsive, every keyboard/linear path is equivalent, all five outcomes are inspectable, and 100 ms submit/100 ms key/1,000 ms progress limits pass, **And** repeated runs over
+1. **Given** isolated TUI/TERM=dumb/NO_COLOR/modal/active-operation fixtures, **When** AC-6.12-P01 renders confirmation, help, pending disposition, and accessibility states, **Then** no privilege prompt occurs, active status remains visible, and exact 100 ms submit/100 ms key/1,000 ms progress limits pass without executing the complete action journey, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-6.12-N01's approved input bytes and boundary state, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** AC-6.12-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.13: Complete exact-target action journey
@@ -3753,7 +3753,7 @@ So that plan, confirmation, admission, execution, verification, and outcome rema
 
 **Dependencies:** Story 6.12.
 
-**Validation Expectations:** Contract C-23 rows AC-6.13-P01/N01 are owned by tests/fixtures/implementation/action-journey-v1 and require independent fixture approval before assignment.; Contract C-23 rows AC-6.13-P01/N01 require an independent approval artifact before assignment.
+**Validation Expectations:** Contract C-23 rows AC-6.13-P01/N01 are owned by tests/fixtures/implementation/action-journey-v1; Contract C-23 rows AC-6.13-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Release actions and changes to any prior domain/executor contract.
 
@@ -3784,9 +3784,9 @@ So that the admitted final artifact alone binds compiler/component/manifest/sour
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json, **When** the named fixture's positive scenario is executed, **Then** the admitted final artifact alone binds compiler/component/manifest/source/Cargo.lock/checksum/ABI/smoke evidence, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json, **When** AC-7.1-P01 executes its approved input bytes, **Then** the admitted final artifact alone binds compiler/component/manifest/source/Cargo.lock/checksum/ABI/smoke evidence, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** cached 1.97.0, stale manifest, another artifact, generic ldd, or compile-before-evidence is selected, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.1-N01's approved input bytes and boundary state, **When** cached 1.97.0, stale manifest, another artifact, generic ldd, or compile-before-evidence is selected, **Then** AC-7.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.2: Traditional POSIX admission and action handoff
@@ -3807,9 +3807,9 @@ So that traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json, **When** the named fixture's positive scenario is executed, **Then** traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss, CLOEXEC, shared drain, and handoff, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json, **When** AC-7.2-P01 executes its approved input bytes, **Then** traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss, CLOEXEC, shared drain, and handoff, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** flock/lockf/OFD, reopen/dup/stdio/inheritance/close, state sampling before drain, or detach occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.2-N01's approved input bytes and boundary state, **When** flock/lockf/OFD, reopen/dup/stdio/inheritance/close, state sampling before drain, or detach occurs, **Then** AC-7.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.3: Canonical release command surfaces
@@ -3830,7 +3830,7 @@ So that each exact verb and argument set routes to one application command and d
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/release-command-surface-v1, **When** the named fixture's positive scenario is executed, **Then** each exact verb and argument set routes to one application command and deterministic non-TUI record, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/release-command-surface-v1, **When** AC-7.3-P01 executes its approved input bytes, **Then** each exact verb and argument set routes to one application command and deterministic non-TUI record, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** missing, duplicate, or unknown Contract C-19 arguments, **When** any verb is parsed, **Then** it returns `invalid_arguments`/exit 2/no write and rollback confirmation accepts only the exact token `rollback <TransactionId>`, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3878,7 +3878,7 @@ So that all preimages and checksums are immutable/read back before the first eff
 
 1. **Given** installed-prior fixtures in tests/fixtures/implementation/upgrade-installed-prior-plan-v1, **When** planning completes, **Then** all preimages/checksums are read back before the first effect, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a preimage is absent/late, type alias appears, capacity is insufficient, or stage differs from admitted artifact, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.5-N01's approved input bytes and boundary state, **When** a preimage is absent/late, type alias appears, capacity is insufficient, or stage differs from admitted artifact, **Then** AC-7.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.6: Exact in-owner consumer migration
@@ -3901,7 +3901,7 @@ So that each metrics and snapshot pair changes only its source fragment and load
 
 1. **Given** independently bound metrics and snapshot pairs, **When** rewrite completes, **Then** exactly two pair-qualified occurrences per pair differ and every other byte/property is identical, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** script/config normalization, bounded deviation, extra replacement, mutating child systemctl, or partial pair appears, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.6-N01's approved input bytes and boundary state, **When** script/config normalization, bounded deviation, extra replacement, mutating child systemctl, or partial pair appears, **Then** AC-7.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.7: Closed FD4 candidate validation and shared D-Bus cut
@@ -3922,9 +3922,9 @@ So that forward, installed-prior recovery, and explicit rollback bind exact dire
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/fd4-request.json, **When** the named fixture's positive scenario is executed, **Then** forward, installed-prior recovery, and explicit rollback bind exact directional generations/artifact/schema and all four evidence classes to one attempt, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/fd4-request.json, **When** AC-7.7-P01 executes its approved input bytes, **Then** forward, installed-prior recovery, and explicit rollback bind exact directional generations/artifact/schema and all four evidence classes to one attempt, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** extra field, replay, wrong peer/owner/order/generation/hash/schema/deadline, manager change, sequence gap, or trailing byte occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.7-N01's approved input bytes and boundary state, **When** extra field, replay, wrong peer/owner/order/generation/hash/schema/deadline, manager change, sequence gap, or trailing byte occurs, **Then** AC-7.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.8: Forward install and upgrade execution
@@ -3947,7 +3947,7 @@ So that each pending/complete effect advances in exact AD-23 order to the durabl
 
 1. **Given** tests/fixtures/implementation/installed-prior-forward-v1, **When** the approved installed-prior rows execute, **Then** each pending/complete effect and event/revision advances in exact AD-23 order to `commit-decided` or starts pre-decision restore, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a mutating child, split pair, skipped readback, forward-only evidence reuse, or terminal alias appears, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.8-N01's approved input bytes and boundary state, **When** a mutating child, split pair, skipped readback, forward-only evidence reuse, or terminal alias appears, **Then** AC-7.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.9: Generic owner takeover and recovery engine
@@ -3970,7 +3970,7 @@ So that each generic pre-decision crash cut resumes from readback without claimi
 
 1. **Given** installed-prior pre-decision cuts, **When** takeover restores and validates the entire prior pair from readback, **Then** it terminalizes only `forward-failed-recovered` or `upgrade-recovery-required`, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** generic recovery assumes KnownGood publication, rewinds a complete effect, invents restored/failed-needs-manual, or detaches, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.9-N01's approved input bytes and boundary state, **When** generic recovery assumes KnownGood publication, rewinds a complete effect, invents restored/failed-needs-manual, or detaches, **Then** AC-7.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.10: Commit-bound KnownGood publication and recovery
@@ -3993,7 +3993,7 @@ So that publication happens only after decision and no extra pointer field exist
 
 1. **Given** tests/fixtures/implementation/installed-prior-known-good-v1, **When** the approved installed-prior publication/ready/commit rows execute, **Then** publication happens only after decision and no extra pointer field exists; resumed cuts preserve the sole canonical candidate, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** policy/evidence extension, pre-decision publish, older accidental selection, or ready-before-readback occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.10-N01's approved input bytes and boundary state, **When** policy/evidence extension, pre-decision publish, older accidental selection, or ready-before-readback occurs, **Then** AC-7.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.11: FirstInstall absence planning
@@ -4016,7 +4016,7 @@ So that only exact absence with no foreign displacement creates the sentinel and
 
 1. **Given** tests/fixtures/implementation/first-install-plan-v1/revision-zero.json, **When** absence planning completes, **Then** exact absence creates the sentinel and restore plan with no effects, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** foreign file/symlink, partial absence, fabricated prior binary, nonzero generation, or deletion occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.11-N01's approved input bytes and boundary state, **When** foreign file/symlink, partial absence, fabricated prior binary, nonzero generation, or deletion occurs, **Then** AC-7.11-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.12: FirstInstall execution and absence recovery
@@ -4025,13 +4025,13 @@ As a srvls Operator or maintainer,
 I want firstinstall execution and absence recovery,
 So that failure restores byte-total declared absence and returns forward-failed-recovered only after all readbacks.
 
-**Implementation Boundary:** Execute FirstInstall forward activation and every automatic absent-restore crash cut, refuse foreign replacements without deletion, and prove complete absence before ready generation zero.
+**Implementation Boundary:** Execute FirstInstall forward activation through generation-1 ready/commit and every automatic absent-restore crash cut; only failed recovery reserves ready generation zero after proving complete absence, and foreign replacements are refused without deletion.
 
 **Requirement Mapping:** AD-11, AD-23, FR-43.
 
 **Dependencies:** Story 7.11.
 
-**Validation Expectations:** The owning oracles are tests/fixtures/implementation/first-install-success-v1 and tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl; both require Contract C-23 approval.; Contract C-23 rows AC-7.12-P01/N01 require an independent approval artifact before assignment.
+**Validation Expectations:** The owning oracles are tests/fixtures/implementation/first-install-success-v1 and tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl; Contract C-23 rows AC-7.12-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Explicit rollback planning.
 
@@ -4062,7 +4062,7 @@ So that installed target freezes source/target generations and byte-equal retain
 
 1. **Given** tests/fixtures/implementation/rollback-plan-v1/revision-zero.json and exact `rollback <TransactionId>` confirmation, **When** planning completes, **Then** source/target generations and retained bundle freeze while sentinel retry returns identical no-transaction result, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** rollback repoints directly, lacks confirmation, creates work for sentinel, or reuses the forward transaction, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.13-N01's approved input bytes and boundary state, **When** rollback repoints directly, lacks confirmation, creates work for sentinel, or reuses the forward transaction, **Then** AC-7.13-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.14: Explicit rollback execution and displaced-source publication
@@ -4083,9 +4083,9 @@ So that successful rollback returns rolled-back with exact generations and prese
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl, **When** the named fixture's positive scenario is executed, **Then** successful rollback returns rolled-back with exact generations and preserves future reversal direction, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl, **When** AC-7.14-P01 executes its approved input bytes, **Then** successful rollback returns rolled-back with exact generations and preserves future reversal direction, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** forward evidence substitutes for reverse evidence, old target remains KnownGood, pair is partial, or rollback alias appears, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.14-N01's approved input bytes and boundary state, **When** forward evidence substitutes for reverse evidence, old target remains KnownGood, pair is partial, or rollback alias appears, **Then** AC-7.14-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.15: Release aggregate and Host smoke gate
@@ -4108,5 +4108,5 @@ So that every AD-11 release registry row and exact final-artifact Host smoke pas
 
 1. **Given** the Contract C-22 installed-prior, FirstInstall, upgrade, rollback, compatibility, and two-pair crash fixtures, **When** the exact final artifact runs every release journey, **Then** installed version/compatibility output is exact and activation occurs only after ABI, storage, consumer, FD4, D-Bus, Host-smoke, and recovery checks pass, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** AC-7.15-N01's approved input bytes and boundary state, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** AC-7.15-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.

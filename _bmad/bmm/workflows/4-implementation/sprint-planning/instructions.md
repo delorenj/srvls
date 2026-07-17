@@ -22,6 +22,11 @@
 
 **No fuzzy aliases**: `user-stories.md`, story-only names, and files outside those two machine-readable patterns are not sprint-planning inputs. Rename a new canonical artifact to an `*epic*.md` name only after it is authoritative and assignable.
 
+**C-23 assignment gate**: before changing any canonical Story `E.S` from
+`backlog`, run `python3 tests/validate_story_fixture_approvals.py E.S`. A
+missing, malformed, same-author/reviewer, or same-commit approval fails closed;
+do not create or assign the story until the command passes.
+
 <workflow>
 
 <step n="1" goal="Parse epic files and extract all work items">
