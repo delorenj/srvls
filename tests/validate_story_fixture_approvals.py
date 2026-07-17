@@ -25,7 +25,7 @@ APPROVAL_KEYS = {
 }
 BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "runnerPath", "runnerSha256", "expectedResultPath", "expectedResultSha256"}
 COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "oracleResults", "verdict"}
-RESULT_KEYS = {"oraclePath", "exitCode", "resultPath", "resultSha256"}
+RESULT_KEYS = {"oraclePath", "implementationPath", "implementationSha256", "exitCode", "resultPath", "resultSha256"}
 
 
 def fail(message: str) -> None:
@@ -48,11 +48,16 @@ def canonical_rows() -> dict[str, dict[str, str]]:
     epics = EPICS.read_text(encoding="utf-8")
     stories = re.findall(r"^### Story (\d+\.\d+):", epics, re.MULTILINE)
     expected_ids = {f"AC-{story}-{kind}" for story in stories for kind in ("P01", "N01")}
-    if len(stories) != 75 or data["rowCount"] != 150 or set(rows) != expected_ids:
+    if len(stories) != 75 or len(set(stories)) != 75 or data["rowCount"] != 150 or set(rows) != expected_ids:
         fail("acceptance registry must contain the exact P01/N01 rows for 75 canonical stories")
     dangling = sorted(set(re.findall(r"Story (\d+\.\d+)", epics)) - set(stories))
     if dangling:
         fail(f"canonical artifact contains dangling Story references: {dangling}")
+    for start, end in re.findall(r"Stories (\d+\.\d+) through (\d+\.\d+)", epics):
+        start_epic, start_number = map(int, start.split(".")); end_epic, end_number = map(int, end.split("."))
+        expanded = {f"{start_epic}.{number}" for number in range(start_number, end_number + 1)}
+        if start_epic != end_epic or start_number > end_number or not expanded <= set(stories):
+            fail(f"invalid or dangling Story range {start} through {end}")
     for row_id, row in rows.items():
         if set(row) != {"rowId", "storyId", "kind", "criterionMarkdown", "criterionSha256"}:
             fail(f"{row_id} has unknown or missing keys")
@@ -172,7 +177,7 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
         if set(binding) != BINDING_KEYS:
             fail(f"Story {story} oracle binding schema is invalid")
         oracle = binding["oraclePath"]
-        for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("expectedResultPath", "expectedResultSha256")):
+        for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("runnerPath", "runnerSha256"), ("expectedResultPath", "expectedResultSha256")):
             if not isinstance(binding[hash_key], str) or not SHA.fullmatch(binding[hash_key]):
                 fail(f"Story {story} {hash_key} is invalid")
             if not within_oracle(binding[path_key], oracle):
@@ -196,7 +201,7 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
     if any(subprocess.run(["git", "merge-base", "--is-ancestor", commit, approval_commit], cwd=ROOT).returncode for commit in commits):
         fail(f"Story {story} approval does not descend from its author and reviewer evidence")
     for binding in bindings:
-        for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("expectedResultPath", "expectedResultSha256")):
+        for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("runnerPath", "runnerSha256"), ("expectedResultPath", "expectedResultSha256")):
             if git_file_hash(data["fixtureAuthorCommit"], binding[path_key]) != binding[hash_key]:
                 fail(f"Story {story} {path_key} bytes are not bound to fixtureAuthorCommit")
     return approval_commit, data
@@ -245,23 +250,36 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             fail(f"Story {story} runner bytes are not fixture-author approved")
         if not within_oracle(result["resultPath"], result["oraclePath"]):
             fail(f"Story {story} executed result escapes its owning oracle")
+        if not OID.fullmatch(data["implementationCommit"]) or not git_path_exists(data["implementationCommit"], result["implementationPath"]):
+            fail(f"Story {story} completion lacks its implementation artifact")
+        if git_file_hash(data["implementationCommit"], result["implementationPath"]) != result["implementationSha256"]:
+            fail(f"Story {story} implementation artifact hash is invalid")
+        if not subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", result["implementationPath"],], cwd=ROOT).returncode:
+            fail(f"Story {story} implementation artifact was not changed by implementation")
         if git_path_exists(approval_commit, result["resultPath"]):
             fail(f"Story {story} executed result is not fresh implementation evidence")
         with tempfile.TemporaryDirectory(prefix="srvls-oracle-") as temporary:
             isolated = Path(temporary)
-            runner = isolated / "runner"; fixture = isolated / "fixture"; home = isolated / "home"
+            runner = isolated / "runner"; fixture = isolated / "fixture"; implementation = isolated / "implementation"; home = isolated / "home"
             runner.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["runnerPath"]))
             fixture.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["fixturePath"]))
-            runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
+            implementation.write_bytes(git_file_bytes(data["implementationCommit"], result["implementationPath"]))
+            runner.chmod(0o500); fixture.chmod(0o400); implementation.chmod(0o500); home.mkdir()
             try:
                 executed = subprocess.run(
-                    [str(runner), str(fixture)], cwd=isolated, capture_output=True, timeout=10,
-                    env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "HOME": str(home)},
+                    ["bwrap", "--unshare-all", "--die-with-parent", "--new-session",
+                     "--ro-bind", str(isolated), "/work", "--ro-bind", "/usr", "/usr",
+                     "--ro-bind", "/bin", "/bin", "--ro-bind", "/lib", "/lib",
+                     "--ro-bind", "/lib64", "/lib64", "--proc", "/proc", "--dev", "/dev",
+                     "--tmpfs", "/tmp", "--chdir", "/work", "--clearenv",
+                     "--setenv", "PATH", "/usr/bin:/bin", "--setenv", "LANG", "C", "--setenv", "LC_ALL", "C",
+                     "/work/runner", "/work/implementation", "/work/fixture"],
+                    cwd=isolated, capture_output=True, timeout=10,
                 )
             except subprocess.TimeoutExpired:
                 fail(f"Story {story} approved runner exceeded the 10-second replay budget")
         if executed.returncode != result["exitCode"] or hashlib.sha256(executed.stdout).hexdigest() != result["resultSha256"]:
-            fail(f"Story {story} approved runner replay does not reproduce the attested result")
+            fail(f"Story {story} approved runner replay does not reproduce the attested result: {executed.stderr.decode(errors='replace')[:240]}")
         if result["resultSha256"] != binding["expectedResultSha256"]:
             fail(f"Story {story} executed result differs from approved expectation")
         if git_file_hash(data["implementationCommit"], result["resultPath"]) != result["resultSha256"]:

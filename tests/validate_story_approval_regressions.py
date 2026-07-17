@@ -94,7 +94,7 @@ def hermetic_git_gate() -> None:
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
         (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
-        runner_bytes = b"#!/bin/sh\nsed 's/input/expected/' \"$1\""
+        runner_bytes = b"#!/bin/sh\ntest \"$(cat \"$1\")\" = done && sed 's/input/expected/' \"$2\""
         (oracle / "runner").write_bytes(runner_bytes); (oracle2 / "runner").write_bytes(runner_bytes)
         (oracle / "runner").chmod(0o755); (oracle2 / "runner").chmod(0o755)
         fixture_commit = commit("fixtures", "fixture@example.test")
@@ -130,6 +130,7 @@ def hermetic_git_gate() -> None:
             "implementationCommit": implementation_commit,
             "oracleResults": [{
                 "oraclePath": path, "exitCode": 0,
+                "implementationPath": "implementation", "implementationSha256": hashlib.sha256(b"done").hexdigest(),
                 "resultPath": f"{path}/actual", "resultSha256": hashlib.sha256(b"expected").hexdigest(),
             } for path in approval.declared_oracles("1.1")],
             "verdict": "completed",
@@ -139,6 +140,19 @@ def hermetic_git_gate() -> None:
         (approvals / "1.2-v1.json").write_text(json.dumps(approval_payload("1.2")))
         commit("approve 1.2", "reviewer@example.test")
         approval.validate_assignment("1.2", rows)
+        baseline_approval = json.loads((approvals / "1.2-v1.json").read_text())
+        bad_runner = json.loads(json.dumps(baseline_approval))
+        bad_runner["oracleBindings"][0]["runnerSha256"] = "0" * 64
+        (approvals / "1.2-v1.json").write_text(json.dumps(bad_runner))
+        commit("runner hash attack", "reviewer@example.test")
+        try:
+            approval.validate_assignment("1.2", rows)
+        except SystemExit:
+            pass
+        else:
+            require(False, "runner-hash mutation escaped")
+        (approvals / "1.2-v1.json").write_text(json.dumps(baseline_approval))
+        commit("restore approval", "reviewer@example.test")
         same_principal_commit = commit("second fixture-principal commit", "fixture@example.test")
         same_principal = json.loads((approvals / "1.2-v1.json").read_text())
         same_principal["reviewerCommit"] = same_principal_commit
@@ -175,6 +189,18 @@ def hermetic_git_gate() -> None:
             require(False, "false runner exit attestation escaped")
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
         commit("restore execution", "reviewer@example.test")
+        bad_implementation = json.loads(json.dumps(baseline_completion))
+        bad_implementation["oracleResults"][0]["implementationSha256"] = "0" * 64
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(bad_implementation))
+        commit("implementation hash attack", "reviewer@example.test")
+        try:
+            approval.validate_completion("1.1", rows)
+        except SystemExit:
+            pass
+        else:
+            require(False, "implementation-hash mutation escaped")
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
+        commit("restore implementation binding", "reviewer@example.test")
         mutated = json.loads((approvals / "1.1-completed-v1.json").read_text())
         mutated["implementationCommit"] = mutated["approvalCommit"]
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(mutated))

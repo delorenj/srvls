@@ -520,10 +520,12 @@ commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
 forbidden until this pre-assignment approval passes. After implementation,
 `<story-id>-completed-v1.json` separately binds the derived approval commit to
-an implementation commit and one executable runner path/SHA-256, zero exit code, and fresh
+an implementation commit and one changed implementation-artifact path/SHA-256,
+zero exit code, and fresh
 executed result path/SHA-256 for every ordered oracle binding; every result must equal its independently approved expected
 SHA-256, and the completion gate replays the fixture-author runner with the
-approved fixture path and requires that exact exit/stdout hash. Every dependent Story requires that fully validated completion object
+implementation artifact plus approved fixture path inside a bounded, network- and
+host-filesystem-isolated sandbox and requires that exact exit/stdout hash. Every dependent Story requires that fully validated completion object
 and requires its completion commit to precede the dependent approval. The implementation may not
 recapture or update approved rows in the same change.
 
@@ -4316,7 +4318,7 @@ As a srvls Operator,
 I want one complete morning investigation journey,
 So that I can enter, understand withheld truth, navigate, inspect, accept a baseline, and leave without Host mutation.
 
-**Implementation Boundary:** Integrate only the already-owned read-only capabilities from Stories 3.11 through 5.9 into the Contract C-22 UJ-1 path; it adds route wiring and journey tests, not new collection, reconciliation, storage, or component implementations.
+**Implementation Boundary:** Integrate only the already-owned read-only capabilities from Story 3.11, Stories 4.1 through 4.10, and Stories 5.1 through 5.9 into the Contract C-22 UJ-1 path; it adds route wiring and journey tests, not new collection, reconciliation, storage, or component implementations.
 
 **Requirement Mapping:** FR-27, FR-28, FR-29, FR-30, FR-31, FR-32, FR-33, NFR-6, NFR-8, NFR-13, NFR-14, UJ-1, UX-IA-1, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11.
 
