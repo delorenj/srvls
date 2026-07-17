@@ -1,0 +1,1039 @@
+{
+  "cases": [
+    {
+      "case_id": "action.stop.usr-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-svc",
+        "verb": "stop"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.usr-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-timer",
+        "verb": "stop"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.sys-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-svc",
+        "verb": "stop"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.sys-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-timer",
+        "verb": "stop"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.docker",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "docker",
+        "verb": "stop"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.pm2",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "pm2",
+        "verb": "stop"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.cron",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "cron",
+        "verb": "stop"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "cron entries: edit with `crontab -e` (line shown in inspect)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.stop.mystery",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "mystery",
+        "verb": "stop"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "no stop for type mystery\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.usr-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "restart",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-svc",
+        "verb": "restart"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.usr-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "restart",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-timer",
+        "verb": "restart"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.sys-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "restart",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-svc",
+        "verb": "restart"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.sys-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "restart",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-timer",
+        "verb": "restart"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.docker",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "restart",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "docker",
+        "verb": "restart"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.pm2",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "restart",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "pm2",
+        "verb": "restart"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.cron",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "cron",
+        "verb": "restart"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "cron entries: edit with `crontab -e` (line shown in inspect)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.restart.mystery",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "mystery",
+        "verb": "restart"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "no restart for type mystery\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.usr-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "start",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-svc",
+        "verb": "start"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.usr-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "start",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-timer",
+        "verb": "start"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.sys-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "start",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-svc",
+        "verb": "start"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.sys-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "start",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-timer",
+        "verb": "start"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.docker",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "start",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "docker",
+        "verb": "start"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.pm2",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "start",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "pm2",
+        "verb": "start"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.cron",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "cron",
+        "verb": "start"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "cron entries: edit with `crontab -e` (line shown in inspect)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.start.mystery",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "mystery",
+        "verb": "start"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "no start for type mystery\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.usr-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "disable",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-svc",
+        "verb": "disable"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.usr-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "disable",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "usr-timer",
+        "verb": "disable"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.sys-svc",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "disable",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-svc",
+        "verb": "disable"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.sys-timer",
+      "external_calls": [
+        {
+          "argv": [
+            "sudo",
+            "systemctl",
+            "disable",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "sys-timer",
+        "verb": "disable"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.docker",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "docker",
+        "verb": "disable"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.pm2",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "delete",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 23,
+            "stderr": "child stderr\n",
+            "stdout": "child stdout\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "pm2",
+        "verb": "disable"
+      },
+      "return_value": 23,
+      "stderr": "child stderr\n",
+      "stdout": "child stdout\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.cron",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "cron",
+        "verb": "disable"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "cron entries: edit with `crontab -e` (line shown in inspect)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.disable.mystery",
+      "external_calls": [],
+      "operation": {
+        "kind": "action",
+        "name": "target name;$(boom)\"",
+        "type": "mystery",
+        "verb": "disable"
+      },
+      "return_value": 1,
+      "stderr": "",
+      "stdout": "no disable for type mystery\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    }
+  ],
+  "fixture": {
+    "matrix_id": "action-matrix",
+    "path": "fixtures/action-matrix.json",
+    "sha256": "744767412f904f2e44e6f8d7c221b224062fe441064e935dd07844ea6c4aecbf"
+  },
+  "schema": "srvls-legacy-oracle-result-v1",
+  "source": {
+    "frozen_parent": "598eb0ccd0ad37a9432a2132a14d75aeea0f9f47",
+    "git_blob_sha1": "aebb996d1341fc44afe513126ca6553815faa904",
+    "path": "srvls",
+    "sha256": "06a7e312fba5f2ca03e99181cc208d7abd9ac4688f26ea0f8c89ee19eb9e8b62",
+    "size": 13388
+  },
+  "volatile_substitutions": [
+    {
+      "id": "clock.utc-now",
+      "rule": "datetime.now() is fixture-owned UTC instead of capture wall time"
+    },
+    {
+      "id": "clock.timer-local-rendering",
+      "rule": "datetime.fromtimestamp() renders in UTC instead of host local time"
+    },
+    {
+      "id": "host.load-average",
+      "rule": "os.getloadavg() is the fixture triple [1.25, 2.5, 3.75] unless overridden"
+    },
+    {
+      "id": "host.identity-and-paths",
+      "rule": "HOME, USER, PATH lookup, virtual /etc files, and tool presence are fixture-owned"
+    },
+    {
+      "id": "source.absolute-path",
+      "rule": "the frozen source __file__ and os.path.abspath(__file__) are /opt/srvls/srvls"
+    },
+    {
+      "id": "host.subprocess-results",
+      "rule": "stdout, stderr, exit, missing, denied, and timeout outcomes are fixture-owned"
+    },
+    {
+      "id": "python.traceback",
+      "rule": "unhandled tracebacks normalize to exception type and message; version, frame path, and line rendering are excluded"
+    }
+  ]
+}

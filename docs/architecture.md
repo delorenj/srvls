@@ -7,7 +7,7 @@ The implemented `srvls` CLI is a procedural, single-process Python application. 
 ## Technology stack
 
 | Category | Technology | Version/evidence | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Runtime | CPython | README requires 3.8+; validated on 3.14.4 | CLI execution |
 | Language | Python | Single executable `srvls` | Product implementation |
 | Libraries | Standard library | `json`, `os`, `re`, `shutil`, `subprocess`, `sys`, `datetime` | Parsing, process execution, formatting |
@@ -93,7 +93,24 @@ The source is directly executable. `mise run test` invokes the smoke suite. The 
 
 ## Deployment architecture
 
-Installation is a clone plus symlink into `~/.local/bin`. README examples show two optional systemd user-timer patterns: atomic Prometheus textfile generation every five minutes and nightly Markdown snapshots committed in another infrastructure repository. Those units are examples, not checked-in deployable units.
+Installation is a clone plus symlink into `~/.local/bin`. On big-chungus,
+`srvls-metrics.{service,timer}` and `srvls-snapshot.{service,timer}` are deployed
+host-managed user units: both timers are enabled, and the services are static
+oneshots. Their definitions live under the operator's user-systemd directory,
+not in this repository, so they remain non-deployable here without being
+optional examples. The release architecture's
+`brownfield-consumer-pairs.json` oracle freezes their 2026-07-17 fragment
+hashes, normalized source bytes and manager properties, atomic Prometheus
+replacement, Snapshot date/Git post-action, and candidate rewrite contract.
+The future Rust release path is governed by the final architecture spine and
+its independent release corpus, not by the current Python executable. That
+corpus distinguishes first install (`0 -> 1`), installed upgrade (`old ->
+old+1`), failed-upgrade recovery (`old -> old`), and explicit rollback (`old ->
+old-1`). In consumer evidence, forward rewrite binds installed source then
+candidate; failed-upgrade restore binds candidate then source; explicit
+rollback binds displaced current then retained target. Reload and validation
+remain bound to whichever pair was restored. The matching FD4 request uses the
+same directional generation, artifact, schema, manifest, owner, and deadline.
 
 ## Testing strategy
 

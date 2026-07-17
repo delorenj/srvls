@@ -1,0 +1,80 @@
+{
+  "schema": "srvls-legacy-fixture-v1",
+  "matrix_id": "output-matrix",
+  "defaults": {
+    "env": {
+      "USER": "fixture-user"
+    },
+    "home": "/home/fixture",
+    "fixed_now": "2026-07-17T12:34:56+00:00",
+    "loadavg": [1.25, 2.5, 3.75],
+    "which": {
+      "pm2": "/usr/bin/pm2"
+    },
+    "files": {
+      "/etc/crontab": "0 1 * * * root /usr/local/sbin/system-job --arg\n",
+      "/etc/cron.d/a-first": "15 3 * * * deploy /opt/jobs/a|job --raw=\\\\path\n",
+      "/etc/cron.d/z-denied": {
+        "error": "permission-denied",
+        "message": "fixture denied cron.d entry"
+      }
+    },
+    "commands": [
+      {
+        "argv": ["crontab", "-l"],
+        "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag \"a|b\"\nmalformed\n"
+      },
+      {
+        "argv": ["sudo", "-n", "crontab", "-l"],
+        "stdout": "0 2 * * * /root/bin/root-job\n"
+      },
+      {
+        "argv": ["systemctl", "list-units", "--type=service", "--all", "--output=json", "--no-pager"],
+        "stdout": "[{\"unit\":\"zeta.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Zeta\"},{\"unit\":\"inactive-enabled.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skip.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"},{\"unit\":\"evil\\u001b[31m\\\"|name.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"line\\nbreak\"}]"
+      },
+      {
+        "argv": ["systemctl", "list-unit-files", "--type=service", "--output=json", "--no-pager"],
+        "stdout": "[{\"unit_file\":\"zeta.service\",\"state\":\"enabled\"},{\"unit_file\":\"inactive-enabled.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skip.service\",\"state\":\"disabled\"},{\"unit_file\":\"evil\\u001b[31m\\\"|name.service\",\"state\":\"enabled\"}]"
+      },
+      {
+        "argv": ["systemctl", "list-timers", "--all", "--output=json", "--no-pager"],
+        "stdout": "[{\"unit\":\"system.timer\",\"next\":2000000000,\"activates\":\"zeta.service\"}]"
+      },
+      {
+        "argv": ["systemctl", "--user", "list-units", "--type=service", "--all", "--output=json", "--no-pager"],
+        "stdout": "[{\"unit\":\"user\\tname.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"User\"}]"
+      },
+      {
+        "argv": ["systemctl", "--user", "list-unit-files", "--type=service", "--output=json", "--no-pager"],
+        "stdout": "[{\"unit_file\":\"user\\tname.service\",\"state\":\"enabled\"}]"
+      },
+      {
+        "argv": ["systemctl", "--user", "list-timers", "--all", "--output=json", "--no-pager"],
+        "stdout": "[{\"unit\":\"user.timer\",\"next\":null,\"activates\":\"user\\tname.service\"}]"
+      },
+      {
+        "argv": ["docker", "ps", "-a", "--format", "{{.ID}}"],
+        "stdout": "deadbeef\ncafebabe\n"
+      },
+      {
+        "argv": ["docker", "inspect", "--format", "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}", "deadbeef", "cafebabe"],
+        "stdout": "/dock\"er\\bad|x\trunning\tunhealthy\talways\tstack\t/srv/stack|one\t30s\n/plain\texited\t-\tno\tplain-project\t\t-\n"
+      },
+      {
+        "argv": ["pm2", "jlist"],
+        "stdout": "[{\"name\":\"pm2|bad\\\"\\\\\\u001b\",\"pm2_env\":{\"status\":\"errored\",\"restart_time\":7,\"pm_cwd\":\"/srv/pm2|cwd\",\"pm_exec_path\":\"/srv/pm2/app.js\"}}]"
+      }
+    ],
+    "default_command": {
+      "error": "file-not-found",
+      "message": "[Errno 2] fixture command not found"
+    }
+  },
+  "cases": [
+    {"id": "output.table", "operation": {"kind": "main", "argv": []}},
+    {"id": "output.json", "operation": {"kind": "main", "argv": ["--json"]}},
+    {"id": "output.prometheus", "operation": {"kind": "main", "argv": ["--prom"]}},
+    {"id": "output.markdown", "operation": {"kind": "main", "argv": ["--md"]}},
+    {"id": "output.fzf-lines", "operation": {"kind": "main", "argv": ["--fzf-lines"]}}
+  ]
+}

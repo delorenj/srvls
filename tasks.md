@@ -4,7 +4,7 @@
 
 ## Completed work
 
-- [x] Rust + ratatui architecture spine and implementation epics/stories — **COMPLETED (2026-07-15; architecture reviewed and 23 stories validated)**
+- [x] Preserve the pre-canonical Rust + ratatui decomposition as non-assignable history — **SUPERSEDED (2026-07-17; 23 retired stories archived byte-exact outside planning workflow discovery)**
 
 ## Active work
 
@@ -23,7 +23,7 @@
     - [x] Adversarially review terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-a11y; Commit: c125fb2; Verdict: FAIL, remediated)**
     - [x] Verify the remediated UX spines against the full BMAD rubric — **COMPLETED by Doctor Von Code (Session: doctor-von-code-ux-acceptance; Commit: d21d718; Verdict: PASS)**
     - [x] Verify remediated terminal accessibility and operator safety — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-ux-acceptance; Commit: c2c2f18; Verdict: PASS)**
-  - [ ] Reconcile and validate the architecture spine — **IN PROGRESS by Team Argus**
+  - [x] Reconcile and validate the architecture spine — **COMPLETED by Taskforce Aegis Directional Recovery (2026-07-17; final substantive digest: 04945fcb968eaba0d866f4c3bd9d0b5883a18fa8a28f1b82a8f70d7263981012; unanimous zero-finding acceptance)**
     - [x] Reconcile canonical PRD and UX contracts against the architecture — **COMPLETED by Agent Buttercup (Session: agent-buttercup-architecture-inputs; Commit: 672b4a7; Verdict: RECONCILIATION REQUIRED and incorporated)**
     - [x] Reconcile live compatibility, readiness, and operational limits — **COMPLETED by Codemaster Zigzag (Sessions: codemaster-zigzag-architecture-live, codemaster-zigzag-architecture-live-recovery; Commit: d00b91a; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Validate the reconciled spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-rubric; Commit: f7ef3d9; Verdict: CHANGES REQUIRED and incorporated)**
@@ -46,7 +46,11 @@
     - [x] Pass-3 acceptance against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-clean-pass3; Commit: 64687f5; Verdict: CHANGES REQUIRED — 1 blocking finding)**
     - [x] Pass-3 acceptance of technology and deployment contracts — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-architecture-clean-pass3; Commit: be2974c; Verdict: PASS — zero findings)**
     - [x] Pass-3 acceptance of two-unit implementation seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-clean-pass3; Commit: e3e566c; Verdict: CHANGES REQUIRED — 8 blocking and 2 high findings)**
-    - [ ] Close all pass-3 interoperability, recovery, and frozen-oracle findings — **CLAIMED by Taskforce Aegis Directional Recovery (Sessions: taskforce-aegis, taskforce-aegis-recovery, taskforce-aegis-directional-recovery; Branch: epic-architecture-pass3-remediation; directional recovery continuing intact uncommitted worktree)**
+    - [x] Close the pass-3 recovery corpus, planning quarantine, validator, and explicit rollback-direction findings — **COMPLETED by Taskforce Aegis Directional Recovery (Sessions: taskforce-aegis, taskforce-aegis-recovery, taskforce-aegis-directional-recovery; Branch: epic-architecture-pass3-remediation; 2026-07-17)**
+    - [x] Final acceptance against the complete good-spine rubric and 154-plus-nine traceability — **COMPLETED by Agent Buttercup (Session: agent-buttercup-aegis-rubric-0717-r4; Verdict: PASS — zero findings; Report: review-pass3-final-rubric-traceability-2026-07-17.md)**
+    - [x] Final acceptance of two-unit implementation convergence — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-aegis-divergence-0717-r4; Verdict: PASS — zero findings; Report: review-pass3-final-two-unit-divergence-2026-07-17.md)**
+    - [x] Final acceptance of Linux/systemd release, recovery, and corpus reality — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-aegis-release-0717-r4; Verdict: PASS — zero findings; Report: review-pass3-final-linux-release-recovery-2026-07-17.md)**
+    - [x] Finalize the architecture spine and append the acceptance event — **COMPLETED by Taskforce Aegis Directional Recovery (2026-07-17; architecture body SHA-256: 06df98f6d201abd47289d6c6771e15b83fb9d8a6c856a3a67e2e20e178a670aa)**
 
 ## Planned work
 

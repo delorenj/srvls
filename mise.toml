@@ -29,6 +29,10 @@ run = "{{config_root}}/.mise/scripts/link-agentfiles.sh"
 description = "Smoke test: every srvls output mode runs and parses"
 run = "bash {{config_root}}/tests/test_smoke.sh"
 
+[tasks."test:architecture-contracts"]
+description = "Run compatibility, architecture contracts, release/recovery, smoke, and Rust boundary gates"
+run = "bash {{config_root}}/tests/validate_architecture_contracts.sh"
+
 # >>> mise-versioning >>>  (managed block — do not edit by hand; re-run init to update)
 [tasks."version"]
 description = "Print the current version (vX.Y.Z)"
