@@ -10,6 +10,7 @@ bash tests/compat/validate.sh
 python3 tests/validate_planning_quarantine.py
 python3 tests/validate_story_fixture_approvals.py
 python3 tests/validate_story_approval_regressions.py
+python3 -m py_compile tests/transition_story_status.py
 python3 tests/fixtures/contracts/validate.py
 python3 tests/fixtures/contracts/release-transaction-v1/validate_oracles.py
 bash tests/test_smoke.sh

@@ -332,7 +332,7 @@
       <action>Load the FULL file and read all development_status entries</action>
       <action>Find development_status key matching {{story_key}}</action>
       <action>Verify current status is "backlog" (expected previous state)</action>
-      <action>Update development_status[{{story_key}}] = "ready-for-dev"</action>
+      <action>Use only `python3 tests/transition_story_status.py {{story_id}} {{story_key}} backlog ready-for-dev {{sprint_status}}`; HALT on non-zero and do not write sprint status directly</action>
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
     </check>
 

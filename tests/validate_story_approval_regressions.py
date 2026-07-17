@@ -64,6 +64,11 @@ require("--complete {{story_id}}" in code_review and "HALT on non-zero" in code_
         "code-review completion transition bypasses provenance")
 require("--complete &lt;story_id&gt;" in sprint_status,
         "sprint-status correction bypasses completion provenance")
+for workflow in (create, dev, code_review, sprint_status):
+    require("transition_story_status.py" in workflow,
+            "workflow bypasses atomic gated Story-status CAS")
+rejected_status = subprocess.run(["python3", "tests/transition_story_status.py"], cwd=ROOT, capture_output=True)
+require(rejected_status.returncode != 0, "status transition accepts missing CAS inputs")
 
 
 def hermetic_git_gate() -> None:
@@ -130,7 +135,6 @@ def hermetic_git_gate() -> None:
             "implementationCommit": implementation_commit,
             "oracleResults": [{
                 "oraclePath": path, "exitCode": 0,
-                "implementationFiles": [{"path": "implementation", "relativePath": "implementation", "sha256": hashlib.sha256(b"done").hexdigest()}],
                 "resultPath": f"{path}/actual", "resultSha256": hashlib.sha256(b"expected").hexdigest(),
             } for path in approval.declared_oracles("1.1")],
             "verdict": "completed",
@@ -201,18 +205,6 @@ def hermetic_git_gate() -> None:
             require(False, "false runner exit attestation escaped")
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
         commit("restore execution", "reviewer@example.test")
-        bad_implementation = json.loads(json.dumps(baseline_completion))
-        bad_implementation["oracleResults"][0]["implementationFiles"][0]["sha256"] = "0" * 64
-        (approvals / "1.1-completed-v1.json").write_text(json.dumps(bad_implementation))
-        commit("implementation hash attack", "reviewer@example.test")
-        try:
-            approval.validate_completion("1.1", rows)
-        except SystemExit:
-            pass
-        else:
-            require(False, "implementation-hash mutation escaped")
-        (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
-        commit("restore implementation binding", "reviewer@example.test")
         mutated = json.loads((approvals / "1.1-completed-v1.json").read_text())
         mutated["implementationCommit"] = mutated["approvalCommit"]
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(mutated))

@@ -520,12 +520,12 @@ commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
 forbidden until this pre-assignment approval passes. After implementation,
 `<story-id>-completed-v1.json` separately binds the derived approval commit to
-an implementation commit and an exact nonempty implementation file manifest
-(repository path, sandbox-relative path, and SHA-256 per file) with at least one changed file,
+an implementation commit with a nonempty Git tree diff,
 zero exit code, and fresh
 executed result path/SHA-256 for every ordered oracle binding; every result must equal its independently approved expected
 SHA-256, and the completion gate replays the fixture-author runner with the
-implementation artifact plus approved fixture path inside a bounded, network- and
+complete `git archive` of that exact commit (preserving paths, modes, links,
+renames, and deletions) plus the approved fixture path inside a bounded, network- and
 host-filesystem-isolated sandbox and requires that exact exit/stdout hash. Every dependent Story requires that fully validated completion object
 and requires its completion commit to precede the dependent approval. The implementation may not
 recapture or update approved rows in the same change.

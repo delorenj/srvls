@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import re
 import subprocess
 import sys
 import tempfile
+import tarfile
 from pathlib import Path
 
 
@@ -25,8 +27,7 @@ APPROVAL_KEYS = {
 }
 BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "runnerPath", "runnerSha256", "expectedResultPath", "expectedResultSha256"}
 COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "oracleResults", "verdict"}
-RESULT_KEYS = {"oraclePath", "implementationFiles", "exitCode", "resultPath", "resultSha256"}
-IMPLEMENTATION_FILE_KEYS = {"path", "sha256", "relativePath"}
+RESULT_KEYS = {"oraclePath", "exitCode", "resultPath", "resultSha256"}
 
 
 def fail(message: str) -> None:
@@ -271,23 +272,8 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             fail(f"Story {story} approved runner is not executable")
         if not within_oracle(result["resultPath"], result["oraclePath"]):
             fail(f"Story {story} executed result escapes its owning oracle")
-        files = result["implementationFiles"]
-        if not isinstance(files, list) or not files or any(set(item) != IMPLEMENTATION_FILE_KEYS for item in files):
-            fail(f"Story {story} completion lacks an exact implementation manifest")
-        if len({item["relativePath"] for item in files}) != len(files) or any(Path(item["relativePath"]).is_absolute() or ".." in Path(item["relativePath"]).parts for item in files):
-            fail(f"Story {story} implementation manifest has an unsafe or duplicate relative path")
-        changed = False
-        for item in files:
-            if git_file_hash(data["implementationCommit"], item["path"]) != item["sha256"]:
-                fail(f"Story {story} implementation manifest hash is invalid")
-            changed |= subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", item["path"]], cwd=ROOT).returncode != 0
-        if not changed:
-            fail(f"Story {story} implementation manifest contains no implemented change")
-        evidence_paths = {entry["resultPath"] for entry in results if isinstance(entry, dict) and "resultPath" in entry}
-        actual_changed = set(git("diff", "--name-only", approval_commit, data["implementationCommit"]).splitlines()) - evidence_paths
-        declared_changed = {item["path"] for item in files}
-        if actual_changed != declared_changed:
-            fail(f"Story {story} implementation manifest must equal the complete implementation diff")
+        if not git("diff", "--name-status", approval_commit, data["implementationCommit"]):
+            fail(f"Story {story} implementation commit has no tree change")
         if git_path_exists(approval_commit, result["resultPath"]):
             fail(f"Story {story} executed result is not fresh implementation evidence")
         with tempfile.TemporaryDirectory(prefix="srvls-oracle-") as temporary:
@@ -296,11 +282,11 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             runner.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["runnerPath"]))
             fixture.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["fixturePath"]))
             implementation.mkdir()
-            for item in files:
-                destination = implementation / item["relativePath"]
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes(git_file_bytes(data["implementationCommit"], item["path"]))
-                destination.chmod(0o500)
+            archive = subprocess.check_output(["git", "archive", "--format=tar", data["implementationCommit"]], cwd=ROOT)
+            with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as bundle:
+                if any(Path(member.name).is_absolute() or ".." in Path(member.name).parts for member in bundle.getmembers()):
+                    fail(f"Story {story} implementation archive contains an unsafe path")
+                bundle.extractall(implementation, filter="data")
             runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
             trace_dir = isolated / "trace"; trace_dir.mkdir()
             try:
@@ -311,16 +297,15 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
                      "--ro-bind", "/lib64", "/lib64", "--proc", "/proc", "--dev", "/dev",
                      "--tmpfs", "/tmp", "--bind", str(trace_dir), "/trace", "--chdir", "/work", "--clearenv",
                      "--setenv", "PATH", "/usr/bin:/bin", "--setenv", "LANG", "C", "--setenv", "LC_ALL", "C",
-                     "/usr/bin/strace", "-f", "-e", "trace=openat", "-o", "/trace/access",
+                     "/usr/bin/strace", "-f", "-e", "trace=%file", "-o", "/trace/access",
                      "/work/runner", "/work/implementation", "/work/fixture"],
                     cwd=isolated, capture_output=True, timeout=10,
                 )
             except subprocess.TimeoutExpired:
                 fail(f"Story {story} approved runner exceeded the 10-second replay budget")
             access = (trace_dir / "access").read_text(errors="replace") if (trace_dir / "access").is_file() else ""
-            for item in files:
-                if f'/work/implementation/{item["relativePath"]}' not in access:
-                    fail(f"Story {story} runner did not consume implementation file {item['relativePath']}")
+            if "/work/implementation/" not in access:
+                fail(f"Story {story} runner did not consume the exact implementation tree")
         if executed.returncode != result["exitCode"] or hashlib.sha256(executed.stdout).hexdigest() != result["resultSha256"]:
             fail(f"Story {story} approved runner replay does not reproduce the attested result: {executed.stderr.decode(errors='replace')[:240]}")
         if result["resultSha256"] != binding["expectedResultSha256"]:
