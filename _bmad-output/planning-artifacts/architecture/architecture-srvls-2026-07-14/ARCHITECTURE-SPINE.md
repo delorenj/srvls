@@ -351,7 +351,20 @@ flowchart LR
   canonical-encodes `DispatchScheduleV1` from the persisted PolicySnapshotV1 and
   ScopeManifestV1, compares those bytes and the AD-24 schedule fingerprint with
   the persisted plan, and refuses the CollectionAttempt before spawn on any
-  mismatch. It then executes only these reservations:
+  mismatch. Before capability allocation, socket creation, or spawn for any
+  reservation, the coordinator samples `CLOCK_BOOTTIME` and compares that one
+  value with both absolute cuts. Equality with or passage of either cut means
+  the reservation is already expired: it creates no capability, socket,
+  `OwnedSpawnV1`, child, or process-group state and synthesizes the AD-25
+  no-child `worker-timeout` at the earlier exact absolute cut with
+  `termination_origin=none`. Catch-up is deterministic after admission or
+  scheduler latency: visit missed epochs by ascending epoch offset and members
+  by ascending worker ID, terminalize every already-expired reservation in
+  that complete order, and only then start the still-live members in the same
+  epoch/worker order. A live member keeps its original absolute deadline and
+  receives only the strict-before remaining budget; neither late admission nor
+  catch-up moves an epoch or creates cleanup evidence for an expired member.
+  It then executes only these reservations:
 
   1. a worker that terminalizes, fails, or becomes Ready before its next
      reservation remains held; no observation advances a reservation epoch. At
@@ -360,8 +373,9 @@ flowchart LR
      initiates that epoch's reserved batch in ascending worker-ID order. A late
      coordinator may reduce the remaining member budget but may not move its
      absolute deadline;
-  2. before each spawn allocate that member's request ID and capability. Set its
-     absolute scope deadline to `schedule origin + epoch offset + budget` and
+  2. after the mandatory strict-before check, allocate that member's request ID
+     and capability immediately before spawn. Set its absolute scope deadline
+     to `schedule origin + epoch offset + budget` and
      the absolute generation cutoff to `schedule origin + generation-cutoff
      offset`; every addition is checked. Spawn, process-group setup, Hello/Ready
      authentication, request transfer, Provider work, result transfer, and the
@@ -485,6 +499,15 @@ flowchart LR
   evidence may change those bytes but may not change a reservation or create a
   generation-cutoff timeout.
 
+  Admission-latency virtual clocks freeze epoch-zero members whose scope cut,
+  generation cut, or both are already equal to or before the first runtime
+  sample. Fixtures resume at one nanosecond before, exactly at, and one
+  nanosecond after each cut and with multiple missed epochs. They require the
+  AD-10 ascending epoch/worker catch-up order, all expired reports before any
+  live spawn, zero capability/socket/child/root/reap state for each expired
+  member, the earlier absolute cut as failure evidence, and byte-identical
+  no-child `worker-timeout` diagnostics with `termination_origin=none`.
+
   The 60-second process/seven 1-second zero-margin case still proves the
   mandatory one-nanosecond half-open headroom, process scope placement is covered
   in every LPT position, and multi-batch virtual clocks inject nonzero
@@ -498,7 +521,45 @@ flowchart LR
   worker/coordinator candidate mixtures and duplicates, post-evidence reference
   resolution, and process exact-PID-versus-cgroup, multi-Provider tie,
   in-group Provider child/grandchild self-suppression, escaped-group emission,
-  conflict, and retained-diagnostic tables. IPC fixtures cover
+  conflict, and retained-diagnostic tables.
+
+  Canonical contract goldens are fixed assertion inputs and are never generated
+  by the encoder under test. Under `tests/fixtures/contracts`,
+  `policy-snapshot-v1/default.preimage.json` is the complete
+  AD-20/ARCH-LIM-24 default
+  PolicySnapshotV1 with decision token `srvls-decision-v1`; its companion
+  `default.policy-fingerprint` is the lowercase SHA-256 defined by AD-24.
+  `tests/fixtures/contracts/collection-plan-v1/minimal.preimage.json` freezes
+  GenerationId 1, BootIdentity `00000000-0000-4000-8000-000000000001`,
+  current and Promise repository revision 7, schedule origin 1,000,000,000 ns,
+  UTC wall 2,000,000,000 ns, the default policy, accepted-baseline none,
+  operation revision 3 with no rows, resource-history revision 4 with window
+  start zero and no rows, prior-current none, current-pointer revision 5, and
+  one optional cron-user UID 1000 scope with reason `default-supported`. Its
+  four-worker schedule reserves worker 0
+  at epoch zero for 10 seconds, has no process gate, 10-second makespan,
+  five-second margin, and absolute cutoff 16,000,000,000 ns. Companion files
+  freeze the obligation-bearing ScopeManifest, every nested baseline row
+  preimage, each row fingerprint, DispatchScheduleFingerprint,
+  PolicyFingerprint, and CollectionPlanFingerprint. Configuration, admission,
+  runtime, repository, and two independent test encoders must emit the exact
+  checked-in bytes and hashes without recapture or normalization.
+
+  Observation identity goldens live at
+  `tests/fixtures/contracts/observation-id-v1/{cron,systemd,docker,pm2,process}.bin`
+  with matching uppercase-percent display and fingerprint files. Their fixed
+  inputs are, respectively: cron-user UID 1000, source `/etc/cron.d/srvls`,
+  physical line 0, entry-hash bytes `0x55`, and occurrence 0; systemd-system unit
+  `srvls-metrics.service`; Docker endpoint `unix:///var/run/docker.sock`,
+  context `default`, and 32 raw bytes `0x11`; PM2_HOME `/home/test/.pm2`, ID 7,
+  `created_at` 1,000 UTC ms, and fingerprint bytes `0x22`; and process HostId
+  bytes `0x33`, boot UUID `00000000-0000-4000-8000-000000000001`, PID 42,
+  start tick 99, and fingerprint bytes `0x44`. Each repeated byte notation means
+  exactly 32 bytes. Independent encoders must match all five complete binary
+  envelopes, displays, and `srvls-observation-id-v1` fingerprints byte for
+  byte.
+
+  IPC fixtures cover
   every AD-25 peer check, Hello/Ready credentials and field echo, silent child,
   exit 77 before Ready, malformed and replayed Ready, a batch with one failed
   member, and an after-PID group/identity-setup failure with pending cleanup and
@@ -515,10 +576,13 @@ flowchart LR
   extra reference to the coordinator endpoint into the worker side, and a
   `duplicate-child-end` fixture injects an extra reference to the worker
   endpoint into each process in turn. Their negative controls prove that the
-  applicable peer cannot observe EOF while the duplicate remains; the
-  acceptance cases require the pre-Hello descriptor audit to close every
-  injected reference and then prove the exact post-Result clean EOF and
-  closure sequence. Combined fixtures cover
+  applicable peer cannot observe EOF while the duplicate remains. Every
+  injected-duplicate case is a fail-closed rejection: the pre-Hello audit
+  freezes `fd-peer-auth`, accepts no Hello, Ready, Request, or Result, closes
+  every owned original and duplicate, and proves failure-path EOF and the one
+  synthesized report. A separate descriptor-clean fixture alone proves the
+  successful Result, write-shutdown, clean-EOF, and two-sided close sequence.
+  Combined fixtures cover
   malformed-frame plus exit 64, oversize plus parent cleanup signal, and trusted
   worker-error plus exit 70. Those combinations assert that later cleanup/reap
   status is excluded from immutable candidate bytes and retained only as
@@ -537,7 +601,16 @@ flowchart LR
   PID/birth, old-PID reuse, forged owner publication, and a second recovery-owner
   crash; the complete public release-event
   and UX-state mapping, sidecar restore, and the storage-unavailable shutdown
-  exception. Release fixtures cover the AD-12 `StableToolchainEvidenceV1`
+  exception. Admission-descriptor fixtures acquire shared and exclusive leases,
+  verify `FD_CLOEXEC`, and exercise FD3, FD4, Provider, `systemctl`, and
+  timer-control spawns. Each leaves the exec'd child alive, terminates the lease
+  owner, and proves a new exclusive contender acquires immediately and can
+  publish the next recovery owner while `/proc/<child>/fd` contains zero
+  admission-lock descriptors. Each path also injects a pre-exec stall and
+  failure after the first close file action; neither may retain the lock or
+  depend on child exit.
+
+  Release fixtures cover the AD-12 `StableToolchainEvidenceV1`
   match and a freshly fetched 1.97.1 manifest against a stale cached 1.97.0
   compiler that must fail before compile; exact-artifact ABI proof; every
   managed absolute `ExecStart` rewrite; and AD-23 forward and rollback
@@ -546,9 +619,22 @@ flowchart LR
   wake or reactivation value, and disabled-but-active enablement. Fresh
   invocation cases inject an already-active service, `RemainAfterExit=yes`,
   unchanged or zero InvocationID, non-advancing start time, and stale
-  successful exit fields. Every such case must fail the pair; matching cases
-  prove the exact loaded contract, timer-correlated candidate invocation, and
-  whole-pair rollback. Fixtures retain every crash edge from validation
+  successful exit fields. Timer-causality cases advance LastTrigger and then
+  inject a manual service start, a wrong or absent `trigger_unit`, a competing
+  service job, lost JobRemoved, and reused invocation evidence; every case fails
+  both forward and rollback. Virtual-clock cases place correct causal and FD4
+  evidence one nanosecond before, exactly at, and one nanosecond after the
+  persisted ARCH-LIM-24 cut, crash each validation effect, and prove a new
+  recovery owner retains the old attempt and persists a fresh attempt-bound cut.
+  Every mismatch must fail the pair; matching cases prove the exact loaded
+  contract, authoritative timer job/invocation causality, one shared validation
+  deadline, and whole-pair rollback. First-install cases crash every automatic
+  absent-restore effect and prove exact link/binary/state/sidecar/unit/
+  enablement absence or restoration, reserved ready generation zero, and
+  `forward-failed-recovered`; an explicit rollback from the published sentinel
+  proves byte-identical `rollback-unavailable` and zero transaction, event,
+  KnownGood, admission, filesystem, database, unit, or Host mutation.
+  Fixtures retain every crash edge from validation
   through durable commit decision, KnownGood publication, ready admission,
   and terminal commit, and explicit post-validation rollback from
   KnownGoodReleaseV1. The existing
@@ -603,10 +689,10 @@ flowchart LR
   trigger, invocation, start, or exit mismatch restores binary and link,
   matching state, service and timer definitions and enablement, and daemon
   state as one pair, reloads, and runs the same exact validator against the
-  prior manifest. AD-23 owns the schemas, durable ordering, forward and
-  rollback postconditions, and retained rollback bundle. Split crates only
-  after three independent
-  consumers.
+  prior manifest; AD-23 FirstInstallAbsentV1 uses its exact absence validator
+  because no prior executable exists. AD-23 owns the schemas, durable ordering,
+  forward and rollback postconditions, and retained rollback bundle. Split
+  crates only after three independent consumers.
 
 ### AD-13 — Identity is typed, exact, and generation-bound
 
@@ -668,18 +754,27 @@ flowchart LR
   report; after assignment the reducer may reject the generation but never
   remaps an ID. No pre-dispatch diagnostic range exists.
 
-  `ObservationId` is a typed tuple of ScopeIdV1, native locator,
-  occurrence, and required birth evidence with AD-24 canonical display encoding:
-  full systemd unit; immutable Docker container ID; PM2 home, numeric ID,
-  creation or uptime origin, and executable/name fingerprint; cron source,
-  zero-based physical line, exact schedule/user/command hash, and duplicate
-  occurrence; or Linux boot ID, PID, process start time, and executable or
-  command fingerprint. Its canonical bytes are `0x01 || provider_tag:u8 ||
-  field_count:u16be`, followed by each schema-declared field in ascending field
-  tag as `field_tag:u16be || length:u32be || value`; nested ScopeId values use
-  AD-24 bytes, integers are fixed-width unsigned big-endian, UUIDs are 16 bytes,
-  and raw locators use complete normalized bytes. Unknown, missing, repeated, or
-  out-of-order fields and trailing bytes are invalid.
+  `ObservationIdV1` is byte-total per Provider. Its envelope is `0x01 ||
+  provider_tag:u8 || field_count:u16be`, followed by the following exact fields
+  in ascending tag order as `field_tag:u16be || length:u32be || value`:
+
+  | Provider / tag | Count | `0x0001` | Remaining field tags and exact values |
+  | --- | ---: | --- | --- |
+  | cron / `0x01` | 5 | complete ScopeIdV1 bytes | `0x0002 source`: AD-24 normalized absolute raw path; `0x0003 physical_line`: zero-based `u64be`; `0x0004 entry_hash`: 32 raw SHA-256 bytes over domain `srvls-cron-entry-v1`, zero byte, then length-framed exact schedule, user, and command bytes; `0x0005 duplicate_occurrence`: zero-based `u32be` |
+  | systemd / `0x02` | 2 | complete ScopeIdV1 bytes | `0x0002 unit`: nonempty NFC UTF-8 full unit name, case preserved and with no alias or suffix removal |
+  | Docker / `0x03` | 2 | complete ScopeIdV1 bytes | `0x0002 container_id`: exactly 32 raw bytes decoded from the canonical 64-lowercase-hex immutable full container ID |
+  | PM2 / `0x04` | 4 | complete ScopeIdV1 bytes, including PM2_HOME | `0x0002 pm_id`: `u32be`; `0x0003 birth_origin`: nine bytes, tag `0x01` for `created_at` or `0x02` for `pm_uptime`, then its nonnegative UTC-millisecond `u64be`; `0x0004 executable_name_fingerprint`: 32 raw SHA-256 bytes over domain `srvls-pm2-birth-v1`, zero byte, then length-framed normalized executable raw path and NFC name bytes |
+  | process / `0x05` | 5 | complete process ScopeIdV1 bytes | `0x0002 boot_id`: kernel UUID as 16 bytes; `0x0003 pid`: `u32be`; `0x0004 start_ticks`: Linux `/proc/<pid>/stat` start time as `u64be`; `0x0005 executable_command_fingerprint`: 32 raw SHA-256 bytes over domain `srvls-process-birth-v1`, zero byte, then a one-byte `0x01` executable or `0x02` command discriminator and one length-framed complete raw value |
+
+  A variant has no undeclared occurrence or birth field: cron's duplicate field
+  disambiguates byte-identical physical entries, while the other native locator
+  and declared birth fields are already unique in their scope. Scope/provider
+  mismatch, a wrong count, tag, length, integer width, hash preimage, path or
+  text normalization, unknown, missing, repeated, or out-of-order field, and
+  trailing bytes are invalid. Public display is the AD-24 uppercase-percent
+  encoding of the complete envelope. `ObservationIdFingerprint` is SHA-256 over
+  domain `srvls-observation-id-v1`, a zero byte, and those same complete bytes;
+  no Provider may hash its logical fields through a different preimage.
 
   `SelfProcessSetV1` is generation-bound. Its frozen roots contain the exact
   coordinator PID/birth/executable device-inode identity and each parent-created
@@ -995,6 +1090,7 @@ flowchart LR
 | ARCH-LIM-21 | `action.revalidation_deadline` | 5 s | 1–15 s; expiry before launch is refused |
 | ARCH-LIM-22 | `action.finalization_deadline` | 5 s | 1–30 s; bounded durable-write attempts before restoration; unavailable or uninterruptible storage leaves the last truthful nonterminal phase for recovery |
 | ARCH-LIM-23 | derived `action.total_decision_bound` | systemd 143 s; Docker 88 s; PM2 73 s; process 53 s; Launch Mechanism 163 s | revalidation + selected execution + verification + graceful + forced observation + finalization attempt; read-only decision budget, never a universal process-exit, durable-write, or reap bound |
+| ARCH-LIM-24 | `release.validation_timeout` | 120 s | 10–600 s; one persisted `CLOCK_BOOTTIME` cut covers loaded-unit readback, timer causal proof, terminal service evidence, and the matching FD4 candidate validation for one recovery-attempt/effect attempt |
 
 For ARCH-LIM-3, default jobs are
 `[30, 20, 15, 15, 10, 10, 10, 10]`. AD-10 freezes four-worker reservation
@@ -1013,6 +1109,9 @@ For ARCH-LIM-23, configuration validation computes the same formula exposed by
 config explanation, action planning, confirmation, status, linear, and machine
 surfaces. Both derived calculations are generated from the typed configuration
 schema and tested as contracts, not duplicated constants.
+For ARCH-LIM-24, checked addition of the sampled attempt start and effective
+duration produces the only release-validation deadline. Equality is expired;
+no wall clock, systemd timeout, or FD4-local default may select another cut.
 
 ### AD-21 — Collection and reconciliation share one frozen truth cut
 
@@ -1143,7 +1242,10 @@ schema and tested as contracts, not duplicated constants.
   `ReleaseAdmissionV1` lives under
   `${XDG_STATE_HOME:-~/.local/state}/srvls/upgrade`. The directory is owned by
   the invoking user and mode `0700`; `admission.lock` is a regular mode-`0600`
-  no-symlink path opened with no-follow semantics and held with `flock`.
+  no-symlink path opened atomically with no-follow and `O_CLOEXEC` semantics and
+  held with `flock`. Every shared or exclusive lease fails closed unless
+  `F_GETFD` immediately confirms `FD_CLOEXEC` before the lock is treated as
+  acquired; setting the flag in a later racy step is forbidden.
   `admission-v1.json` atomically persists schema version, install generation,
   `ready | recovering`, and optional UpgradeTransactionId. Before opening
   SQLite, every Promise, collection, Brief, baseline, plan, action, TUI, and
@@ -1155,6 +1257,21 @@ schema and tested as contracts, not duplicated constants.
   namespace may take the exclusive lease, persist `recovering`, and own recovery;
   a crashed release therefore leaves a durable gate after its live lock is
   dropped.
+
+  `ChildDescriptorWhitelistV1` governs every process spawn while any admission
+  lease is held. Only descriptors 0, 1, and 2 plus exactly the explicitly mapped
+  transient FD3 worker endpoint or FD4 validator endpoint for its corresponding
+  same-binary exec may cross exec. The admission-lock descriptor is never on the
+  whitelist. Worker, validator, Provider, `systemctl`, timer-control, smoke,
+  checksum, and every other child path closes that descriptor and every other
+  non-whitelisted descriptor as the first child spawn file action, before any
+  fallible, blocking, or injected pre-exec setup; close-on-exec remains a second
+  atomic backstop, not the ownership proof. Parent spawn plans record the
+  admission descriptor identity and whitelist, verify the close action was
+  installed, and require the post-exec FD3/FD4 peer audit or a dedicated child
+  descriptor proof to report zero admission-lock descriptors. A pre-exec setup
+  failure closes the child copy before it can stall or exit. No child lifetime,
+  successful exec, or eventual reap may extend a shared or exclusive lease.
 
   `UpgradeTransactionV1` retains its immutable original owner and an ordered,
   gap-free list of `ReleaseRecoveryAttemptV1` records. Attempt zero names the
@@ -1177,11 +1294,34 @@ schema and tested as contracts, not duplicated constants.
   replacement leaves the prior attempt authoritative; a crash after it lets the
   next owner append another attempt by the same rule.
 
+  Every forward, pre-decision restored-pair, and explicit-rollback validation
+  effect first persists one `ReleaseValidationAttemptV1` inside the pending
+  manifest step. Its exact key order is `schema_version`,
+  `recovery_attempt_id`, `recovery_attempt_sequence`, `effect_attempt`,
+  `start_boot_ns`, `timeout_ns`, `absolute_deadline_boot_ns`; schema is
+  `srvls-release-validation-attempt-v1`, the recovery identity is the active
+  ReleaseRecoveryAttemptV1, and all remaining values are unsigned. One
+  `CLOCK_BOOTTIME` sample supplies `start_boot_ns`; `timeout_ns` is the frozen
+  ARCH-LIM-24 value; checked addition supplies the absolute deadline. The
+  pending replacement and readback happen before loaded-unit sampling, timer
+  trigger or wait, child creation, or FD4 creation. Timer, systemd job,
+  terminal-service, and FD4 evidence must all occur strictly before that one
+  cut; equality is expired and no subsystem-local timeout may replace it.
+  Recovery never extends a prior attempt's cut. After publishing a new recovery
+  owner, it retains the expired or interrupted attempt as evidence and persists
+  the next gap-free effect-attempt number with a fresh owner-bound start and
+  cut before replay. A retry under the same owner likewise requires a new
+  durable effect attempt rather than silently refreshing the old deadline.
+
   Candidate validation uses only `ReleaseValidationBypassV1`. The release owner
   launches the exact staged binary with raw profile
   `__srvls-release-validator-v1`, creates an `AF_UNIX SOCK_STREAM` socketpair,
   maps only the candidate endpoint to inherited FD 4, and closes every other
-  copy with close-on-exec. Before admission or SQLite the candidate requires FD
+  copy with close-on-exec. Its first spawn file action applies AD-23
+  ChildDescriptorWhitelistV1, including explicit closure of the exclusive
+  admission lease before any other setup; validator entry proves FD4 is the
+  only nonstandard inherited descriptor. Before admission or SQLite the
+  candidate requires FD
   4 to be a Unix stream, `SO_PEERCRED` UID to equal the invoking UID and peer PID
   to equal `getppid()`, and the peer PID/birth/executable device-inode to match
   the manifest's active ReleaseRecoveryAttemptV1. The one request is AD-25
@@ -1191,8 +1331,9 @@ schema and tested as contracts, not duplicated constants.
   one-time 256-bit capability, UpgradeTransactionId, active recovery-attempt
   UUID and sequence, exact current manifest revision and checksum, old and
   candidate install generations, candidate binary SHA-256, uppercase-percent
-  canonical database path, allowed database schema, backup manifest hash, absolute boot-time
-  deadline, and mode `read-only-release-validation`. The candidate echoes, in
+  canonical database path, allowed database schema, backup manifest hash, the
+  exact ReleaseValidationAttemptV1 absolute `CLOCK_BOOTTIME` deadline, and mode
+  `read-only-release-validation`. The candidate echoes, in
   the same encoding, protocol, request, capability, transaction, recovery
   attempt, manifest revision and checksum, candidate generation and hash, then
   exactly one
@@ -1288,26 +1429,53 @@ schema and tested as contracts, not duplicated constants.
   reactivation value, or a disabled-but-active unit fails this postcondition.
 
   Every paired-timer acceptance then creates a new
-  `TimerInvocationAcceptanceV1`. Before forcing or awaiting that exact timer,
-  it requires the target service to be inactive, confirms the loaded service
-  has `RemainAfterExit=false`, and captures baseline timer
+  `TimerInvocationAcceptanceV1` under the active
+  ReleaseValidationAttemptV1. Before forcing or awaiting that exact timer, it
+  subscribes race-free to the user manager's D-Bus `JobNew`, `JobRemoved`, and
+  relevant unit property changes, requires the target service to be inactive,
+  confirms `RemainAfterExit=false`, and captures baseline timer
   `LastTriggerUSecMonotonic`, service `InvocationID`, and service
-  `ExecMainStartTimestampMonotonic`. Acceptance requires a later
-  `LastTriggerUSecMonotonic` strictly greater than baseline, then a service
-  sample with a nonzero InvocationID different from baseline and an
-  `ExecMainStartTimestampMonotonic` strictly greater than baseline and at or
-  after that advanced trigger. A later terminal sample must retain that exact
-  new invocation ID and start timestamp and report `Result=success`,
-  `ExecMainCode=CLD_EXITED`, and `ExecMainStatus=0`. All samples and their
-  observation boot times are stored as post-effect evidence and must fall
-  strictly before the validation deadline. One invocation cannot satisfy two
-  timer acceptances. An already-active target, `RemainAfterExit=yes`, no new
-  nonzero invocation, a start predating the trigger, or stale success fields
-  therefore cannot pass.
+  `ExecMainStartTimestampMonotonic`.
+
+  Ordering evidence alone is insufficient. The authoritative causal record is
+  `TimerCausalityProofV1`, whose exact key order is `schema_version`,
+  `manager_boot_id`, `timer_unit`, `service_unit`, `job_id`, `job_path`,
+  `job_type`, `activation_details`, `baseline_last_trigger_usec_monotonic`,
+  `accepted_last_trigger_usec_monotonic`, `baseline_invocation_id`,
+  `accepted_invocation_id`, `baseline_start_usec_monotonic`,
+  `accepted_start_usec_monotonic`, `job_removed_result`, and
+  `observation_boot_ns`. The schema token is
+  `srvls-timer-causality-proof-v1`; manager identity is BootIdentity; job ID is
+  unsigned; path and unit names are exact NFC text; InvocationIDs are exactly
+  16 raw bytes. `activation_details` is the complete Job object's
+  `org.freedesktop.systemd1.Job.ActivationDetails` list captured before
+  JobRemoved, canonicalized as `{"key":<NFC>,"value":<NFC>}` pairs sorted by
+  unsigned pair bytes with duplicates retained. It must contain the exact pair
+  `trigger_unit=<timer_unit>`, Job.Unit must equal `service_unit`, JobType must
+  be `start`, and JobRemoved result must be `done`. systemd documents a present
+  `trigger_unit` ActivationDetails pair as a valid trigger that caused that
+  activation job; because its presence is best effort, absence is a validation
+  failure rather than permission to infer causality.
+
+  Acceptance additionally requires the timer's later trigger value, then the
+  first nonzero service InvocationID and advancing start timestamp observed for
+  that causally tagged job, with start at or after the advanced trigger. No
+  other JobNew for the service, InvocationID transition, manual start, or
+  unrelated activation may occur from baseline through the accepted job's
+  terminal sample; any such race rejects the pair. The terminal sample retains
+  that exact invocation and start and reports `Result=success`,
+  `ExecMainCode=CLD_EXITED`, and `ExecMainStatus=0`. The acceptance record embeds
+  the complete causal proof plus the terminal fields and every observation boot
+  time. All evidence is strict-before the one ReleaseValidationAttemptV1
+  deadline. One job or invocation cannot satisfy two acceptances. An
+  already-active target, stale success, missing causal detail, lost D-Bus event,
+  competing manual start, or deadline equality therefore cannot pass.
 
   Forward validation applies those two schemas against the staged candidate
   contract; rollback revalidation applies the same schemas against the prior
-  contract from the transaction or KnownGood bundle and takes fresh baselines.
+  installed contract from the transaction or KnownGood bundle and takes fresh
+  baselines. FirstInstallAbsentV1 instead uses its declared absence validator
+  and never fabricates timer or FD4 evidence for a nonexistent executable.
   Both directions fail on wrong target, schedule, delay, persistence,
   enablement, or invocation correlation. A forward failure enters the existing
   whole-pair restore path; a rollback mismatch leaves admission recovering and
@@ -1321,7 +1489,16 @@ schema and tested as contracts, not duplicated constants.
   rollback record. The candidate contains the exact prior binary and hash or an
   explicit first-install-absent sentinel, matching state backup and schema,
   prior `ManagedConsumerUnitContractV1` records, prior install generation, and
-  every integrity hash. A subsequent fsynced manifest replacement marks
+  every integrity hash. `FirstInstallAbsentV1` is permitted only when preflight
+  proved both canonical managed link and prior managed version binary absent
+  and no foreign file was displaced. Its exact key order is `kind`,
+  `canonical_link_path`, `versioned_binary_path`, `state_disposition`,
+  `consumer_disposition`, `prior_install_generation`; kind is
+  `first-install-absent`, paths are AD-24 normalized absolute raw paths,
+  `state_disposition` is exactly `{"kind":"absent"}` or key order `kind`,
+  `backup_manifest_hash`, `schema` with kind `restore-recorded`,
+  `consumer_disposition` is `restore-recorded`, and prior install generation is
+  the reserved unsigned value zero. A subsequent fsynced manifest replacement marks
   `commit-decided` complete and binds that candidate, target install generation,
   and expected published checksum. This is the irreversible commit decision.
   Only then may the `publish-known-good` pending/complete effect atomically
@@ -1344,9 +1521,29 @@ schema and tested as contracts, not duplicated constants.
   generation but the transaction is nonterminal, it completes the transaction.
   A checksum, generation, or staged-candidate mismatch remains
   `upgrade-recovery-required` and never selects an older file by accident.
-  `srvls release rollback` never repoints directly: it creates a new
-  UpgradeTransactionV1 whose candidate is the retained pair and runs the same
-  admission, validation, decision, publication, event, and commit protocol.
+  Pre-decision recovery to FirstInstallAbsentV1 is byte-total and never invokes
+  an absent binary: it removes only the transaction-owned link and versioned
+  binary after exact target/hash readback, applies the declared absent or
+  restore-recorded database/WAL/SHM disposition, restores recorded consumer
+  fragments and enablement, reloads, and verifies link and managed binary
+  absence plus exact state, sidecar, unit, timer, and enablement postconditions.
+  Stage, checksum, smoke, and FD4 candidate-validation steps complete as
+  `skipped` with sole reason `no-prior-release`; the absence validator itself is
+  a required recovery effect. Each removal, restore, reload, and absence
+  readback retains ordinary pending/complete crash recovery. Only after all
+  readbacks may admission become `ready` at reserved generation zero and the
+  transaction return `forward-failed-recovered`.
+
+  `srvls release rollback` never repoints directly. For an installed retained
+  pair it creates a new UpgradeTransactionV1 and runs the same admission,
+  validation, decision, publication, event, and commit protocol. If the current
+  KnownGoodReleaseV1 instead contains FirstInstallAbsentV1, rollback acquires
+  only the ordinary shared ready-admission read, returns the stable machine
+  result `rollback-unavailable` with reason `no-prior-release`, and performs no
+  exclusive-lock transition, UpgradeTransaction creation, event, file, state,
+  unit, enablement, KnownGood, admission-generation, or Host mutation. Retries
+  return the identical result. A recovering or inconsistent admission still
+  returns `upgrade-recovery-required` before this sentinel check.
   Only a later durably commit-decided transaction may replace the single
   known-good record with its own prior pair.
 
@@ -1378,12 +1575,14 @@ schema and tested as contracts, not duplicated constants.
   original transaction.
 
   Final machine result is exactly `committed`, `forward-failed-recovered`,
-  `rolled-back`, or `upgrade-recovery-required`. `forward-failed-recovered`
+  `rolled-back`, `rollback-unavailable`, or `upgrade-recovery-required`.
+  `forward-failed-recovered`
   names the forward failing step and verified whole-pair recovery result;
   `rolled-back` names the source and retained target generations of the explicit
-  new rollback transaction; and `upgrade-recovery-required` names the last
+  new rollback transaction; `rollback-unavailable` is the no-mutation
+  FirstInstallAbsentV1 result above; and `upgrade-recovery-required` names the last
   durable step and mismatch or failed recovery reason. Resumed recovery uses the
-  same terminal result, never a fifth alias. Admission returns to `ready` only
+  same terminal result, never a sixth alias. Admission returns to `ready` only
   with the committed target generation after forward commit, or the restored
   prior generation after verified pre-decision rollback.
 
@@ -1422,12 +1621,41 @@ schema and tested as contracts, not duplicated constants.
   use nonnegative JSON integers, and optional or union values use a declared
   tagged object rather than omission, `null`, or an untyped map.
 
-  `PolicySnapshotV1` stores every effective typed field with no
-  artifact-specific omission in schema-declaration order: schema and decision
-  versions first, then typed policy fields in the AD-19 declaration order.
-  Durations are integer nanoseconds, sizes integer bytes, percentages integer
-  basis points, enums stable ASCII tokens, and booleans typed values. Its one
-  canonical byte stream is CanonicalJsonV1 under those field rules.
+  `PolicySchemaV1` is the following exhaustive v1 behavioral-policy grammar;
+  its listed object and key order is literal, not dotted lexical order or
+  implementation declaration order. `PolicySnapshotV1` is one
+  CanonicalJsonV1 object with exact top-level key order `schema`,
+  `decision_contract_version`, `collection`, `process`, `inspection`,
+  `retention`, `lease`, `heartbeat`, `stale`, `hot`, `action`, `state`, and
+  `release`. `schema` is `srvls-policy-snapshot-v1`; the decision version is a
+  stable ASCII token. The remaining objects have these exact keys and order:
+
+  | Object | Exact key order |
+  | --- | --- |
+  | `collection` | `max_concurrency`, `deadlines`, `scheduler_margin_ns` |
+  | `collection.deadlines` | `cron_user_ns`, `cron_root_ns`, `cron_system_ns`, `systemd_system_ns`, `systemd_user_ns`, `docker_ns`, `pm2_ns`, `process_ns` |
+  | `process` | `child_stdout_bytes`, `child_stderr_bytes`, `scope_stdout_bytes`, `scope_stderr_bytes`, `generation_stdout_bytes`, `generation_stderr_bytes` |
+  | `inspection` | `max_bytes`, `max_lines` |
+  | `retention` | `snapshot_age_ns`, `snapshot_count`, `lifecycle_event_age_ns`, `events_per_promise`, `promise_count`, `operation_count`, `lifecycle_event_count` |
+  | `lease` | `default_duration_ns` |
+  | `heartbeat` | `default_cadence_ns`, `grace_ns` |
+  | `stale` | `no_use_window_ns` |
+  | `hot` | `cpu_basis_points`, `memory_basis_points`, `sample_count`, `window_ns` |
+  | `action` | `max_concurrency`, `execution_deadlines`, `verification_window_ns`, `poll_interval_ns`, `graceful_termination_ns`, `forced_observation_ns`, `plan_ttl_ns`, `revalidation_deadline_ns`, `finalization_deadline_ns` |
+  | `action.execution_deadlines` | `systemd_ns`, `docker_ns`, `pm2_ns`, `process_ns`, `launch_mechanism_ns` |
+  | `state` | `busy_timeout_ns`, `byte_ceiling` |
+  | `release` | `validation_timeout_ns` |
+
+  Every listed leaf is a nonnegative JSON integer in the exact AD-20 base unit:
+  nanoseconds, bytes, counts, or basis points. There are no wildcard keys,
+  aliases, omitted leaves, defaults, tagged alternates, or unknown keys in v1.
+  The derived generation cutoff and action total-decision bounds are excluded
+  because their byte-total inputs are present and AD-10/AD-20 recompute them;
+  scope obligation and resolved executable/argv/environment/read-root inputs
+  are excluded because the obligation-bearing ScopeManifestV1 and AD-25
+  ProviderScopeInputV1 admit them separately. Provenance is excluded. Any new
+  behavior-affecting policy leaf requires `PolicySnapshotV2`; a v1 reader may
+  never silently append, sort, or default it.
 
   `PolicyFingerprint` is SHA-256 over domain `srvls-policy-v1`, a zero byte, and
   those bytes; provenance is excluded. `ProvenanceDigest` is SHA-256 over domain
@@ -1441,7 +1669,7 @@ schema and tested as contracts, not duplicated constants.
   `effective_scheduler_margin_ns`; and `generation_cutoff_offset_ns`. Every
   value after `schema` is an unsigned integer except the two arrays. LPT ScopeIds
   are uppercase-percent canonical bytes in AD-10 order and contain every
-  ScopeManifest member exactly once.
+  ScopeManifest entry's ScopeId exactly once.
 
   Each epoch object has exact key order `epoch_offset_ns`, `members`,
   `process_gate`. Epochs sort by offset and have no duplicate offset. Members
@@ -1466,16 +1694,121 @@ schema and tested as contracts, not duplicated constants.
   `dispatch_schedule`; `dispatch_schedule_fingerprint`;
   `absolute_generation_cutoff_boot_ns`; `accepted_baseline_cut`;
   `operation_cut`; `resource_history_cut`; `prior_current_snapshot`; and
-  `current_pointer_revision`. `clock_sample` has exact key order
-  `boot_identity`, `schedule_origin_boot_ns`, `utc_wall_ns`. Nested rows retain
-  the explicit AD-21 identity sort
-  and encode canonical binary identities as uppercase-percent strings; row
-  revisions, sequences, clocks, offsets, budgets, and reservations are unsigned
-  integers; UUIDs and fingerprints use the encodings above; `none | accepted`
-  and every other union is a `{"kind":<stable token>,...}` object with exactly
-  the fields of that variant. This complete stream, including the embedded
-  baseline comparison projection but excluding no admitted field, is the sole
-  input to CollectionPlanFingerprint.
+  `current_pointer_revision`. `schema_version` is the stable token
+  `srvls-collection-plan-v1`. `policy_snapshot` and `dispatch_schedule` are the
+  complete objects defined above; `scope_manifest` is the uppercase-percent
+  encoding of the complete obligation-bearing binary manifest below. IDs,
+  fingerprints, revisions, sequences, clocks, offsets, budgets, counts, and
+  reservations use the AD-24 scalar encodings and no admitted field is omitted.
+
+  Every nested plan schema is likewise exact:
+
+  - `ClockSampleV1` key order is `boot_identity`,
+    `schedule_origin_boot_ns`, `utc_wall_ns`.
+  - `PromiseCutV1` key order is `repository_revision`, `rows`. Rows sort by
+    unsigned PromiseId bytes and each `PromiseCutRowV1` has exact key order
+    `promise_id`, `projection_revision`, `event_sequence`, `fields`.
+    `fields` contains one `{"name":<stable token>,"value":<tagged value>}`
+    object for every name, in this exact order: `lifecycle`, `closure_reason`,
+    `agent_id`, `agent_label`, `project_id`, `project_label`,
+    `runtime_provider`, `runtime_scope_id`, `runtime_locator`, `purpose`,
+    `launch_provider`, `launch_scope_id`, `launch_target`,
+    `expected_lifetime`, `owner_id`, `owner_label`,
+    `intended_instance_count`, `persistence`, `opaque_references`,
+    `declaration_source`, `created_boot_ns`, `created_utc_ns`,
+    `lease_boot_identity`, `lease_expires_boot_ns`,
+    `heartbeat_last_boot_ns`, `heartbeat_cadence_ns`, `heartbeat_grace_ns`,
+    and `durable_ownership`. Values use exactly the AD-13
+    DiagnosticParameterV1 tagged-value grammar; a semantically absent field is
+    tagged absent, never omitted. ID, locator, reference, lifetime, and
+    ownership composites use its schema-declared object/list variants, so an
+    untyped map is invalid.
+
+    The field-to-tag declaration is fixed. `lifecycle`, Agent/Project/Owner IDs
+    and labels, `runtime_provider`, `purpose`, `persistence`, and
+    `declaration_source` are tagged text; `closure_reason` and
+    `launch_provider` are absent or text; `runtime_scope_id` and
+    `runtime_locator` are bytes; `launch_scope_id` and `launch_target` are
+    absent or bytes; instance count, creation clocks, cadence, and grace are
+    u64; Lease BootIdentity is absent or UUID; Lease expiry and last Heartbeat
+    are absent or u64; durable ownership is bool. `expected_lifetime` is the
+    object schema `promise-lifetime-v1` with declared value-key order `kind`,
+    `duration_ns`, `termination`: kind is text `lease | termination`, and
+    exactly the matching u64 duration or text termination is present while the
+    other is tagged absent. `opaque_references` is a semantic-order list of
+    `promise-reference-v1` objects with value-key order `kind`, `value`, both
+    tagged text, sorted unsigned by complete object bytes. No other tag or
+    object schema is valid for a Promise field.
+  - `AcceptedBaselineCutV1` is exactly `{"kind":"none"}` or an object with key
+    order `kind`, `acceptance_id`, `acceptance_revision`,
+    `baseline_snapshot_id`, `baseline_snapshot_revision`, `compatibility`,
+    `projection`, where kind is `accepted`. `compatibility` is exactly
+    `{"kind":"compatible"}` or
+    `{"kind":"incompatible","reasons":[<stable tokens>]}`, with reasons
+    unsigned-byte sorted and unique.
+  - `BaselineComparisonProjectionV1` has exact key order `schema_version`,
+    `evidence_window_start_utc_ns`, `completeness`, `policy_fingerprint`,
+    `scope_manifest_fingerprint`, `decision_contract_version`, `promise_rows`,
+    `observation_rows`, `finding_rows`; its schema token is
+    `srvls-baseline-comparison-v1`. `completeness` has exact key order
+    `required_complete`, `incomplete_scope_ids`, `out_of_scope_scope_ids`; the
+    first value is boolean and both ScopeId arrays sort unsigned canonical
+    bytes without duplicates. Promise rows reuse the PromiseCutRowV1 fields
+    and add final key `fingerprint`. Observation rows sort by ObservationId bytes
+    and have key order `observation_id`, `fields`, `fingerprint`; their fixed
+    field-name order is `provider`, `scope_id`, `native_locator`,
+    `birth_evidence`, `lifecycle`, `schedule`, `health`, `project`, `source`,
+    `ownership`, `cpu_basis_points`, `rss_bytes`, `host_memory_bytes`,
+    `provider_detail`, and `comparison`. Finding rows sort by unsigned
+    `correlation_key` bytes and have key order `correlation_key`, `fields`,
+    `fingerprint`; their fixed field-name order is `promise_ids`,
+    `observation_ids`, `promise_lifecycle`, `evidence_status`,
+    `promise_outcome`, `labels`, `completeness`, `safe_to_stop`,
+    `evidence_vector`, `contradictory_evidence`, `missing_evidence`, and
+    `comparison`. Every `fields` entry uses the same exact tagged-value rule,
+    including tagged absence; set-valued ID and label lists sort by canonical
+    element bytes and semantic-order lists retain order.
+
+    Observation field tags are fixed: Provider and lifecycle are text; ScopeId,
+    native locator, birth evidence, and Provider detail are bytes; schedule,
+    health, Project, source, ownership, and comparison are absent or bytes; CPU,
+    RSS, and Host memory are absent or u64. Finding Promise IDs are UUID lists,
+    Observation IDs are byte lists, labels are text lists, lifecycle/evidence/
+    outcome/Safe-to-stop are text, and completeness, evidence vector,
+    contradictory evidence, missing evidence, and comparison are bytes. Every
+    byte-valued baseline field is copied from its immutable persisted Snapshot
+    aggregate field without semantic reconstruction; its domain schema and
+    complete bytes are retained by baseline acceptance. The fixed type and
+    order make the plan encoder a byte copy, not a second Provider serializer.
+  - A baseline row fingerprint excludes only its final `fingerprint` key and is
+    SHA-256 over, respectively, domain `srvls-baseline-promise-row-v1`,
+    `srvls-baseline-observation-row-v1`, or
+    `srvls-baseline-finding-row-v1`, a zero byte, and the complete canonical row
+    preimage. No fingerprint may cover a logical reconstruction or a different
+    field subset.
+  - `OperationCutV1` has key order `repository_revision`, `rows`; rows sort by
+    OperationId bytes and have exact key order `operation_id`,
+    `target_identity`, `phase`. `target_identity` is exactly key order `kind`,
+    `observation_id`, `promise_id`, `launch_provider`, `scope_id`,
+    `native_target`: kind `observation` requires the ObservationId and tags the
+    other four values absent; kind `promise-launch` requires PromiseId, stable
+    Provider token, ScopeIdV1, and complete raw native target and tags the
+    ObservationId absent. Every value uses the AD-13 tagged-value grammar;
+    phase is exactly `planned | launch-authorized | executing | verifying`.
+  - `ResourceHistoryCutV1` has key order `repository_revision`,
+    `window_start_utc_ns`, `rows`; rows sort by sample UUID bytes and have exact
+    key order `sample_id`, `snapshot_id`, `observation_id`, `sample_utc_ns`,
+    `cpu_basis_points`, `rss_bytes`, `host_memory_bytes`. Every value after the
+    three UUIDs is unsigned.
+  - `prior_current_snapshot` is exactly `{"kind":"none"}` or has key order
+    `kind`, `snapshot_id`, `snapshot_revision` with kind `present`.
+
+  A wrong key, row field, field-name order, tagged type, row order, union
+  member, duplicate, omission, or unknown value makes the plan noncanonical.
+  This complete stream, including every baseline row and its declared
+  fingerprint, is the sole input to `CollectionPlanFingerprint`; the
+  fingerprint is SHA-256 over domain `srvls-collection-plan-v1`, a zero byte,
+  and these exact canonical bytes.
 
   `ScopeIdV1` canonical bytes are `0x01 || provider_tag || fields`, with these
   fixed tags and fields: `0x01` cron-user plus `uid:u32be`; `0x02` cron-root;
@@ -1491,11 +1824,20 @@ schema and tested as contracts, not duplicated constants.
   slash. Unknown tags, wrong field count or length, noncanonical paths or
   strings, and trailing bytes are invalid. Scope display percent-encodes the
   complete canonical binary sequence, leaving only RFC 3986 unreserved bytes
-  literal and using uppercase hex. ScopeManifestV1 sorts unsigned canonical
-  bytes and encodes `count:u32be` followed by `length:u32be || ScopeIdV1` for
-  each member. Its fingerprint is SHA-256 over domain `srvls-scopes-v1`, a zero
-  byte, and those manifest bytes. These bytes alone govern equality, LPT order,
-  report validation, persistence, baseline compatibility, and fixtures.
+  literal and using uppercase hex. `ScopeManifestV1` is obligation-bearing and
+  byte-total: it encodes `version:0x01 || count:u32be`, then each entry sorted by
+  unsigned ScopeIdV1 bytes as `scope_length:u32be || ScopeIdV1 ||
+  obligation_tag:u8 || reason_length:u16be || reason`. Obligation tags are
+  `required=0x01`, `optional=0x02`, and `not-applicable=0x03`; reason is a
+  nonempty stable ASCII token. Duplicate ScopeIds, an unknown tag, empty or
+  noncanonical reason, wrong length, unsorted entry, or trailing byte is
+  invalid. LPT consumes only the ScopeId portion of every entry, while
+  admission, report validation, and WorkerRequest obligation require the exact
+  kind and reason from that same entry. Its fingerprint is SHA-256 over domain
+  `srvls-scopes-v1`, a zero byte, and the complete obligation-bearing manifest
+  bytes. Those bytes alone govern equality, LPT input, report validation,
+  persistence, baseline compatibility, and fixtures; no IDs-only manifest is a
+  valid v1 alternate.
 
   Findings and Briefs persist their materialized
   result plus `decision_contract_version`; historical reads never recompute it,
@@ -1524,7 +1866,10 @@ schema and tested as contracts, not duplicated constants.
   accepted Request it may only authenticate, exchange Hello/Ready, and wait: it
   must not fork, clone, or launch any Provider or helper process.
 
-  Descriptor ownership is exact and is part of FD3 authentication:
+  Pair-descriptor ownership is exact and is part of FD3 authentication. The
+  table counts pair endpoints only; AD-23 ChildDescriptorWhitelistV1 separately
+  requires the worker's first pre-exec action to close the admission lease and
+  the worker-entry audit to prove zero admission-lock descriptors before Hello:
 
   | Lifecycle cut | Coordinator descriptors | Worker descriptors | Required closure and proof |
   | --- | --- | --- | --- |
@@ -1537,8 +1882,11 @@ schema and tested as contracts, not duplicated constants.
   Immediately after spawn, the only live open file descriptions for the pair
   are therefore one `P0` in the coordinator and exactly FD3 in the worker.
   The `duplicate-parent-end` and `duplicate-child-end` AD-11 fixtures inject
-  forbidden extra references on both sides and prove the audit closes them
-  before Hello, so neither direction's required EOF can be suppressed.
+  forbidden extra references on both sides. Discovery freezes `fd-peer-auth`,
+  accepts no Hello, closes all owned copies, and proves failure-path EOF; closing
+  the duplicate sanitizes cleanup only and never converts that lane into an
+  accepted exchange. Only the separate descriptor-clean fixture reaches Result
+  and the normal clean-EOF trust cut.
 
   FD3 protocol v1 framing is exactly `length:u32be || canonical_json_bytes` in
   this four-frame direction sequence and no other: parent `WorkerHelloV1`, child
