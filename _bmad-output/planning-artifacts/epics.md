@@ -463,6 +463,29 @@ at revision-zero immutable plans. Forward execution ends at
 their recovery cuts are owned together afterward. The aggregate executes both
 pairs through every forward, rollback, FirstInstall, takeover, and crash cut.
 
+### Contract C-22: End-to-End Product Consequence Gates
+
+The Agent gate proves metadata minimization; returned expiry and renewal;
+next-refresh inactive/abandoned projection; and audited revocation. The Provider
+gate proves cron denied/unavailable and hostile text; Docker cross-Provider
+isolation; bounded PM2 invalid JSON; direct PID/birth/executable/uid/cgroup/
+parent attribution; and typed-detail provenance. The reconciliation gate proves
+confidence/conflicts, coexisting stale/hot, broken Lease/Heartbeat/mechanism
+context, orphan no-match reasons, duplicate comparison evidence, policy fields,
+hot-not-safe separation, and abandoned Promise history. The product-navigation
+gate proves retention, baseline/window/drill-down detail, inspectable Stack
+evidence, removal of inherited `--fzf-lines`, nonblocking refresh, and separate
+unmatched Promise/Observation inspection. The action gate proves one enum feeds
+the complete plan, refresh/navigation isolation, no privilege prompt in raw
+mode, exact 100 ms submit/1,000 ms progress/100 ms key-response budgets, every
+keyboard/modal journey, and the full linear alternative. The release gate
+proves installed version/compatibility output and activation only after all
+checks. UJ-1 through UJ-6 gates each execute entry, path, climax, resolution,
+and edge cases. NFR-1 through NFR-16 are exercised across all owning subsystem
+gates, never inferred from one narrow fixture. Foundation CI additionally gates
+format, lint, both toolchains, hexagonal dependency direction, Elm update/view/
+command isolation, and Strategy/Adapter/Command seams before Provider code.
+
 ## Machine-Checkable Coverage Registry
 
 The JSON block is normative. It explicitly distinguishes the 83 non-
@@ -2512,7 +2535,7 @@ As a srvls Agent,
 I want exact agent lifecycle commands,
 So that each command and retry maps to one documented result/exit and references the same canonical lifecycle aggregates.
 
-**Implementation Boundary:** Expose typed argv declare, revise, query, renew, close, and validate with deterministic JSON/linear stdout, human stderr, stable framing, exits, and no ambiguous stdin grammar.
+**Implementation Boundary:** Expose typed argv declare, revise, query, renew, close, and validate with deterministic JSON/linear stdout, human stderr, stable framing, exits, no ambiguous stdin grammar, and the complete Contract C-22 Agent lifecycle gate.
 
 **Requirement Mapping:** AD-11, FR-7, NFR-7, SM-5, UJ-2, UX-IA-10, UX-IP-9.
 
@@ -2525,7 +2548,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/agent-lifecycle-cli-v1, **When** the named fixture's positive scenario is executed, **Then** each command and retry maps to one documented result/exit and references the same canonical lifecycle aggregates, **And** repeated runs over
+1. **Given** the Contract C-22 Agent journey fixtures, **When** declare/revise/renew/close/query run through success, retry, expiry, revocation, and next-refresh cuts, **Then** metadata is minimized and every expiry, renewal, inactive/abandoned projection, audit, result, and exit is exact, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** unknown argv, stdin payload, ANSI/progress on stdout, or an undocumented interactive gate is introduced, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2780,7 +2803,7 @@ As a srvls Operator or maintainer,
 I want bounded provider evidence inspection,
 So that inspection is stable by typed ID and visibly names truncation/redaction and the winning bound.
 
-**Implementation Boundary:** Expose sanitized typed detail, separate captures, provenance, diagnostics, redaction, and earlier-of byte/line bounds for one exact Observation.
+**Implementation Boundary:** Expose sanitized typed detail, provenance, diagnostics, redaction, earlier-of bounds, and run the Contract C-22 five-Provider consequence gate.
 
 **Requirement Mapping:** AD-21, FR-14, FR-15, UX-CP-7, UX-IA-4, UX-ST-17.
 
@@ -2793,7 +2816,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-inspect-v1, **When** the named fixture's positive scenario is executed, **Then** inspection is stable by typed ID and visibly names truncation/redaction and the winning bound, **And** repeated runs over
+1. **Given** Contract C-22 cron, systemd, Docker, PM2, and direct-process fixtures, **When** complete/denied/unavailable/hostile/invalid/cross-provider cases reduce, **Then** every identity, attribution, provenance, bound, diagnostic, isolation, and withheld conclusion is exact, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** raw control bytes, unrestricted logs, secrets, row identity, or another Observation's failure leaks, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3023,7 +3046,7 @@ As a srvls Operator or maintainer,
 I want deterministic attention, stack, and ungrouped grouping,
 So that identical findings produce identical grouping/order and group rows remain read-only.
 
-**Implementation Boundary:** Order attention first, infer Stack only from evidence, normalize paths, apply deterministic candidates/facets, and retain ambiguity as inspectable Ungrouped.
+**Implementation Boundary:** Order attention first, infer Stack only from evidence, retain Ungrouped ambiguity, and run the complete Contract C-22 reconciliation/Brief journey gate.
 
 **Requirement Mapping:** AD-11, AD-18, AD-4, FR-26, FR-29, UX-CP-4.
 
@@ -3036,7 +3059,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-grouping-v1, **When** the named fixture's positive scenario is executed, **Then** identical findings produce identical grouping/order and group rows remain read-only, **And** repeated runs over
+1. **Given** Contract C-22 reconciliation fixtures, **When** every correlation, coexistence, orphan, duplicate, stale, hot, broken, abandoned, Stack, and Brief case runs, **Then** its confidence, conflicts, comparison evidence, policy, history, safety separation, grouping, and drill-down IDs are exact, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a benchmark-dependent branch, group action, or hidden ambiguity is introduced, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3242,7 +3265,7 @@ As a srvls Operator or maintainer,
 I want state/component goldens and ux budget gate,
 So that all UX-ST read-only states/components match immutable goldens and 30 post-warm-up iterations meet each UX-BUD default/range/p95 on the four-vCPU 8-GiB glibc-2.42 profile.
 
-**Implementation Boundary:** Own only immutable read-only state/component goldens and the constrained ARCH-HOST-1 read-only benchmark for UX-BUD-1/2/3/7.
+**Implementation Boundary:** Own immutable read-only state/component goldens, ARCH-HOST-1 read-only budgets, and the Contract C-22 end-to-end morning/navigation gate including retention, baseline, refresh, Stack, unmatched detail, and removed `--fzf-lines` behavior.
 
 **Requirement Mapping:** AD-11, ARCH-HOST-1, FR-34, UX-BUD-1, UX-BUD-2, UX-BUD-3, UX-BUD-7.
 
@@ -3255,7 +3278,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-state-budget-v1, **When** the named fixture's positive scenario is executed, **Then** all UX-ST read-only states/components match immutable goldens and 30 post-warm-up iterations meet each UX-BUD default/range/p95 on the four-vCPU 8-GiB glibc-2.42 profile, **And** repeated runs over
+1. **Given** the complete Contract C-22 morning/navigation fixtures, **When** entry, scan, filter, refresh, inspect, baseline, Stack, unmatched Promise/Observation, and exit run, **Then** every state/component/recovery/voice/detail row matches immutable goldens and 30 iterations meet each read-only p95, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3547,7 +3570,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-aggregate-v1, **When** the named fixture's positive scenario is executed, **Then** TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate withheld truth, inspect, review safety, submit exact plan, and retrieve all five outcomes, **And** repeated runs over
+1. **Given** Contract C-22 TUI, TERM=dumb, NO_COLOR, linear, JSON, raw-mode, modal, refresh, and replacement fixtures, **When** the full plan-to-outcome journey runs, **Then** no privilege prompt occurs, navigation stays responsive, every keyboard/linear path is equivalent, all five outcomes are inspectable, and 100 ms submit/100 ms key/1,000 ms progress limits pass, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3911,7 +3934,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named fixture's positive scenario is executed, **Then** every AD-11 release registry row and exact final-artifact Host smoke passes, with current versus future deliverables distinguished, **And** repeated runs over
+1. **Given** the Contract C-22 installed-prior, FirstInstall, upgrade, rollback, compatibility, and two-pair crash fixtures, **When** the exact final artifact runs every release journey, **Then** installed version/compatibility output is exact and activation occurs only after ABI, storage, consumer, FD4, D-Bus, Host-smoke, and recovery checks pass, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
