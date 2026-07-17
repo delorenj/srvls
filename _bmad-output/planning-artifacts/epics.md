@@ -506,12 +506,20 @@ Every numbered criterion is a closed row with ID
 `AC-<story-id>-P01` or `AC-<story-id>-N01`. Its complete `Given` and `When`
 clauses are the input definition; its complete `Then` and `And` clauses are the
 expected observable result and precedence. Before a story may be assigned, a
-reviewer who is neither its implementer nor fixture author must commit
-`_bmad-output/implementation-artifacts/fixture-approvals/<story-id>-v1.md`
-containing both row IDs, fixture SHA-256, expected-byte/result SHA-256, reviewer
-identity, and `verdict: approved`. Production work is forbidden until that
-approval commit is an explicit dependency. The implementation may not recapture
-or update approved rows in the same change.
+reviewer who is not its fixture author must commit
+`_bmad-output/implementation-artifacts/fixture-approvals/<story-id>-v1.json`.
+The exact `srvls-fixture-approval-v1` object contains only `schema`, `storyId`,
+the ordered two `rowIds`, their ordered `criterionSha256` values, `fixturePath`,
+`fixtureSha256`, `expectedResultPath`, `expectedResultSha256`,
+`reviewerCommit`, `fixtureAuthorCommit`, and `verdict: approved`. The named
+fixture paths must be the Story's declared owning oracle, the named author
+commit must contain those exact bytes, and the committed approval must descend
+from distinct fixture-author and reviewer Git identities. Production work is
+forbidden until this pre-assignment approval passes. After implementation,
+`<story-id>-completed-v1.json` separately binds the derived approval commit to
+an implementation commit; every dependent Story requires that fully validated
+completion object and ancestor implementation. The implementation may not
+recapture or update approved rows in the same change.
 
 ### Contract C-24: DESIGN Visual Row Inventory
 
@@ -1885,7 +1893,8 @@ requirement plus every AD-11 row.
     "UJ-2": [
       "Story 2.6",
       "Story 3.11",
-      "Story 4.2"
+      "Story 4.2",
+      "Story 6.13"
     ],
     "UJ-3": [
       "Story 4.2",
@@ -4604,7 +4613,7 @@ So that plan, confirmation, admission, execution, verification, and outcome rema
 
 **Implementation Boundary:** Integrate Stories 2.1 through 2.8 and 6.1 through 6.12 into the Contract C-22 UJ-2/UJ-3/UJ-4/UJ-5 and UX-IP-7 paths; add journey routing and parity tests without reimplementing lifecycle, enum, plan, pool, executor, persistence, verification, or presentation owners.
 
-**Requirement Mapping:** FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-3, UJ-4, UJ-5, UX-FND-3, UX-IP-7, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11, AD-22.
+**Requirement Mapping:** FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-2, UJ-3, UJ-4, UJ-5, UX-FND-3, UX-IP-7, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11, AD-22.
 
 **Dependencies:** Story 6.12.
 

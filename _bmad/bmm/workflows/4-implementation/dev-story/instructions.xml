@@ -188,6 +188,7 @@
   </step>
 
   <step n="4" goal="Mark story in-progress" tag="sprint-status">
+    <action>Derive {{story_id}} from the first two numeric components of {{story_key}} as `epic.story` (for example `6-13-complete-exact-target-action-journey` becomes `6.13`); STOP if that exact derivation fails</action>
     <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
     <check if="the C-23 command exits non-zero">
       <output>STOP: fixture approval, reviewer separation, commit ancestry, or a declared predecessor is not valid for {{story_id}}.</output>

@@ -20,8 +20,9 @@ SHA = re.compile(r"^[0-9a-f]{64}$")
 APPROVAL_KEYS = {
     "schema", "storyId", "rowIds", "fixturePath", "fixtureSha256",
     "expectedResultPath", "expectedResultSha256", "reviewerCommit",
-    "fixtureAuthorCommit", "implementerCommit", "verdict",
+    "fixtureAuthorCommit", "criterionSha256", "verdict",
 }
+COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "verdict"}
 
 
 def fail(message: str) -> None:
@@ -38,13 +39,21 @@ def canonical_rows() -> dict[str, dict[str, str]]:
         fail("acceptance registry has unknown or missing top-level keys")
     if data["schema"] != "srvls-story-acceptance-registry-v1":
         fail("acceptance registry schema mismatch")
+    if data["sourceArtifact"] != "_bmad-output/planning-artifacts/epics.md":
+        fail("acceptance registry sourceArtifact mismatch")
     rows = {row["rowId"]: row for row in data["rows"]}
-    if data["rowCount"] != 150 or len(rows) != 150:
-        fail("acceptance registry must contain 150 unique rows")
     epics = EPICS.read_text(encoding="utf-8")
+    stories = re.findall(r"^### Story (\d+\.\d+):", epics, re.MULTILINE)
+    expected_ids = {f"AC-{story}-{kind}" for story in stories for kind in ("P01", "N01")}
+    if len(stories) != 75 or data["rowCount"] != 150 or set(rows) != expected_ids:
+        fail("acceptance registry must contain the exact P01/N01 rows for 75 canonical stories")
     for row_id, row in rows.items():
         if set(row) != {"rowId", "storyId", "kind", "criterionMarkdown", "criterionSha256"}:
             fail(f"{row_id} has unknown or missing keys")
+        match = re.fullmatch(r"AC-(\d+\.\d+)-(P01|N01)", row_id)
+        expected_kind = "positive" if match and match.group(2) == "P01" else "negative"
+        if not match or row["storyId"] != match.group(1) or row["kind"] != expected_kind:
+            fail(f"{row_id} identity metadata is inconsistent")
         actual = hashlib.sha256(row["criterionMarkdown"].encode()).hexdigest()
         if actual != row["criterionSha256"] or row["criterionMarkdown"] not in epics:
             fail(f"{row_id} does not bind the canonical criterion bytes")
@@ -81,6 +90,26 @@ def author_email(commit: str) -> str:
     return git("show", "-s", "--format=%ae", commit)
 
 
+def git_file_hash(commit: str, path: str) -> str:
+    try:
+        content = subprocess.check_output(["git", "show", f"{commit}:{path}"], cwd=ROOT)
+    except subprocess.CalledProcessError:
+        fail(f"{path} is absent from declared commit {commit}")
+    return hashlib.sha256(content).hexdigest()
+
+
+def declared_oracle(story: str) -> str:
+    text = EPICS.read_text(encoding="utf-8")
+    match = re.search(
+        rf"^### Story {re.escape(story)}:.*?^\*\*Validation Expectations:\*\* "
+        rf"(?:The owning oracle is |Contract C-23 rows .*? are owned by )([^;\n]+)",
+        text, re.MULTILINE | re.DOTALL,
+    )
+    if not match:
+        fail(f"Story {story} has no parseable owning oracle")
+    return match.group(1).strip().strip('`')
+
+
 def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
     if not STORY.fullmatch(story):
         fail(f"invalid Story ID {story!r}")
@@ -92,11 +121,19 @@ def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
         fail(f"Story {story} approval schema/keys are invalid")
     if data["storyId"] != story or data["rowIds"] != [f"AC-{story}-P01", f"AC-{story}-N01"]:
         fail(f"Story {story} approval row binding is invalid")
+    expected_criteria = [rows[row_id]["criterionSha256"] for row_id in data["rowIds"]]
+    if data["criterionSha256"] != expected_criteria:
+        fail(f"Story {story} approval does not bind current criterion bytes")
     if data["verdict"] != "approved":
         fail(f"Story {story} is not approved")
     for key in ("fixtureSha256", "expectedResultSha256"):
         if not SHA.fullmatch(data[key]):
             fail(f"Story {story} {key} is invalid")
+    oracle = declared_oracle(story).rstrip("/")
+    if not (data["fixturePath"] == oracle or data["fixturePath"].startswith(oracle + "/")):
+        fail(f"Story {story} fixturePath is outside its declared owning oracle")
+    if not (data["expectedResultPath"] == oracle or data["expectedResultPath"].startswith(oracle + "/")):
+        fail(f"Story {story} expectedResultPath is outside its declared owning oracle")
     for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("expectedResultPath", "expectedResultSha256")):
         target = (ROOT / data[path_key]).resolve()
         if not target.is_file() or ROOT not in target.parents:
@@ -106,37 +143,45 @@ def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
             fail(f"Story {story} {hash_key} does not match repository bytes")
         committed_clean(target)
     approval_commit = committed_clean(path)
-    commits = [data[k] for k in ("reviewerCommit", "fixtureAuthorCommit", "implementerCommit")]
-    if any(not SHA.fullmatch(value) for value in commits) or len(set(commits)) != 3:
-        fail(f"Story {story} identities are not three distinct Git commits")
+    commits = [data[k] for k in ("reviewerCommit", "fixtureAuthorCommit")]
+    if any(not SHA.fullmatch(value) for value in commits) or len(set(commits)) != 2:
+        fail(f"Story {story} reviewer and fixture author commits are not distinct")
     for commit in commits + [approval_commit]:
         git("cat-file", "-e", f"{commit}^{{commit}}")
-    if len({author_email(commit) for commit in commits}) != 3:
-        fail(f"Story {story} reviewer, fixture author, and implementer Git identities are not distinct")
-    if subprocess.run(["git", "merge-base", "--is-ancestor", approval_commit, data["implementerCommit"]], cwd=ROOT).returncode:
-        fail(f"Story {story} approval is not an ancestor of implementation")
-    if rows[f"AC-{story}-P01"]["storyId"] != story:
-        fail(f"Story {story} canonical row is missing")
+    if len({author_email(commit) for commit in commits}) != 2:
+        fail(f"Story {story} reviewer and fixture author Git identities are not distinct")
+    if any(subprocess.run(["git", "merge-base", "--is-ancestor", commit, approval_commit], cwd=ROOT).returncode for commit in commits):
+        fail(f"Story {story} approval does not descend from its author and reviewer evidence")
+    for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("expectedResultPath", "expectedResultSha256")):
+        if git_file_hash(data["fixtureAuthorCommit"], data[path_key]) != data[hash_key]:
+            fail(f"Story {story} {path_key} bytes are not bound to fixtureAuthorCommit")
     for dependency in declared_dependencies(story):
-        dependency_path = APPROVALS / f"{dependency}-v1.json"
-        if not dependency_path.is_file():
-            fail(f"Story {story} predecessor {dependency} has no approval artifact")
-        dependency_data = json.loads(dependency_path.read_text(encoding="utf-8"))
-        dependency_commit = dependency_data.get("implementerCommit", "")
-        if not SHA.fullmatch(dependency_commit):
-            fail(f"Story {story} predecessor {dependency} has no valid implementation commit")
-        if subprocess.run(
-            ["git", "merge-base", "--is-ancestor", dependency_commit, data["implementerCommit"]],
-            cwd=ROOT,
-        ).returncode:
-            fail(f"Story {story} predecessor {dependency} is not implemented first")
+        validate_completion(dependency, rows)
     print(f"Story {story} fixture approval: PASS ({approval_commit})")
+
+
+def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
+    approval_path = APPROVALS / f"{story}-v1.json"
+    completion_path = APPROVALS / f"{story}-completed-v1.json"
+    if not completion_path.is_file():
+        fail(f"Story {story} has no completion provenance")
+    data = json.loads(completion_path.read_text(encoding="utf-8"))
+    if set(data) != COMPLETION_KEYS or data["schema"] != "srvls-story-completion-v1" or data["storyId"] != story or data["verdict"] != "completed":
+        fail(f"Story {story} completion schema is invalid")
+    approval_commit = committed_clean(approval_path)
+    committed_clean(completion_path)
+    if data["approvalCommit"] != approval_commit or not SHA.fullmatch(data["implementationCommit"]):
+        fail(f"Story {story} completion does not bind its approval and implementation")
+    git("cat-file", "-e", f"{data['implementationCommit']}^{{commit}}")
+    if subprocess.run(["git", "merge-base", "--is-ancestor", approval_commit, data["implementationCommit"]], cwd=ROOT).returncode:
+        fail(f"Story {story} implementation does not descend from approval")
+    return data["implementationCommit"]
 
 
 def main() -> None:
     rows = canonical_rows()
     if len(sys.argv) == 1:
-        print("story acceptance registry: PASS (75 stories, 150 byte-bound rows)")
+        print("story acceptance registry: PASS (75 stories, 150 canonical-criterion-bound rows)")
         return
     for story in sys.argv[1:]:
         validate_assignment(story, rows)
