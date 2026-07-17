@@ -94,7 +94,7 @@ def hermetic_git_gate() -> None:
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
         (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
-        runner_bytes = b"#!/bin/sh\ntest \"$(cat \"$1\")\" = done && sed 's/input/expected/' \"$2\""
+        runner_bytes = b"#!/bin/sh\ntest \"$(cat \"$1/implementation\")\" = done && sed 's/input/expected/' \"$2\""
         (oracle / "runner").write_bytes(runner_bytes); (oracle2 / "runner").write_bytes(runner_bytes)
         (oracle / "runner").chmod(0o755); (oracle2 / "runner").chmod(0o755)
         fixture_commit = commit("fixtures", "fixture@example.test")
@@ -130,7 +130,7 @@ def hermetic_git_gate() -> None:
             "implementationCommit": implementation_commit,
             "oracleResults": [{
                 "oraclePath": path, "exitCode": 0,
-                "implementationPath": "implementation", "implementationSha256": hashlib.sha256(b"done").hexdigest(),
+                "implementationFiles": [{"path": "implementation", "relativePath": "implementation", "sha256": hashlib.sha256(b"done").hexdigest()}],
                 "resultPath": f"{path}/actual", "resultSha256": hashlib.sha256(b"expected").hexdigest(),
             } for path in approval.declared_oracles("1.1")],
             "verdict": "completed",
@@ -190,7 +190,7 @@ def hermetic_git_gate() -> None:
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
         commit("restore execution", "reviewer@example.test")
         bad_implementation = json.loads(json.dumps(baseline_completion))
-        bad_implementation["oracleResults"][0]["implementationSha256"] = "0" * 64
+        bad_implementation["oracleResults"][0]["implementationFiles"][0]["sha256"] = "0" * 64
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(bad_implementation))
         commit("implementation hash attack", "reviewer@example.test")
         try:

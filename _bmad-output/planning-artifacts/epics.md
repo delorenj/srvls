@@ -520,7 +520,8 @@ commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
 forbidden until this pre-assignment approval passes. After implementation,
 `<story-id>-completed-v1.json` separately binds the derived approval commit to
-an implementation commit and one changed implementation-artifact path/SHA-256,
+an implementation commit and an exact nonempty implementation file manifest
+(repository path, sandbox-relative path, and SHA-256 per file) with at least one changed file,
 zero exit code, and fresh
 executed result path/SHA-256 for every ordered oracle binding; every result must equal its independently approved expected
 SHA-256, and the completion gate replays the fixture-author runner with the
@@ -4619,7 +4620,7 @@ As a srvls Operator,
 I want one complete exact-target action journey,
 So that plan, confirmation, admission, execution, verification, and outcome remain one inspectable operation across every surface.
 
-**Implementation Boundary:** Integrate Stories 2.1 through 2.6 and 6.1 through 6.12 into the Contract C-22 UJ-2/UJ-3/UJ-4/UJ-5 and UX-IP-7 paths; add journey routing and parity tests without reimplementing lifecycle, enum, plan, pool, executor, persistence, verification, or presentation owners.
+**Implementation Boundary:** Integrate Stories 2.1 through 2.6 and Stories 6.1 through 6.12 into the Contract C-22 UJ-2/UJ-3/UJ-4/UJ-5 and UX-IP-7 paths; add journey routing and parity tests without reimplementing lifecycle, enum, plan, pool, executor, persistence, verification, or presentation owners.
 
 **Requirement Mapping:** FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-2, UJ-3, UJ-4, UJ-5, UX-FND-3, UX-IP-7, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11, AD-22.
 

@@ -25,7 +25,8 @@ APPROVAL_KEYS = {
 }
 BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "runnerPath", "runnerSha256", "expectedResultPath", "expectedResultSha256"}
 COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "oracleResults", "verdict"}
-RESULT_KEYS = {"oraclePath", "implementationPath", "implementationSha256", "exitCode", "resultPath", "resultSha256"}
+RESULT_KEYS = {"oraclePath", "implementationFiles", "exitCode", "resultPath", "resultSha256"}
+IMPLEMENTATION_FILE_KEYS = {"path", "sha256", "relativePath"}
 
 
 def fail(message: str) -> None:
@@ -58,6 +59,9 @@ def canonical_rows() -> dict[str, dict[str, str]]:
         expanded = {f"{start_epic}.{number}" for number in range(start_number, end_number + 1)}
         if start_epic != end_epic or start_number > end_number or not expanded <= set(stories):
             fail(f"invalid or dangling Story range {start} through {end}")
+    plural_mentions = re.findall(r"Stories \d+\.\d+[^\n]*", epics)
+    if any(not re.match(r"Stories \d+\.\d+ through \d+\.\d+", mention) for mention in plural_mentions):
+        fail("unsupported plural Story reference; use explicit singular references or one same-Epic range")
     for row_id, row in rows.items():
         if set(row) != {"rowId", "storyId", "kind", "criterionMarkdown", "criterionSha256"}:
             fail(f"{row_id} has unknown or missing keys")
@@ -134,6 +138,11 @@ def git_path_exists(commit: str, path: str) -> bool:
     ).returncode == 0
 
 
+def git_file_mode(commit: str, path: str) -> str:
+    output = git("ls-tree", commit, "--", path)
+    return output.split()[0] if output else ""
+
+
 def declared_oracles(story: str) -> list[str]:
     text = EPICS.read_text(encoding="utf-8")
     section = re.search(
@@ -177,6 +186,8 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
         if set(binding) != BINDING_KEYS:
             fail(f"Story {story} oracle binding schema is invalid")
         oracle = binding["oraclePath"]
+        if len({binding["fixturePath"], binding["runnerPath"], binding["expectedResultPath"]}) != 3:
+            fail(f"Story {story} oracle fixture, runner, and expectation paths must be distinct")
         for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("runnerPath", "runnerSha256"), ("expectedResultPath", "expectedResultSha256")):
             if not isinstance(binding[hash_key], str) or not SHA.fullmatch(binding[hash_key]):
                 fail(f"Story {story} {hash_key} is invalid")
@@ -185,6 +196,8 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
             target = (ROOT / binding[path_key]).resolve()
             if not target.is_file() or ROOT not in target.parents:
                 fail(f"Story {story} {path_key} is missing or outside the repository")
+            if target.is_symlink() or (ROOT / binding[path_key]).is_symlink():
+                fail(f"Story {story} {path_key} may not be a symlink")
             if hashlib.sha256(target.read_bytes()).hexdigest() != binding[hash_key]:
                 fail(f"Story {story} {hash_key} does not match repository bytes")
             committed_clean(target)
@@ -248,14 +261,22 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             fail(f"Story {story} approved runner escapes its owning oracle")
         if git_file_hash(approval["fixtureAuthorCommit"], binding["runnerPath"]) != binding["runnerSha256"]:
             fail(f"Story {story} runner bytes are not fixture-author approved")
+        if git_file_mode(approval["fixtureAuthorCommit"], binding["runnerPath"]) != "100755":
+            fail(f"Story {story} approved runner is not executable")
         if not within_oracle(result["resultPath"], result["oraclePath"]):
             fail(f"Story {story} executed result escapes its owning oracle")
-        if not OID.fullmatch(data["implementationCommit"]) or not git_path_exists(data["implementationCommit"], result["implementationPath"]):
-            fail(f"Story {story} completion lacks its implementation artifact")
-        if git_file_hash(data["implementationCommit"], result["implementationPath"]) != result["implementationSha256"]:
-            fail(f"Story {story} implementation artifact hash is invalid")
-        if not subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", result["implementationPath"],], cwd=ROOT).returncode:
-            fail(f"Story {story} implementation artifact was not changed by implementation")
+        files = result["implementationFiles"]
+        if not isinstance(files, list) or not files or any(set(item) != IMPLEMENTATION_FILE_KEYS for item in files):
+            fail(f"Story {story} completion lacks an exact implementation manifest")
+        if len({item["relativePath"] for item in files}) != len(files) or any(Path(item["relativePath"]).is_absolute() or ".." in Path(item["relativePath"]).parts for item in files):
+            fail(f"Story {story} implementation manifest has an unsafe or duplicate relative path")
+        changed = False
+        for item in files:
+            if git_file_hash(data["implementationCommit"], item["path"]) != item["sha256"]:
+                fail(f"Story {story} implementation manifest hash is invalid")
+            changed |= subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", item["path"]], cwd=ROOT).returncode != 0
+        if not changed:
+            fail(f"Story {story} implementation manifest contains no implemented change")
         if git_path_exists(approval_commit, result["resultPath"]):
             fail(f"Story {story} executed result is not fresh implementation evidence")
         with tempfile.TemporaryDirectory(prefix="srvls-oracle-") as temporary:
@@ -263,8 +284,13 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             runner = isolated / "runner"; fixture = isolated / "fixture"; implementation = isolated / "implementation"; home = isolated / "home"
             runner.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["runnerPath"]))
             fixture.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["fixturePath"]))
-            implementation.write_bytes(git_file_bytes(data["implementationCommit"], result["implementationPath"]))
-            runner.chmod(0o500); fixture.chmod(0o400); implementation.chmod(0o500); home.mkdir()
+            implementation.mkdir()
+            for item in files:
+                destination = implementation / item["relativePath"]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(git_file_bytes(data["implementationCommit"], item["path"]))
+                destination.chmod(0o500)
+            runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
             try:
                 executed = subprocess.run(
                     ["bwrap", "--unshare-all", "--die-with-parent", "--new-session",
