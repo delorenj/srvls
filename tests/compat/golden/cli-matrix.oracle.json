@@ -1,0 +1,2292 @@
+{
+  "cases": [
+    {
+      "case_id": "flags.all-known-json-wins",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf",
+          "--md",
+          "--prom",
+          "--json"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "[]\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.json-wins-reversed",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--json",
+          "--md"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "[]\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.prom-wins",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf",
+          "--md",
+          "--prom"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "# HELP srvls_items Background task inventory counts by type and state\n# TYPE srvls_items gauge\n# HELP srvls_unit_problem Units in failed/unhealthy/restarting/errored state (1=problem)\n# TYPE srvls_unit_problem gauge\n# HELP srvls_loadavg System load average\n# TYPE srvls_loadavg gauge\nsrvls_loadavg{window=\"1m\"} 1.25\nsrvls_loadavg{window=\"5m\"} 2.50\nsrvls_loadavg{window=\"15m\"} 3.75\n# HELP srvls_collect_timestamp_seconds Unix time of this collection\n# TYPE srvls_collect_timestamp_seconds gauge\nsrvls_collect_timestamp_seconds 1784291696\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.markdown-wins",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf",
+          "--md"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "# Background Task Inventory \u2014 2026-07-17 12:34 UTC\n\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.fzf-lines-wins",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf",
+          "--fzf-lines"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.help-is-table",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--help"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "TYPE  NAME  STATE  SCHED             SOURCE\n-------------------------------------------\n\n0 items (0 failed, 0 unhealthy)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.help-plus-json",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--help",
+          "--json"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "[]\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.unknown-is-table",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--definitely-unknown",
+          "value"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "TYPE  NAME  STATE  SCHED             SOURCE\n-------------------------------------------\n\n0 items (0 failed, 0 unhealthy)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.fzf-absent",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf"
+        ],
+        "kind": "main"
+      },
+      "stderr": "fzf not installed\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        },
+        {
+          "name": "fzf",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "flags.fzf-present-bindings",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "* * * * * /bin/job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "fzf",
+            "--delimiter",
+            "\t",
+            "--with-nth",
+            "1,2,3",
+            "--preview",
+            "python3 /opt/srvls/srvls inspect {1} {2}",
+            "--preview-window",
+            "down,60%,wrap",
+            "--header",
+            "enter=inspect ctrl-s=stop ctrl-r=restart ctrl-x=disable",
+            "--bind",
+            "ctrl-s:execute(python3 /opt/srvls/srvls stop {1} {2})+reload(python3 /opt/srvls/srvls --fzf-lines)",
+            "--bind",
+            "ctrl-r:execute(python3 /opt/srvls/srvls restart {1} {2})+reload(python3 /opt/srvls/srvls --fzf-lines)",
+            "--bind",
+            "ctrl-x:execute(python3 /opt/srvls/srvls disable {1} {2})+reload(python3 /opt/srvls/srvls --fzf-lines)"
+          ],
+          "capture_output": true,
+          "input": "cron\tjob\tscheduled\tcrontab:fixture-user",
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "cron\tjob\tscheduled\tcrontab:fixture-user\n"
+          },
+          "text": true,
+          "timeout": null
+        },
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "* * * * * /bin/job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "crontab:fixture-user:  * * * * *  /bin/job\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        },
+        {
+          "name": "fzf",
+          "result": "/usr/bin/fzf"
+        }
+      ]
+    },
+    {
+      "case_id": "arity.inspect-one",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "inspect"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls inspect TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "arity.inspect-two",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "inspect",
+          "docker"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls inspect TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "arity.inspect-four",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "inspect",
+          "docker",
+          "name",
+          "extra"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls inspect TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "arity.stop-two",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "stop",
+          "docker"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls stop TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "arity.restart-two",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "restart",
+          "docker"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls restart TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "arity.start-two",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "start",
+          "docker"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls start TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "arity.disable-two",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "disable",
+          "docker"
+        ],
+        "kind": "main"
+      },
+      "stderr": "usage: srvls disable TYPE NAME\n",
+      "stdout": "",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.unknown-success-empty",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "inspect",
+          "mystery",
+          "target name;$(boom)\""
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "code": 0,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.cron-refusal-stdout",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "stop",
+          "cron",
+          "target name;$(boom)\""
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "cron entries: edit with `crontab -e` (line shown in inspect)\n",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.unknown-refusal-stdout",
+      "external_calls": [],
+      "operation": {
+        "argv": [
+          "restart",
+          "mystery",
+          "target name;$(boom)\""
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "no restart for type mystery\n",
+      "termination": {
+        "code": 1,
+        "kind": "exit"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "action.child-channel-placement",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "stop",
+            "target name;$(boom)\""
+          ],
+          "capture_output": false,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 9,
+            "stderr": "child-err\n",
+            "stdout": "child-out\n"
+          },
+          "text": false,
+          "timeout": null
+        }
+      ],
+      "operation": {
+        "argv": [
+          "stop",
+          "docker",
+          "target name;$(boom)\""
+        ],
+        "kind": "main"
+      },
+      "stderr": "child-err\n",
+      "stdout": "child-out\n",
+      "termination": {
+        "code": 9,
+        "kind": "exit"
+      },
+      "which_calls": []
+    }
+  ],
+  "fixture": {
+    "matrix_id": "cli-matrix",
+    "path": "fixtures/cli-matrix.json",
+    "sha256": "72b3af4f1968206fc0900ea893a987e6a2254255662b82677fd1fe35011049eb"
+  },
+  "schema": "srvls-legacy-oracle-result-v1",
+  "source": {
+    "frozen_parent": "598eb0ccd0ad37a9432a2132a14d75aeea0f9f47",
+    "git_blob_sha1": "aebb996d1341fc44afe513126ca6553815faa904",
+    "path": "srvls",
+    "sha256": "06a7e312fba5f2ca03e99181cc208d7abd9ac4688f26ea0f8c89ee19eb9e8b62",
+    "size": 13388
+  },
+  "volatile_substitutions": [
+    {
+      "id": "clock.utc-now",
+      "rule": "datetime.now() is fixture-owned UTC instead of capture wall time"
+    },
+    {
+      "id": "clock.timer-local-rendering",
+      "rule": "datetime.fromtimestamp() renders in UTC instead of host local time"
+    },
+    {
+      "id": "host.load-average",
+      "rule": "os.getloadavg() is the fixture triple [1.25, 2.5, 3.75] unless overridden"
+    },
+    {
+      "id": "host.identity-and-paths",
+      "rule": "HOME, USER, PATH lookup, virtual /etc files, and tool presence are fixture-owned"
+    },
+    {
+      "id": "source.absolute-path",
+      "rule": "the frozen source __file__ and os.path.abspath(__file__) are /opt/srvls/srvls"
+    },
+    {
+      "id": "host.subprocess-results",
+      "rule": "stdout, stderr, exit, missing, denied, and timeout outcomes are fixture-owned"
+    },
+    {
+      "id": "python.traceback",
+      "rule": "unhandled tracebacks normalize to exception type and message; version, frame path, and line rendering are excluded"
+    }
+  ]
+}

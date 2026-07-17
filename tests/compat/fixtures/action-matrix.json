@@ -1,0 +1,28 @@
+{
+  "schema": "srvls-legacy-fixture-v1",
+  "matrix_id": "action-matrix",
+  "defaults": {
+    "env": {"USER": "fixture-user"},
+    "home": "/home/fixture",
+    "fixed_now": "2026-07-17T12:34:56+00:00",
+    "loadavg": [1.25, 2.5, 3.75],
+    "which": {},
+    "files": {},
+    "default_command": {
+      "stdout": "child stdout\n",
+      "stderr": "child stderr\n",
+      "returncode": 23
+    }
+  },
+  "cases": [
+    {
+      "id": "action",
+      "operation": {
+        "kind": "action-cross-product",
+        "name": "target name;$(boom)\"",
+        "verbs": ["stop", "restart", "start", "disable"],
+        "types": ["usr-svc", "usr-timer", "sys-svc", "sys-timer", "docker", "pm2", "cron", "mystery"]
+      }
+    }
+  ]
+}

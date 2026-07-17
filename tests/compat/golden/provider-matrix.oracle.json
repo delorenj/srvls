@@ -1,0 +1,1376 @@
+{
+  "cases": [
+    {
+      "case_id": "cron.success",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag\nmalformed\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "0 2 * * * /root/bin/root-job\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "cron"
+      },
+      "return_value": [
+        {
+          "detail": "/usr/local/bin/user-job --flag",
+          "name": "user-job",
+          "schedule": "*/5 * * * *",
+          "source": "crontab:fixture-user",
+          "state": "scheduled",
+          "type": "cron"
+        },
+        {
+          "detail": "/root/bin/root-job",
+          "name": "root-job",
+          "schedule": "0 2 * * *",
+          "source": "crontab:root",
+          "state": "scheduled",
+          "type": "cron"
+        },
+        {
+          "detail": "/usr/local/sbin/system-job --arg",
+          "name": "system-job",
+          "schedule": "0 1 * * *",
+          "source": "/etc/crontab",
+          "state": "scheduled",
+          "type": "cron"
+        },
+        {
+          "detail": "/opt/jobs/cron-a",
+          "name": "cron-a",
+          "schedule": "15 3 * * *",
+          "source": "/etc/cron.d/a-first",
+          "state": "scheduled",
+          "type": "cron"
+        }
+      ],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "cron.malformed",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "# comment\nMAILTO=x\nnot enough fields\n* * * * only-five\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "cron"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "cron.unavailable",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "cron"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "cron.denied",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied cron command"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied cron command"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "cron"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "cron.timeout",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture cron timeout"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture cron timeout"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "cron"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "cron.system-file-denied",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "cron"
+      },
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "exception",
+        "message": "fixture denied /etc/crontab",
+        "type": "PermissionError"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd-system.success",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"alpha.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Alpha\"},{\"unit\":\"retained.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skipped.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"alpha.service\",\"state\":\"enabled\"},{\"unit_file\":\"retained.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skipped.service\",\"state\":\"disabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"alpha.timer\",\"next\":2000000000,\"activates\":\"alpha.service\"},{\"unit\":\"idle.timer\",\"next\":null,\"activates\":\"idle.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-system"
+      },
+      "return_value": [
+        {
+          "detail": "Alpha",
+          "name": "alpha.service",
+          "schedule": "",
+          "source": "enabled",
+          "state": "active/running",
+          "type": "sys-svc"
+        },
+        {
+          "detail": "Retained",
+          "name": "retained.service",
+          "schedule": "",
+          "source": "enabled-runtime",
+          "state": "inactive/dead",
+          "type": "sys-svc"
+        },
+        {
+          "detail": "",
+          "name": "alpha.timer",
+          "schedule": "next 01-01 00:33",
+          "source": "alpha.service",
+          "state": "waiting",
+          "type": "sys-timer"
+        },
+        {
+          "detail": "",
+          "name": "idle.timer",
+          "schedule": "",
+          "source": "idle.service",
+          "state": "inactive",
+          "type": "sys-timer"
+        }
+      ],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd-user.success",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"User\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"user.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-user"
+      },
+      "return_value": [
+        {
+          "detail": "User",
+          "name": "user.service",
+          "schedule": "",
+          "source": "enabled",
+          "state": "failed/failed",
+          "type": "usr-svc"
+        }
+      ],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd.malformed",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-system"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd.unavailable",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-system"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd.denied",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied systemctl"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied systemctl"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied systemctl"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-system"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd.timeout",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture systemctl timeout"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture systemctl timeout"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture systemctl timeout"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-system"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "systemd.wrong-shaped",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[1]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[]"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "systemd-system"
+      },
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "exception",
+        "message": "'int' object has no attribute 'get'",
+        "type": "AttributeError"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "docker.success",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "/demo\trunning\thealthy\talways\tdemo\t/srv/demo\t30s\n"
+          },
+          "text": true,
+          "timeout": 30
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "docker"
+      },
+      "return_value": [
+        {
+          "detail": "restart=always",
+          "name": "demo",
+          "schedule": "hc:30s",
+          "source": "/srv/demo",
+          "state": "running(healthy)",
+          "type": "docker"
+        }
+      ],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "docker.malformed",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "too\tfew\tfields\n"
+          },
+          "text": true,
+          "timeout": 30
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "docker"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "docker.unavailable",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "docker"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "docker.denied",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied docker"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "docker"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "docker.timeout",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture docker timeout"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "docker"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "pm2.success",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"name\":\"worker\",\"pm2_env\":{\"status\":\"online\",\"restart_time\":3,\"pm_cwd\":\"/srv/worker\",\"pm_exec_path\":\"/srv/worker/app.js\"}}]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "return_value": [
+        {
+          "detail": "/srv/worker/app.js",
+          "name": "worker",
+          "schedule": "restarts:3",
+          "source": "/srv/worker",
+          "state": "online",
+          "type": "pm2"
+        }
+      ],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "pm2.malformed",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "{not-json"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "pm2.absent",
+      "external_calls": [],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": null
+        }
+      ]
+    },
+    {
+      "case_id": "pm2.command-unavailable",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture command not found"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "pm2.denied",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "permission-denied",
+            "kind": "error",
+            "message": "fixture denied pm2"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "pm2.timeout",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture pm2 timeout"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "return_value": [],
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "pm2.wrong-shaped",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[1]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "kind": "collector",
+        "provider": "pm2"
+      },
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "exception",
+        "message": "'int' object has no attribute 'get'",
+        "type": "AttributeError"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    }
+  ],
+  "fixture": {
+    "matrix_id": "provider-matrix",
+    "path": "fixtures/provider-matrix.json",
+    "sha256": "4908ead423103004b4cb9addbcb4d16a32b5c3b52dfa4b0d5193afafb8f392ca"
+  },
+  "schema": "srvls-legacy-oracle-result-v1",
+  "source": {
+    "frozen_parent": "598eb0ccd0ad37a9432a2132a14d75aeea0f9f47",
+    "git_blob_sha1": "aebb996d1341fc44afe513126ca6553815faa904",
+    "path": "srvls",
+    "sha256": "06a7e312fba5f2ca03e99181cc208d7abd9ac4688f26ea0f8c89ee19eb9e8b62",
+    "size": 13388
+  },
+  "volatile_substitutions": [
+    {
+      "id": "clock.utc-now",
+      "rule": "datetime.now() is fixture-owned UTC instead of capture wall time"
+    },
+    {
+      "id": "clock.timer-local-rendering",
+      "rule": "datetime.fromtimestamp() renders in UTC instead of host local time"
+    },
+    {
+      "id": "host.load-average",
+      "rule": "os.getloadavg() is the fixture triple [1.25, 2.5, 3.75] unless overridden"
+    },
+    {
+      "id": "host.identity-and-paths",
+      "rule": "HOME, USER, PATH lookup, virtual /etc files, and tool presence are fixture-owned"
+    },
+    {
+      "id": "source.absolute-path",
+      "rule": "the frozen source __file__ and os.path.abspath(__file__) are /opt/srvls/srvls"
+    },
+    {
+      "id": "host.subprocess-results",
+      "rule": "stdout, stderr, exit, missing, denied, and timeout outcomes are fixture-owned"
+    },
+    {
+      "id": "python.traceback",
+      "rule": "unhandled tracebacks normalize to exception type and message; version, frame path, and line rendering are excluded"
+    }
+  ]
+}

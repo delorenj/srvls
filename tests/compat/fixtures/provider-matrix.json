@@ -1,0 +1,253 @@
+{
+  "schema": "srvls-legacy-fixture-v1",
+  "matrix_id": "provider-matrix",
+  "defaults": {
+    "env": {
+      "USER": "fixture-user"
+    },
+    "home": "/home/fixture",
+    "fixed_now": "2026-07-17T12:34:56+00:00",
+    "loadavg": [1.25, 2.5, 3.75],
+    "files": {},
+    "which": {},
+    "default_command": {
+      "error": "file-not-found",
+      "message": "[Errno 2] fixture command not found"
+    }
+  },
+  "environments": {
+    "cron-success": {
+      "commands": [
+        {
+          "argv": ["crontab", "-l"],
+          "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag\nmalformed\n"
+        },
+        {
+          "argv": ["sudo", "-n", "crontab", "-l"],
+          "stdout": "0 2 * * * /root/bin/root-job\n"
+        }
+      ],
+      "files": {
+        "/etc/crontab": "0 1 * * * root /usr/local/sbin/system-job --arg\n",
+        "/etc/cron.d/a-first": "15 3 * * * deploy /opt/jobs/cron-a\n",
+        "/etc/cron.d/z-denied": {
+          "error": "permission-denied",
+          "message": "fixture denied cron.d entry"
+        }
+      }
+    },
+    "cron-malformed": {
+      "commands": [
+        {
+          "argv": ["crontab", "-l"],
+          "stdout": "# comment\nMAILTO=x\nnot enough fields\n* * * * only-five\n"
+        },
+        {
+          "argv": ["sudo", "-n", "crontab", "-l"],
+          "stdout": ""
+        }
+      ],
+      "files": {
+        "/etc/cron.d/bad": "SHELL=/bin/sh\n1 2 3\n"
+      }
+    },
+    "cron-unavailable": {},
+    "cron-denied": {
+      "default_command": {
+        "error": "permission-denied",
+        "message": "fixture denied cron command"
+      },
+      "files": {
+        "/etc/cron.d/denied": {
+          "error": "permission-denied",
+          "message": "fixture denied cron.d entry"
+        }
+      }
+    },
+    "cron-timeout": {
+      "default_command": {
+        "error": "timeout",
+        "message": "fixture cron timeout"
+      }
+    },
+    "cron-system-file-denied": {
+      "commands": [
+        {"argv": ["crontab", "-l"], "stdout": ""},
+        {"argv": ["sudo", "-n", "crontab", "-l"], "stdout": ""}
+      ],
+      "files": {
+        "/etc/crontab": {
+          "error": "permission-denied",
+          "message": "fixture denied /etc/crontab"
+        }
+      }
+    },
+    "systemd-system-success": {
+      "commands": [
+        {
+          "argv": ["systemctl", "list-units", "--type=service", "--all", "--output=json", "--no-pager"],
+          "stdout": "[{\"unit\":\"alpha.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Alpha\"},{\"unit\":\"retained.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skipped.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"}]"
+        },
+        {
+          "argv": ["systemctl", "list-unit-files", "--type=service", "--output=json", "--no-pager"],
+          "stdout": "[{\"unit_file\":\"alpha.service\",\"state\":\"enabled\"},{\"unit_file\":\"retained.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skipped.service\",\"state\":\"disabled\"}]"
+        },
+        {
+          "argv": ["systemctl", "list-timers", "--all", "--output=json", "--no-pager"],
+          "stdout": "[{\"unit\":\"alpha.timer\",\"next\":2000000000,\"activates\":\"alpha.service\"},{\"unit\":\"idle.timer\",\"next\":null,\"activates\":\"idle.service\"}]"
+        }
+      ]
+    },
+    "systemd-user-success": {
+      "commands": [
+        {
+          "argv": ["systemctl", "--user", "list-units", "--type=service", "--all", "--output=json", "--no-pager"],
+          "stdout": "[{\"unit\":\"user.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"User\"}]"
+        },
+        {
+          "argv": ["systemctl", "--user", "list-unit-files", "--type=service", "--output=json", "--no-pager"],
+          "stdout": "[{\"unit_file\":\"user.service\",\"state\":\"enabled\"}]"
+        },
+        {
+          "argv": ["systemctl", "--user", "list-timers", "--all", "--output=json", "--no-pager"],
+          "stdout": "[]"
+        }
+      ]
+    },
+    "systemd-malformed": {
+      "default_command": {
+        "stdout": "{not-json"
+      }
+    },
+    "systemd-unavailable": {},
+    "systemd-denied": {
+      "default_command": {
+        "error": "permission-denied",
+        "message": "fixture denied systemctl"
+      }
+    },
+    "systemd-timeout": {
+      "default_command": {
+        "error": "timeout",
+        "message": "fixture systemctl timeout"
+      }
+    },
+    "systemd-wrong-shaped": {
+      "commands": [
+        {
+          "argv": ["systemctl", "list-units", "--type=service", "--all", "--output=json", "--no-pager"],
+          "stdout": "[1]"
+        },
+        {
+          "argv": ["systemctl", "list-unit-files", "--type=service", "--output=json", "--no-pager"],
+          "stdout": "[]"
+        }
+      ]
+    },
+    "docker-success": {
+      "commands": [
+        {
+          "argv": ["docker", "ps", "-a", "--format", "{{.ID}}"],
+          "stdout": "deadbeef\n"
+        },
+        {
+          "argv": ["docker", "inspect", "--format", "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}", "deadbeef"],
+          "stdout": "/demo\trunning\thealthy\talways\tdemo\t/srv/demo\t30s\n"
+        }
+      ]
+    },
+    "docker-malformed": {
+      "commands": [
+        {
+          "argv": ["docker", "ps", "-a", "--format", "{{.ID}}"],
+          "stdout": "deadbeef\n"
+        },
+        {
+          "argv": ["docker", "inspect", "--format", "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}", "deadbeef"],
+          "stdout": "too\tfew\tfields\n"
+        }
+      ]
+    },
+    "docker-unavailable": {},
+    "docker-denied": {
+      "default_command": {
+        "error": "permission-denied",
+        "message": "fixture denied docker"
+      }
+    },
+    "docker-timeout": {
+      "default_command": {
+        "error": "timeout",
+        "message": "fixture docker timeout"
+      }
+    },
+    "pm2-success": {
+      "which": {"pm2": "/usr/bin/pm2"},
+      "commands": [
+        {
+          "argv": ["pm2", "jlist"],
+          "stdout": "[{\"name\":\"worker\",\"pm2_env\":{\"status\":\"online\",\"restart_time\":3,\"pm_cwd\":\"/srv/worker\",\"pm_exec_path\":\"/srv/worker/app.js\"}}]"
+        }
+      ]
+    },
+    "pm2-malformed": {
+      "which": {"pm2": "/usr/bin/pm2"},
+      "commands": [
+        {"argv": ["pm2", "jlist"], "stdout": "{not-json"}
+      ]
+    },
+    "pm2-absent": {
+      "which": {}
+    },
+    "pm2-command-unavailable": {
+      "which": {"pm2": "/usr/bin/pm2"}
+    },
+    "pm2-denied": {
+      "which": {"pm2": "/usr/bin/pm2"},
+      "default_command": {
+        "error": "permission-denied",
+        "message": "fixture denied pm2"
+      }
+    },
+    "pm2-timeout": {
+      "which": {"pm2": "/usr/bin/pm2"},
+      "default_command": {
+        "error": "timeout",
+        "message": "fixture pm2 timeout"
+      }
+    },
+    "pm2-wrong-shaped": {
+      "which": {"pm2": "/usr/bin/pm2"},
+      "commands": [
+        {"argv": ["pm2", "jlist"], "stdout": "[1]"}
+      ]
+    }
+  },
+  "cases": [
+    {"id": "cron.success", "environment": "cron-success", "operation": {"kind": "collector", "provider": "cron"}},
+    {"id": "cron.malformed", "environment": "cron-malformed", "operation": {"kind": "collector", "provider": "cron"}},
+    {"id": "cron.unavailable", "environment": "cron-unavailable", "operation": {"kind": "collector", "provider": "cron"}},
+    {"id": "cron.denied", "environment": "cron-denied", "operation": {"kind": "collector", "provider": "cron"}},
+    {"id": "cron.timeout", "environment": "cron-timeout", "operation": {"kind": "collector", "provider": "cron"}},
+    {"id": "cron.system-file-denied", "environment": "cron-system-file-denied", "operation": {"kind": "collector", "provider": "cron"}},
+    {"id": "systemd-system.success", "environment": "systemd-system-success", "operation": {"kind": "collector", "provider": "systemd-system"}},
+    {"id": "systemd-user.success", "environment": "systemd-user-success", "operation": {"kind": "collector", "provider": "systemd-user"}},
+    {"id": "systemd.malformed", "environment": "systemd-malformed", "operation": {"kind": "collector", "provider": "systemd-system"}},
+    {"id": "systemd.unavailable", "environment": "systemd-unavailable", "operation": {"kind": "collector", "provider": "systemd-system"}},
+    {"id": "systemd.denied", "environment": "systemd-denied", "operation": {"kind": "collector", "provider": "systemd-system"}},
+    {"id": "systemd.timeout", "environment": "systemd-timeout", "operation": {"kind": "collector", "provider": "systemd-system"}},
+    {"id": "systemd.wrong-shaped", "environment": "systemd-wrong-shaped", "operation": {"kind": "collector", "provider": "systemd-system"}},
+    {"id": "docker.success", "environment": "docker-success", "operation": {"kind": "collector", "provider": "docker"}},
+    {"id": "docker.malformed", "environment": "docker-malformed", "operation": {"kind": "collector", "provider": "docker"}},
+    {"id": "docker.unavailable", "environment": "docker-unavailable", "operation": {"kind": "collector", "provider": "docker"}},
+    {"id": "docker.denied", "environment": "docker-denied", "operation": {"kind": "collector", "provider": "docker"}},
+    {"id": "docker.timeout", "environment": "docker-timeout", "operation": {"kind": "collector", "provider": "docker"}},
+    {"id": "pm2.success", "environment": "pm2-success", "operation": {"kind": "collector", "provider": "pm2"}},
+    {"id": "pm2.malformed", "environment": "pm2-malformed", "operation": {"kind": "collector", "provider": "pm2"}},
+    {"id": "pm2.absent", "environment": "pm2-absent", "operation": {"kind": "collector", "provider": "pm2"}},
+    {"id": "pm2.command-unavailable", "environment": "pm2-command-unavailable", "operation": {"kind": "collector", "provider": "pm2"}},
+    {"id": "pm2.denied", "environment": "pm2-denied", "operation": {"kind": "collector", "provider": "pm2"}},
+    {"id": "pm2.timeout", "environment": "pm2-timeout", "operation": {"kind": "collector", "provider": "pm2"}},
+    {"id": "pm2.wrong-shaped", "environment": "pm2-wrong-shaped", "operation": {"kind": "collector", "provider": "pm2"}}
+  ]
+}

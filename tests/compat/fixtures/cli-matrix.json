@@ -1,0 +1,75 @@
+{
+  "schema": "srvls-legacy-fixture-v1",
+  "matrix_id": "cli-matrix",
+  "defaults": {
+    "env": {"USER": "fixture-user"},
+    "home": "/home/fixture",
+    "fixed_now": "2026-07-17T12:34:56+00:00",
+    "loadavg": [1.25, 2.5, 3.75],
+    "which": {},
+    "commands": [
+      {"argv": ["crontab", "-l"], "stdout": ""},
+      {"argv": ["sudo", "-n", "crontab", "-l"], "stdout": ""},
+      {"argv": ["systemctl", "list-units", "--type=service", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+      {"argv": ["systemctl", "list-unit-files", "--type=service", "--output=json", "--no-pager"], "stdout": "[]"},
+      {"argv": ["systemctl", "list-timers", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+      {"argv": ["systemctl", "--user", "list-units", "--type=service", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+      {"argv": ["systemctl", "--user", "list-unit-files", "--type=service", "--output=json", "--no-pager"], "stdout": "[]"},
+      {"argv": ["systemctl", "--user", "list-timers", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+      {"argv": ["docker", "ps", "-a", "--format", "{{.ID}}"], "stdout": ""},
+      {
+        "argv": ["docker", "stop", "target name;$(boom)\""],
+        "stdout": "child-out\n",
+        "stderr": "child-err\n",
+        "returncode": 9
+      }
+    ],
+    "default_command": {
+      "error": "file-not-found",
+      "message": "[Errno 2] fixture command not found"
+    }
+  },
+  "environments": {
+    "fzf-present": {
+      "which": {"fzf": "/usr/bin/fzf"},
+      "commands": [
+        {"argv": ["crontab", "-l"], "stdout": "* * * * * /bin/job\n"},
+        {"argv": ["sudo", "-n", "crontab", "-l"], "stdout": ""},
+        {"argv": ["systemctl", "list-units", "--type=service", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+        {"argv": ["systemctl", "list-unit-files", "--type=service", "--output=json", "--no-pager"], "stdout": "[]"},
+        {"argv": ["systemctl", "list-timers", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+        {"argv": ["systemctl", "--user", "list-units", "--type=service", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+        {"argv": ["systemctl", "--user", "list-unit-files", "--type=service", "--output=json", "--no-pager"], "stdout": "[]"},
+        {"argv": ["systemctl", "--user", "list-timers", "--all", "--output=json", "--no-pager"], "stdout": "[]"},
+        {"argv": ["docker", "ps", "-a", "--format", "{{.ID}}"], "stdout": ""},
+        {
+          "argv": ["fzf", "--delimiter", "\t", "--with-nth", "1,2,3", "--preview", "python3 /opt/srvls/srvls inspect {1} {2}", "--preview-window", "down,60%,wrap", "--header", "enter=inspect ctrl-s=stop ctrl-r=restart ctrl-x=disable", "--bind", "ctrl-s:execute(python3 /opt/srvls/srvls stop {1} {2})+reload(python3 /opt/srvls/srvls --fzf-lines)", "--bind", "ctrl-r:execute(python3 /opt/srvls/srvls restart {1} {2})+reload(python3 /opt/srvls/srvls --fzf-lines)", "--bind", "ctrl-x:execute(python3 /opt/srvls/srvls disable {1} {2})+reload(python3 /opt/srvls/srvls --fzf-lines)"],
+          "stdout": "cron\tjob\tscheduled\tcrontab:fixture-user\n"
+        }
+      ]
+    }
+  },
+  "cases": [
+    {"id": "flags.all-known-json-wins", "operation": {"kind": "main", "argv": ["--fzf", "--md", "--prom", "--json"]}},
+    {"id": "flags.json-wins-reversed", "operation": {"kind": "main", "argv": ["--json", "--md"]}},
+    {"id": "flags.prom-wins", "operation": {"kind": "main", "argv": ["--fzf", "--md", "--prom"]}},
+    {"id": "flags.markdown-wins", "operation": {"kind": "main", "argv": ["--fzf", "--md"]}},
+    {"id": "flags.fzf-lines-wins", "operation": {"kind": "main", "argv": ["--fzf", "--fzf-lines"]}},
+    {"id": "flags.help-is-table", "operation": {"kind": "main", "argv": ["--help"]}},
+    {"id": "flags.help-plus-json", "operation": {"kind": "main", "argv": ["--help", "--json"]}},
+    {"id": "flags.unknown-is-table", "operation": {"kind": "main", "argv": ["--definitely-unknown", "value"]}},
+    {"id": "flags.fzf-absent", "operation": {"kind": "main", "argv": ["--fzf"]}},
+    {"id": "flags.fzf-present-bindings", "environment": "fzf-present", "operation": {"kind": "main", "argv": ["--fzf"]}},
+    {"id": "arity.inspect-one", "operation": {"kind": "main", "argv": ["inspect"]}},
+    {"id": "arity.inspect-two", "operation": {"kind": "main", "argv": ["inspect", "docker"]}},
+    {"id": "arity.inspect-four", "operation": {"kind": "main", "argv": ["inspect", "docker", "name", "extra"]}},
+    {"id": "arity.stop-two", "operation": {"kind": "main", "argv": ["stop", "docker"]}},
+    {"id": "arity.restart-two", "operation": {"kind": "main", "argv": ["restart", "docker"]}},
+    {"id": "arity.start-two", "operation": {"kind": "main", "argv": ["start", "docker"]}},
+    {"id": "arity.disable-two", "operation": {"kind": "main", "argv": ["disable", "docker"]}},
+    {"id": "inspect.unknown-success-empty", "operation": {"kind": "main", "argv": ["inspect", "mystery", "target name;$(boom)\""]}},
+    {"id": "action.cron-refusal-stdout", "operation": {"kind": "main", "argv": ["stop", "cron", "target name;$(boom)\""]}},
+    {"id": "action.unknown-refusal-stdout", "operation": {"kind": "main", "argv": ["restart", "mystery", "target name;$(boom)\""]}},
+    {"id": "action.child-channel-placement", "operation": {"kind": "main", "argv": ["stop", "docker", "target name;$(boom)\""]}}
+  ]
+}
