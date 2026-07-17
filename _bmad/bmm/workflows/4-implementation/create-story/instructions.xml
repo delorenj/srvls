@@ -317,7 +317,7 @@
 
     <!-- Close the check/use window immediately before the assignable write. -->
     <action>Re-run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` and re-read canonical sprint source state; HALT unless approval still passes and state is still exactly `backlog`</action>
-    <action>Set story Status to: "ready-for-dev"</action>
+    <action>Do not write a second Story-file status; canonical assignability exists only in the atomically gated sprint-status entry</action>
     <action>Add completion note: "Ultimate
     context engine analysis completed - comprehensive developer guide created"</action>
   </step>

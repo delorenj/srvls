@@ -288,16 +288,18 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
                     fail(f"Story {story} implementation archive contains an unsafe path")
                 bundle.extractall(implementation, filter="data")
             runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
+            if not runner.read_bytes().startswith(b"\x7fELF"):
+                fail(f"Story {story} approved runner must be a static ELF executable")
+            elf = subprocess.run(["readelf", "-l", str(runner)], capture_output=True, text=True)
+            if elf.returncode or "INTERP" in elf.stdout:
+                fail(f"Story {story} approved runner has a Host dynamic-loader dependency")
             trace_dir = isolated / "trace"; trace_dir.mkdir()
             try:
                 executed = subprocess.run(
-                    ["bwrap", "--unshare-all", "--die-with-parent", "--new-session",
-                     "--ro-bind", str(isolated), "/work", "--ro-bind", "/usr", "/usr",
-                     "--ro-bind", "/bin", "/bin", "--ro-bind", "/lib", "/lib",
-                     "--ro-bind", "/lib64", "/lib64", "--proc", "/proc", "--dev", "/dev",
-                     "--tmpfs", "/tmp", "--bind", str(trace_dir), "/trace", "--chdir", "/work", "--clearenv",
-                     "--setenv", "PATH", "/usr/bin:/bin", "--setenv", "LANG", "C", "--setenv", "LC_ALL", "C",
-                     "/usr/bin/strace", "-f", "-e", "trace=%file", "-o", "/trace/access",
+                    ["strace", "-f", "-e", "trace=%file", "-o", str(trace_dir / "access"),
+                     "bwrap", "--unshare-all", "--die-with-parent", "--new-session",
+                     "--ro-bind", str(isolated), "/work", "--proc", "/proc", "--dev", "/dev",
+                     "--tmpfs", "/tmp", "--chdir", "/work", "--clearenv",
                      "/work/runner", "/work/implementation", "/work/fixture"],
                     cwd=isolated, capture_output=True, timeout=10,
                 )
@@ -313,7 +315,7 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
         if git_file_hash(data["implementationCommit"], result["resultPath"]) != result["resultSha256"]:
             fail(f"Story {story} implementation commit lacks its executed result bytes")
     for binding in bindings:
-        for path_key in ("fixturePath", "expectedResultPath"):
+        for path_key in ("fixturePath", "runnerPath", "expectedResultPath"):
             relative = binding[path_key]
             if subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", relative], cwd=ROOT).returncode:
                 fail(f"Story {story} implementation changed approved {path_key}")

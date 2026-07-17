@@ -99,8 +99,11 @@ def hermetic_git_gate() -> None:
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
         (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
-        runner_bytes = b"#!/bin/sh\ntest \"$(cat \"$1/implementation\")\" = done && sed 's/input/expected/' \"$2\""
-        (oracle / "runner").write_bytes(runner_bytes); (oracle2 / "runner").write_bytes(runner_bytes)
+        runner_source = rb'''#include <stdio.h>
+#include <string.h>
+int main(int c,char**v){char p[4096],a[16]={0},b[16]={0};if(c!=3)return 2;snprintf(p,sizeof p,"%s/implementation",v[1]);FILE*f=fopen(p,"rb");if(!f)return 3;fread(a,1,15,f);fclose(f);f=fopen(v[2],"rb");if(!f)return 4;fread(b,1,15,f);fclose(f);if(strcmp(a,"done")||strcmp(b,"input"))return 5;fwrite("expected",1,8,stdout);return 0;}'''
+        subprocess.run(["gcc", "-static", "-O2", "-x", "c", "-o", str(oracle / "runner"), "-"], input=runner_source, check=True)
+        runner_bytes = (oracle / "runner").read_bytes(); (oracle2 / "runner").write_bytes(runner_bytes)
         (oracle / "runner").chmod(0o755); (oracle2 / "runner").chmod(0o755)
         fixture_commit = commit("fixtures", "fixture@example.test")
         reviewer_commit = commit("review evidence", "reviewer@example.test")

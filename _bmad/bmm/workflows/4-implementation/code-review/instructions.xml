@@ -175,12 +175,12 @@
     <check if="all HIGH and MEDIUM issues fixed AND all ACs implemented">
       <action>Run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on non-zero</action>
       <action>Set {{new_status}} = "done"</action>
-      <action>Update story Status field to "done"</action>
+      <action>Do not write a second Story-file status</action>
     </check>
     <check if="HIGH or MEDIUM issues remain OR ACs not fully implemented">
       <action>Require the canonical source state to be `review`; HALT for any other source state</action>
       <action>Set {{new_status}} = "in-progress"</action>
-      <action>Update story Status field to "in-progress"</action>
+      <action>Do not write a second Story-file status</action>
     </check>
     <action>Save story file</action>
 

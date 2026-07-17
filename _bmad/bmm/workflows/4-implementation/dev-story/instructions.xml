@@ -335,7 +335,7 @@
     <action>Confirm File List includes every changed file</action>
     <action>Require the committed `&lt;story-id&gt;-completed-v1.json` provenance object and run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on any non-zero exit before review status</action>
     <action>Execute enhanced definition-of-done validation</action>
-    <action>Update the story Status to: "review"</action>
+    <action>Do not write a second Story-file status; canonical state exists only in the atomically gated sprint-status entry</action>
 
     <!-- Enhanced Definition of Done Validation -->
     <action>Validate definition-of-done checklist with essential requirements:
