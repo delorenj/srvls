@@ -91,7 +91,10 @@ development_status:
 - C-23 validity dominates preservation: on a non-zero approval command, force
   the Story to `backlog` even if an existing status is more advanced and report
   the invalid transition evidence.
-- If C-23 passes and existing `{status_file}` has a more advanced status, preserve it
+- If C-23 passes, preserve `ready-for-dev` or `in-progress`; preserve `review`
+  or `done` only when
+  `python3 tests/validate_story_fixture_approvals.py --complete <story_id>`
+  also exits zero. Otherwise force `backlog` and report the invalid provenance.
 - Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
 
 **Status Flow Reference:**

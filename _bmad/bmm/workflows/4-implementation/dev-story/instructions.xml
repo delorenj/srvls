@@ -200,7 +200,7 @@
       <action>Read all development_status entries to find {{story_key}}</action>
       <action>Get current status value for development_status[{{story_key}}]</action>
 
-      <check if="current status == 'ready-for-dev' OR review_continuation == true">
+      <check if="current status == 'ready-for-dev' OR (current status == 'review' AND review_continuation == true)">
         <action>Update the story in the sprint status report to = "in-progress"</action>
         <output>🚀 Starting work on story {{story_key}}
           Status updated: ready-for-dev → in-progress
@@ -213,7 +213,7 @@
         </output>
       </check>
 
-      <check if="current status is neither ready-for-dev nor in-progress">
+      <check if="current status is neither ready-for-dev nor in-progress AND NOT (current status == 'review' AND review_continuation == true)">
         <output>🚫 Unexpected story status: {{current_status}}
           Expected ready-for-dev or in-progress.
         </output>
@@ -332,7 +332,7 @@
     <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
     <action>Run the full regression suite (do not skip)</action>
     <action>Confirm File List includes every changed file</action>
-    <action>Require the committed `<story-id>-completed-v1.json` provenance object and run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on any non-zero exit before review status</action>
+    <action>Require the committed `&lt;story-id&gt;-completed-v1.json` provenance object and run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on any non-zero exit before review status</action>
     <action>Execute enhanced definition-of-done validation</action>
     <action>Update the story Status to: "review"</action>
 

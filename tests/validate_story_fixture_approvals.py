@@ -22,7 +22,8 @@ APPROVAL_KEYS = {
     "fixtureAuthorCommit", "criterionSha256", "verdict",
 }
 BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "expectedResultPath", "expectedResultSha256"}
-COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "verdict"}
+COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "oracleResults", "verdict"}
+RESULT_KEYS = {"oraclePath", "resultPath", "resultSha256"}
 
 
 def fail(message: str) -> None:
@@ -94,6 +95,13 @@ def committer_email(commit: str) -> str:
     return git("show", "-s", "--format=%ce", commit)
 
 
+def principal_email(commit: str) -> str:
+    author, committer = author_email(commit), committer_email(commit)
+    if author != committer:
+        fail(f"commit {commit} has inconsistent author/committer identity")
+    return committer
+
+
 def git_file_hash(commit: str, path: str) -> str:
     try:
         content = subprocess.check_output(["git", "show", f"{commit}:{path}"], cwd=ROOT)
@@ -162,9 +170,9 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
         fail(f"Story {story} reviewer and fixture author commits are not distinct")
     for commit in commits + [approval_commit]:
         git("cat-file", "-e", f"{commit}^{{commit}}")
-    if len({committer_email(commit) for commit in commits}) != 2:
+    if len({principal_email(commit) for commit in commits}) != 2:
         fail(f"Story {story} reviewer and fixture author Git committer identities are not distinct")
-    if committer_email(approval_commit) != committer_email(data["reviewerCommit"]):
+    if principal_email(approval_commit) != principal_email(data["reviewerCommit"]):
         fail(f"Story {story} approval commit is not committed by the declared reviewer")
     if any(subprocess.run(["git", "merge-base", "--is-ancestor", commit, approval_commit], cwd=ROOT).returncode for commit in commits):
         fail(f"Story {story} approval does not descend from its author and reviewer evidence")
@@ -178,7 +186,9 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
 def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
     approval_commit, _ = validate_approval(story, rows)
     for dependency in declared_dependencies(story):
-        validate_completion(dependency, rows)
+        dependency_completion = validate_completion(dependency, rows)
+        if subprocess.run(["git", "merge-base", "--is-ancestor", dependency_completion, approval_commit], cwd=ROOT).returncode:
+            fail(f"Story {story} approval predates completed predecessor {dependency}")
     print(f"Story {story} fixture approval: PASS ({approval_commit})")
 
 
@@ -201,12 +211,23 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
         fail(f"Story {story} implementation does not descend from approval")
     if subprocess.run(["git", "merge-base", "--is-ancestor", data["implementationCommit"], completion_commit], cwd=ROOT).returncode:
         fail(f"Story {story} completion provenance does not descend from implementation")
-    for binding in approval["oracleBindings"]:
+    results = data["oracleResults"]
+    bindings = approval["oracleBindings"]
+    if not isinstance(results, list) or len(results) != len(bindings):
+        fail(f"Story {story} completion must contain one result per oracle")
+    for binding, result in zip(bindings, results, strict=True):
+        if set(result) != RESULT_KEYS or result["oraclePath"] != binding["oraclePath"]:
+            fail(f"Story {story} completion result binding is invalid")
+        if result["resultSha256"] != binding["expectedResultSha256"]:
+            fail(f"Story {story} executed result differs from approved expectation")
+        if git_file_hash(data["implementationCommit"], result["resultPath"]) != result["resultSha256"]:
+            fail(f"Story {story} implementation commit lacks its executed result bytes")
+    for binding in bindings:
         for path_key in ("fixturePath", "expectedResultPath"):
             relative = binding[path_key]
             if subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", relative], cwd=ROOT).returncode:
                 fail(f"Story {story} implementation changed approved {path_key}")
-    return data["implementationCommit"]
+    return completion_commit
 
 
 def main() -> None:

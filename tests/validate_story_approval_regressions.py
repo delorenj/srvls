@@ -9,6 +9,7 @@ import json
 import os
 import subprocess
 import tempfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -48,6 +49,10 @@ dev = (ROOT / "_bmad/bmm/workflows/4-implementation/dev-story/instructions.xml")
 sprint = (ROOT / "_bmad/bmm/workflows/4-implementation/sprint-planning/instructions.md").read_text()
 require(create.index("validate_story_fixture_approvals.py") < create.index("template-output"),
         "create-story writes before approval")
+ET.parse(ROOT / "_bmad/bmm/workflows/4-implementation/create-story/instructions.xml")
+ET.parse(ROOT / "_bmad/bmm/workflows/4-implementation/dev-story/instructions.xml")
+require(create.count("validate_story_fixture_approvals.py") >= 5,
+        "not every create-story selection branch has a C-23 preflight")
 require("<action>HALT</action>" in create and "<action>HALT</action>" in dev,
         "workflow nonzero transition lacks HALT")
 require("C-23 validity dominates preservation" in sprint,
@@ -71,16 +76,17 @@ def hermetic_git_gate() -> None:
 
         planning = root / "_bmad-output/planning-artifacts"
         approvals = root / "_bmad-output/implementation-artifacts/fixture-approvals"
-        oracle = root / "tests/fixtures/story-v1"
-        planning.mkdir(parents=True); approvals.mkdir(parents=True); oracle.mkdir(parents=True)
+        oracle = root / "tests/fixtures/story-v1"; oracle2 = root / "tests/fixtures/story-v2"
+        planning.mkdir(parents=True); approvals.mkdir(parents=True); oracle.mkdir(parents=True); oracle2.mkdir(parents=True)
         (planning / "epics.md").write_text(
             "### Story 1.1: First\n**Dependencies:** None.\n"
-            "**Validation Expectations:** The owning oracle is tests/fixtures/story-v1.\n\n"
+            "**Validation Expectations:** The owning oracles are tests/fixtures/story-v1 and tests/fixtures/story-v2.\n\n"
             "### Story 1.2: Second\n**Dependencies:** Story 1.1.\n"
             "**Validation Expectations:** The owning oracle is tests/fixtures/story-v1.\n"
         )
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
+        (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
         fixture_commit = commit("fixtures", "fixture@example.test")
         reviewer_commit = commit("review evidence", "reviewer@example.test")
         rows = {
@@ -95,11 +101,11 @@ def hermetic_git_gate() -> None:
                 "rowIds": [f"AC-{story}-P01", f"AC-{story}-N01"],
                 "criterionSha256": [rows[f"AC-{story}-P01"]["criterionSha256"], rows[f"AC-{story}-N01"]["criterionSha256"]],
                 "oracleBindings": [{
-                    "oraclePath": "tests/fixtures/story-v1", "fixturePath": "tests/fixtures/story-v1/input",
+                    "oraclePath": path, "fixturePath": f"{path}/input",
                     "fixtureSha256": hashlib.sha256(b"input").hexdigest(),
-                    "expectedResultPath": "tests/fixtures/story-v1/expected",
+                    "expectedResultPath": f"{path}/expected",
                     "expectedResultSha256": hashlib.sha256(b"expected").hexdigest(),
-                }],
+                } for path in approval.declared_oracles(story)],
                 "reviewerCommit": reviewer_commit, "fixtureAuthorCommit": fixture_commit, "verdict": "approved",
             }
 
@@ -109,10 +115,12 @@ def hermetic_git_gate() -> None:
         implementation_commit = commit("implement 1.1", "implementer@example.test")
         (approvals / "1.1-completed-v1.json").write_text(json.dumps({
             "schema": "srvls-story-completion-v1", "storyId": "1.1", "approvalCommit": approval_commit,
-            "implementationCommit": implementation_commit, "verdict": "completed",
+            "implementationCommit": implementation_commit,
+            "oracleResults": [{"oraclePath": path, "resultPath": f"{path}/expected", "resultSha256": hashlib.sha256(b"expected").hexdigest()} for path in approval.declared_oracles("1.1")],
+            "verdict": "completed",
         }))
-        commit("complete 1.1", "reviewer@example.test")
-        require(approval.validate_completion("1.1", rows) == implementation_commit, "valid completion rejected")
+        completion_commit = commit("complete 1.1", "reviewer@example.test")
+        require(approval.validate_completion("1.1", rows) == completion_commit, "valid completion rejected")
         (approvals / "1.2-v1.json").write_text(json.dumps(approval_payload("1.2")))
         commit("approve 1.2", "reviewer@example.test")
         approval.validate_assignment("1.2", rows)
@@ -126,6 +134,18 @@ def hermetic_git_gate() -> None:
             pass
         else:
             require(False, "zero-change completion mutation escaped")
+        env = os.environ | {
+            "GIT_AUTHOR_NAME": "spoof", "GIT_AUTHOR_EMAIL": "spoof@example.test",
+            "GIT_COMMITTER_NAME": "fixture", "GIT_COMMITTER_EMAIL": "fixture@example.test",
+        }
+        subprocess.run(["git", "commit", "-q", "--allow-empty", "-m", "identity mismatch"], cwd=root, check=True, env=env)
+        mismatch = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+        try:
+            approval.principal_email(mismatch)
+        except SystemExit:
+            pass
+        else:
+            require(False, "author/committer identity mismatch escaped")
 
 
 hermetic_git_gate()
