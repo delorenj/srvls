@@ -64,8 +64,11 @@ with lock_path.open("a+") as lock:
             stream.write(updated); stream.flush(); os.fsync(stream.fileno())
         os.replace(temporary, status_path)
         directory = os.open(status_path.parent, os.O_RDONLY)
-        try: os.fsync(directory)
+        try:
+            try: os.fsync(directory)
+            except OSError: pass  # replace already committed; report success and recover by ordinary next read
         finally: os.close(directory)
     finally:
         if os.path.exists(temporary): os.unlink(temporary)
-print(f"story status transition: PASS ({story_key}: {expected} -> {target})")
+try: print(f"story status transition: PASS ({story_key}: {expected} -> {target})")
+except BrokenPipeError: pass

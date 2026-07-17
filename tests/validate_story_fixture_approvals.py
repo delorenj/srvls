@@ -278,7 +278,7 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             fail(f"Story {story} executed result is not fresh implementation evidence")
         with tempfile.TemporaryDirectory(prefix="srvls-oracle-") as temporary:
             isolated = Path(temporary)
-            runner = isolated / "runner"; fixture = isolated / "fixture"; implementation = isolated / "implementation"; home = isolated / "home"
+            runner = isolated / "runner"; fixture = isolated / "fixture"; implementation = isolated / "implementation"; control = isolated / "control"; home = isolated / "home"
             runner.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["runnerPath"]))
             fixture.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["fixturePath"]))
             implementation.mkdir()
@@ -287,6 +287,10 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
                 if any(Path(member.name).is_absolute() or ".." in Path(member.name).parts for member in bundle.getmembers()):
                     fail(f"Story {story} implementation archive contains an unsafe path")
                 bundle.extractall(implementation, filter="data")
+            control.mkdir()
+            control_archive = subprocess.check_output(["git", "archive", "--format=tar", approval_commit], cwd=ROOT)
+            with tarfile.open(fileobj=io.BytesIO(control_archive), mode="r:") as bundle:
+                bundle.extractall(control, filter="data")
             runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
             if not runner.read_bytes().startswith(b"\x7fELF"):
                 fail(f"Story {story} approved runner must be a static ELF executable")
@@ -308,6 +312,15 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             access = (trace_dir / "access").read_text(errors="replace") if (trace_dir / "access").is_file() else ""
             if "/work/implementation/" not in access:
                 fail(f"Story {story} runner did not consume the exact implementation tree")
+            control_run = subprocess.run(
+                ["bwrap", "--unshare-all", "--die-with-parent", "--new-session",
+                 "--ro-bind", str(isolated), "/work", "--proc", "/proc", "--dev", "/dev",
+                 "--tmpfs", "/tmp", "--chdir", "/work", "--clearenv",
+                 "/work/runner", "/work/control", "/work/fixture"],
+                cwd=isolated, capture_output=True, timeout=10,
+            )
+            if control_run.returncode == result["exitCode"] and hashlib.sha256(control_run.stdout).hexdigest() == result["resultSha256"]:
+                fail(f"Story {story} oracle result is independent of the implementation change")
         if executed.returncode != result["exitCode"] or hashlib.sha256(executed.stdout).hexdigest() != result["resultSha256"]:
             fail(f"Story {story} approved runner replay does not reproduce the attested result: {executed.stderr.decode(errors='replace')[:240]}")
         if result["resultSha256"] != binding["expectedResultSha256"]:
