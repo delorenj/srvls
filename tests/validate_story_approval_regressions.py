@@ -47,23 +47,30 @@ rejected("--complete", "1.1", contains="has no completion provenance")
 create = (ROOT / "_bmad/bmm/workflows/4-implementation/create-story/instructions.xml").read_text()
 dev = (ROOT / "_bmad/bmm/workflows/4-implementation/dev-story/instructions.xml").read_text()
 sprint = (ROOT / "_bmad/bmm/workflows/4-implementation/sprint-planning/instructions.md").read_text()
+code_review = (ROOT / "_bmad/bmm/workflows/4-implementation/code-review/instructions.xml").read_text()
+sprint_status = (ROOT / "_bmad/bmm/workflows/4-implementation/sprint-status/instructions.md").read_text()
 require(create.index("validate_story_fixture_approvals.py") < create.index("template-output"),
         "create-story writes before approval")
 ET.parse(ROOT / "_bmad/bmm/workflows/4-implementation/create-story/instructions.xml")
 ET.parse(ROOT / "_bmad/bmm/workflows/4-implementation/dev-story/instructions.xml")
+ET.parse(ROOT / "_bmad/bmm/workflows/4-implementation/code-review/instructions.xml")
 require(create.count("validate_story_fixture_approvals.py") >= 5,
         "not every create-story selection branch has a C-23 preflight")
 require("<action>HALT</action>" in create and "<action>HALT</action>" in dev,
         "workflow nonzero transition lacks HALT")
 require("C-23 validity dominates preservation" in sprint,
         "sprint preservation can bypass approval")
+require("--complete {{story_id}}" in code_review and "HALT on non-zero" in code_review,
+        "code-review completion transition bypasses provenance")
+require("--complete &lt;story_id&gt;" in sprint_status,
+        "sprint-status correction bypasses completion provenance")
 
 
 def hermetic_git_gate() -> None:
     """Execute one valid approval/completion/dependency chain, then mutate it."""
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
-        subprocess.run(["git", "init", "-q", "--object-format=sha256"], cwd=root, check=True)
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
 
         def commit(message: str, email: str) -> str:
             env = os.environ | {
@@ -87,7 +94,9 @@ def hermetic_git_gate() -> None:
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
         (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
-        (oracle / "runner").write_bytes(b"runner"); (oracle2 / "runner").write_bytes(b"runner")
+        runner_bytes = b"#!/bin/sh\nprintf expected"
+        (oracle / "runner").write_bytes(runner_bytes); (oracle2 / "runner").write_bytes(runner_bytes)
+        (oracle / "runner").chmod(0o755); (oracle2 / "runner").chmod(0o755)
         fixture_commit = commit("fixtures", "fixture@example.test")
         reviewer_commit = commit("review evidence", "reviewer@example.test")
         rows = {
@@ -120,7 +129,7 @@ def hermetic_git_gate() -> None:
             "implementationCommit": implementation_commit,
             "oracleResults": [{
                 "oraclePath": path, "runnerPath": f"{path}/runner",
-                "runnerSha256": hashlib.sha256(b"runner").hexdigest(), "exitCode": 0,
+                "runnerSha256": hashlib.sha256(runner_bytes).hexdigest(), "exitCode": 0,
                 "resultPath": f"{path}/actual", "resultSha256": hashlib.sha256(b"expected").hexdigest(),
             } for path in approval.declared_oracles("1.1")],
             "verdict": "completed",
@@ -130,8 +139,9 @@ def hermetic_git_gate() -> None:
         (approvals / "1.2-v1.json").write_text(json.dumps(approval_payload("1.2")))
         commit("approve 1.2", "reviewer@example.test")
         approval.validate_assignment("1.2", rows)
+        same_principal_commit = commit("second fixture-principal commit", "fixture@example.test")
         same_principal = json.loads((approvals / "1.2-v1.json").read_text())
-        same_principal["reviewerCommit"] = fixture_commit
+        same_principal["reviewerCommit"] = same_principal_commit
         (approvals / "1.2-v1.json").write_text(json.dumps(same_principal))
         commit("same principal attack", "fixture@example.test")
         try:
@@ -153,6 +163,18 @@ def hermetic_git_gate() -> None:
             require(False, "result-path oracle escape escaped")
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
         commit("restore completion", "reviewer@example.test")
+        bad_execution = json.loads(json.dumps(baseline_completion))
+        bad_execution["oracleResults"][0]["exitCode"] = 1
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(bad_execution))
+        commit("false execution attack", "reviewer@example.test")
+        try:
+            approval.validate_completion("1.1", rows)
+        except SystemExit:
+            pass
+        else:
+            require(False, "false runner exit attestation escaped")
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
+        commit("restore execution", "reviewer@example.test")
         mutated = json.loads((approvals / "1.1-completed-v1.json").read_text())
         mutated["implementationCommit"] = mutated["approvalCommit"]
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(mutated))

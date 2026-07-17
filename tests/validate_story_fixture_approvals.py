@@ -17,6 +17,7 @@ REGISTRY = ROOT / "_bmad-output/planning-artifacts/story-acceptance-registry.jso
 APPROVALS = ROOT / "_bmad-output/implementation-artifacts/fixture-approvals"
 STORY = re.compile(r"^\d+\.\d+$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
+OID = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 APPROVAL_KEYS = {
     "schema", "storyId", "rowIds", "oracleBindings", "reviewerCommit",
     "fixtureAuthorCommit", "criterionSha256", "verdict",
@@ -173,7 +174,7 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
             committed_clean(target)
     approval_commit = committed_clean(path)
     commits = [data[k] for k in ("reviewerCommit", "fixtureAuthorCommit")]
-    if any(not SHA.fullmatch(value) for value in commits) or len(set(commits)) != 2:
+    if any(not OID.fullmatch(value) for value in commits) or len(set(commits)) != 2:
         fail(f"Story {story} reviewer and fixture author commits are not distinct")
     for commit in commits + [approval_commit]:
         git("cat-file", "-e", f"{commit}^{{commit}}")
@@ -209,7 +210,7 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
         fail(f"Story {story} completion schema is invalid")
     approval_commit, approval = validate_approval(story, rows)
     completion_commit = committed_clean(completion_path)
-    if data["approvalCommit"] != approval_commit or not SHA.fullmatch(data["implementationCommit"]):
+    if data["approvalCommit"] != approval_commit or not OID.fullmatch(data["implementationCommit"]):
         fail(f"Story {story} completion does not bind its approval and implementation")
     if len({approval_commit, data["implementationCommit"], completion_commit}) != 3:
         fail(f"Story {story} approval, implementation, and completion commits are not distinct")
@@ -233,6 +234,11 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             fail(f"Story {story} executed result escapes its owning oracle")
         if git_path_exists(approval_commit, result["resultPath"]):
             fail(f"Story {story} executed result is not fresh implementation evidence")
+        runner = (ROOT / result["runnerPath"]).resolve()
+        fixture = (ROOT / binding["fixturePath"]).resolve()
+        executed = subprocess.run([str(runner), str(fixture)], cwd=ROOT, capture_output=True)
+        if executed.returncode != result["exitCode"] or hashlib.sha256(executed.stdout).hexdigest() != result["resultSha256"]:
+            fail(f"Story {story} approved runner replay does not reproduce the attested result")
         if result["resultSha256"] != binding["expectedResultSha256"]:
             fail(f"Story {story} executed result differs from approved expectation")
         if git_file_hash(data["implementationCommit"], result["resultPath"]) != result["resultSha256"]:

@@ -519,9 +519,10 @@ commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
 forbidden until this pre-assignment approval passes. After implementation,
 `<story-id>-completed-v1.json` separately binds the derived approval commit to
-an implementation commit and one runner path/SHA-256, zero exit code, and fresh
+an implementation commit and one executable runner path/SHA-256, zero exit code, and fresh
 executed result path/SHA-256 for every ordered oracle binding; every result must equal its independently approved expected
-SHA-256. Every dependent Story requires that fully validated completion object
+SHA-256, and the completion gate replays the fixture-author runner with the
+approved fixture path and requires that exact exit/stdout hash. Every dependent Story requires that fully validated completion object
 and requires its completion commit to precede the dependent approval. The implementation may not
 recapture or update approved rows in the same change.
 
@@ -4615,11 +4616,11 @@ As a srvls Operator,
 I want one complete exact-target action journey,
 So that plan, confirmation, admission, execution, verification, and outcome remain one inspectable operation across every surface.
 
-**Implementation Boundary:** Integrate Stories 2.1 through 2.8 and 6.1 through 6.12 into the Contract C-22 UJ-2/UJ-3/UJ-4/UJ-5 and UX-IP-7 paths; add journey routing and parity tests without reimplementing lifecycle, enum, plan, pool, executor, persistence, verification, or presentation owners.
+**Implementation Boundary:** Integrate Stories 2.1 through 2.6 and 6.1 through 6.12 into the Contract C-22 UJ-2/UJ-3/UJ-4/UJ-5 and UX-IP-7 paths; add journey routing and parity tests without reimplementing lifecycle, enum, plan, pool, executor, persistence, verification, or presentation owners.
 
 **Requirement Mapping:** FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-2, UJ-3, UJ-4, UJ-5, UX-FND-3, UX-IP-7, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11, AD-22.
 
-**Dependencies:** Story 6.12.
+**Dependencies:** Story 2.6 and Story 6.12.
 
 **Validation Expectations:** Contract C-23 rows AC-6.13-P01/N01 are owned by tests/fixtures/implementation/action-journey-v1; Contract C-23 rows AC-6.13-P01/N01 require an independent approval artifact before assignment.
 
