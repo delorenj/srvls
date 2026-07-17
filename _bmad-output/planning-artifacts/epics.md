@@ -500,6 +500,19 @@ gates, never inferred from one narrow fixture. Foundation CI additionally gates
 format, lint, both toolchains, hexagonal dependency direction, Elm update/view/
 command isolation, and Strategy/Adapter/Command seams before Provider code.
 
+### Contract C-23: Acceptance Row Identity and Independent Approval
+
+Every numbered criterion is a closed row with ID
+`AC-<story-id>-P01` or `AC-<story-id>-N01`. Its complete `Given` and `When`
+clauses are the input definition; its complete `Then` and `And` clauses are the
+expected observable result and precedence. Before a story may be assigned, a
+reviewer who is neither its implementer nor fixture author must commit
+`_bmad-output/implementation-artifacts/fixture-approvals/<story-id>-v1.md`
+containing both row IDs, fixture SHA-256, expected-byte/result SHA-256, reviewer
+identity, and `verdict: approved`. Production work is forbidden until that
+approval commit is an explicit dependency. The implementation may not recapture
+or update approved rows in the same change.
+
 ## Machine-Checkable Coverage Registry
 
 The JSON block is normative. It explicitly distinguishes the 83 non-
@@ -511,7 +524,7 @@ requirement plus every AD-11 row.
   "schema": "srvls-backlog-coverage-v1",
   "canonicalCounts": {
     "epics": 7,
-    "stories": 73,
+    "stories": 75,
     "functional": 43,
     "nonFunctional": 16,
     "journeys": 6,
@@ -522,7 +535,7 @@ requirement plus every AD-11 row.
     "architectureLimits": 24,
     "hostProfiles": 1,
     "supplementalMetrics": 9,
-    "ad11Rows": 84
+    "ad11Rows": 87
   },
   "inventory": {
     "functional": [
@@ -795,6 +808,7 @@ requirement plus every AD-11 row.
     "Story 5.7",
     "Story 5.8",
     "Story 5.9",
+    "Story 5.10",
     "Story 6.1",
     "Story 6.2",
     "Story 6.3",
@@ -807,6 +821,7 @@ requirement plus every AD-11 row.
     "Story 6.10",
     "Story 6.11",
     "Story 6.12",
+    "Story 6.13",
     "Story 7.1",
     "Story 7.2",
     "Story 7.3",
@@ -895,16 +910,17 @@ requirement plus every AD-11 row.
     "Story 3.8": ["AD-11", "AD-15", "AD-21", "FR-12", "FR-14"],
     "Story 3.9": ["AD-11", "AD-21", "FR-13", "FR-14"],
     "Story 3.10": [
-      "AD-11",
-      "AD-21",
       "FR-14",
       "FR-17",
       "NFR-2",
-      "SM-C2",
-      "UX-CP-2",
       "UX-FND-4",
+      "UX-IA-10",
+      "UX-CP-2",
       "UX-ST-4",
-      "UX-ST-5"
+      "UX-ST-5",
+      "AD-11",
+      "AD-21",
+      "SM-C2"
     ],
     "Story 3.11": [
       "FR-8",
@@ -986,21 +1002,23 @@ requirement plus every AD-11 row.
       "NFR-1",
       "UJ-3",
       "UJ-5",
+      "UX-IA-2",
       "UX-CP-4",
       "AD-4",
       "AD-11",
       "AD-18"
     ],
     "Story 5.1": [
-      "AD-11",
-      "AD-14",
-      "AD-7",
       "FR-30",
       "FR-34",
       "NFR-6",
       "UX-FND-1",
+      "UX-IA-10",
       "UX-IP-1",
-      "UX-RP-6"
+      "UX-RP-6",
+      "AD-7",
+      "AD-11",
+      "AD-14"
     ],
     "Story 5.2": [
       "FR-34",
@@ -1051,6 +1069,22 @@ requirement plus every AD-11 row.
       "UX-VT-4"
     ],
     "Story 5.9": [
+      "FR-34",
+      "UX-VT-1",
+      "UX-VT-2",
+      "UX-VT-3",
+      "UX-VT-4",
+      "UX-CP-14",
+      "UX-BUD-1",
+      "UX-BUD-2",
+      "UX-BUD-3",
+      "UX-BUD-7",
+      "UX-A11Y-3",
+      "AD-11",
+      "ARCH-HOST-1"
+    ],
+    "Story 5.10": [
+      "AD-11",
       "FR-27",
       "FR-28",
       "FR-29",
@@ -1058,18 +1092,11 @@ requirement plus every AD-11 row.
       "FR-31",
       "FR-32",
       "FR-33",
-      "FR-34",
       "NFR-6",
       "NFR-8",
       "NFR-13",
       "NFR-14",
-      "UJ-1",
-      "UX-BUD-1",
-      "UX-BUD-2",
-      "UX-BUD-3",
-      "UX-BUD-7",
-      "AD-11",
-      "ARCH-HOST-1"
+      "UJ-1"
     ],
     "Story 6.1": ["AD-11", "AD-22", "AD-6", "FR-36", "FR-40"],
     "Story 6.2": [
@@ -1082,55 +1109,63 @@ requirement plus every AD-11 row.
       "UX-IP-4"
     ],
     "Story 6.3": [
-      "AD-11",
-      "AD-22",
       "FR-38",
       "FR-40",
       "UX-CP-10",
+      "UX-ST-20",
       "UX-IP-5",
-      "UX-ST-20"
+      "UX-IP-7",
+      "AD-11",
+      "AD-22"
     ],
-    "Story 6.4": ["AD-11", "AD-22", "FR-26", "FR-37", "FR-40", "UX-ST-14"],
+    "Story 6.4": [
+      "FR-26",
+      "FR-37",
+      "FR-40",
+      "UX-ST-14",
+      "UX-IP-7",
+      "AD-11",
+      "AD-22"
+    ],
     "Story 6.5": ["AD-11", "AD-22", "FR-40"],
-    "Story 6.6": ["AD-11", "AD-22", "FR-39", "FR-40", "NFR-12"],
-    "Story 6.7": ["AD-11", "AD-15", "AD-22", "FR-40", "NFR-5"],
+    "Story 6.6": [
+      "FR-39",
+      "FR-40",
+      "NFR-12",
+      "UX-FND-3",
+      "UX-IP-7",
+      "AD-11",
+      "AD-22"
+    ],
+    "Story 6.7": ["FR-40", "NFR-5", "UX-IP-7", "AD-11", "AD-15", "AD-22"],
     "Story 6.8": ["AD-22", "FR-40", "UX-CP-11", "UX-IP-7", "UX-ST-8"],
     "Story 6.9": [
-      "AD-11",
-      "AD-22",
       "FR-40",
-      "SM-3",
       "UJ-4",
+      "UX-ST-9",
       "UX-ST-10",
       "UX-ST-11",
       "UX-ST-12",
       "UX-ST-13",
       "UX-ST-15",
-      "UX-ST-9"
+      "UX-IP-7",
+      "AD-11",
+      "AD-22",
+      "SM-3"
     ],
     "Story 6.10": ["AD-11", "AD-22", "FR-40", "UX-IP-10"],
     "Story 6.11": [
-      "AD-11",
-      "AD-22",
       "FR-40",
-      "UX-A11Y-3",
+      "UX-IA-10",
       "UX-CP-15",
-      "UX-IP-11"
+      "UX-IP-7",
+      "UX-IP-11",
+      "UX-A11Y-3",
+      "AD-11",
+      "AD-22"
     ],
     "Story 6.12": [
-      "FR-35",
-      "FR-36",
-      "FR-37",
-      "FR-38",
-      "FR-39",
       "FR-40",
-      "FR-41",
-      "NFR-5",
-      "NFR-7",
-      "NFR-8",
-      "NFR-12",
-      "NFR-13",
-      "UJ-4",
       "UX-RP-5",
       "UX-BUD-4",
       "UX-BUD-5",
@@ -1142,9 +1177,28 @@ requirement plus every AD-11 row.
       "AD-11",
       "AD-22"
     ],
+    "Story 6.13": [
+      "AD-11",
+      "AD-22",
+      "FR-35",
+      "FR-36",
+      "FR-37",
+      "FR-38",
+      "FR-39",
+      "FR-41",
+      "NFR-5",
+      "NFR-7",
+      "NFR-8",
+      "NFR-12",
+      "NFR-13",
+      "UJ-4",
+      "UX-FND-3",
+      "UX-IP-7",
+      "UX-A11Y-3"
+    ],
     "Story 7.1": ["AD-11", "AD-12", "FR-42", "FR-43", "NFR-15"],
     "Story 7.2": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.3": ["AD-11", "AD-23", "FR-43"],
+    "Story 7.3": ["FR-43", "UX-IA-10", "AD-11", "AD-23"],
     "Story 7.4": ["AD-11", "AD-23", "FR-43"],
     "Story 7.5": ["AD-23", "FR-43"],
     "Story 7.6": ["AD-11", "AD-23", "FR-43"],
@@ -1241,13 +1295,13 @@ requirement plus every AD-11 row.
       "Story 4.10",
       "Story 6.4"
     ],
-    "FR-27": ["Story 4.7", "Story 4.8", "Story 4.10", "Story 5.9"],
-    "FR-28": ["Story 4.9", "Story 4.10", "Story 5.9"],
-    "FR-29": ["Story 4.10", "Story 5.9"],
-    "FR-30": ["Story 5.1", "Story 5.9"],
-    "FR-31": ["Story 5.3", "Story 5.9"],
-    "FR-32": ["Story 5.4", "Story 5.5", "Story 5.9"],
-    "FR-33": ["Story 5.7", "Story 5.9"],
+    "FR-27": ["Story 4.7", "Story 4.8", "Story 4.10", "Story 5.10"],
+    "FR-28": ["Story 4.9", "Story 4.10", "Story 5.10"],
+    "FR-29": ["Story 4.10", "Story 5.10"],
+    "FR-30": ["Story 5.1", "Story 5.10"],
+    "FR-31": ["Story 5.3", "Story 5.10"],
+    "FR-32": ["Story 5.4", "Story 5.5", "Story 5.10"],
+    "FR-33": ["Story 5.7", "Story 5.10"],
     "FR-34": [
       "Story 5.1",
       "Story 5.2",
@@ -1259,11 +1313,11 @@ requirement plus every AD-11 row.
       "Story 5.8",
       "Story 5.9"
     ],
-    "FR-35": ["Story 6.2", "Story 6.12"],
-    "FR-36": ["Story 6.1", "Story 6.12"],
-    "FR-37": ["Story 6.4", "Story 6.12"],
-    "FR-38": ["Story 6.3", "Story 6.12"],
-    "FR-39": ["Story 6.6", "Story 6.12"],
+    "FR-35": ["Story 6.2", "Story 6.13"],
+    "FR-36": ["Story 6.1", "Story 6.13"],
+    "FR-37": ["Story 6.4", "Story 6.13"],
+    "FR-38": ["Story 6.3", "Story 6.13"],
+    "FR-39": ["Story 6.6", "Story 6.13"],
     "FR-40": [
       "Story 6.1",
       "Story 6.2",
@@ -1278,7 +1332,7 @@ requirement plus every AD-11 row.
       "Story 6.11",
       "Story 6.12"
     ],
-    "FR-41": ["Story 6.2", "Story 6.12"],
+    "FR-41": ["Story 6.2", "Story 6.13"],
     "FR-42": ["Story 7.1", "Story 7.15"],
     "FR-43": [
       "Story 7.1",
@@ -1301,32 +1355,32 @@ requirement plus every AD-11 row.
     "NFR-2": ["Story 3.10", "Story 3.11"],
     "NFR-3": ["Story 3.2", "Story 3.11"],
     "NFR-4": ["Story 1.9", "Story 3.11"],
-    "NFR-5": ["Story 3.11", "Story 6.7", "Story 6.12"],
-    "NFR-6": ["Story 5.1", "Story 5.9"],
-    "NFR-7": ["Story 2.6", "Story 6.12"],
-    "NFR-8": ["Story 5.7", "Story 5.9", "Story 6.12"],
+    "NFR-5": ["Story 3.11", "Story 6.7", "Story 6.13"],
+    "NFR-6": ["Story 5.1", "Story 5.10"],
+    "NFR-7": ["Story 2.6", "Story 6.13"],
+    "NFR-8": ["Story 5.7", "Story 5.10", "Story 6.13"],
     "NFR-9": ["Story 1.7", "Story 7.15"],
     "NFR-10": ["Story 2.3", "Story 2.6"],
     "NFR-11": ["Story 1.8", "Story 7.15"],
-    "NFR-12": ["Story 6.6", "Story 6.12"],
-    "NFR-13": ["Story 1.10", "Story 5.9", "Story 6.12"],
-    "NFR-14": ["Story 1.3", "Story 5.9"],
+    "NFR-12": ["Story 6.6", "Story 6.13"],
+    "NFR-13": ["Story 1.10", "Story 5.10", "Story 6.13"],
+    "NFR-14": ["Story 1.3", "Story 5.10"],
     "NFR-15": ["Story 7.1", "Story 7.15"],
     "NFR-16": ["Story 1.5", "Story 7.15"],
-    "UJ-1": ["Story 4.9", "Story 5.9"],
+    "UJ-1": ["Story 4.9", "Story 5.10"],
     "UJ-2": ["Story 2.6"],
     "UJ-3": ["Story 4.2", "Story 4.10"],
-    "UJ-4": ["Story 6.9", "Story 6.12"],
+    "UJ-4": ["Story 6.9", "Story 6.13"],
     "UJ-5": ["Story 4.4", "Story 4.10"],
     "UJ-6": ["Story 7.15"],
     "UX-FND-1": ["Story 5.1"],
     "UX-FND-2": ["Story 4.2"],
-    "UX-FND-3": ["Story 1.4"],
+    "UX-FND-3": ["Story 1.4", "Story 6.6", "Story 6.13"],
     "UX-FND-4": ["Story 3.10"],
     "UX-FND-5": ["Story 4.5"],
     "UX-FND-6": ["Story 1.3"],
     "UX-IA-1": ["Story 4.9"],
-    "UX-IA-2": ["Story 5.2"],
+    "UX-IA-2": ["Story 4.10", "Story 5.2"],
     "UX-IA-3": ["Story 5.4"],
     "UX-IA-4": ["Story 3.11"],
     "UX-IA-5": ["Story 5.3"],
@@ -1334,13 +1388,19 @@ requirement plus every AD-11 row.
     "UX-IA-7": ["Story 4.8"],
     "UX-IA-8": ["Story 5.8"],
     "UX-IA-9": ["Story 7.15"],
-    "UX-IA-10": ["Story 2.6"],
+    "UX-IA-10": [
+      "Story 2.6",
+      "Story 3.10",
+      "Story 5.1",
+      "Story 6.11",
+      "Story 7.3"
+    ],
     "UX-IA-11": ["Story 5.3"],
     "UX-IA-12": ["Story 5.8"],
-    "UX-VT-1": ["Story 5.7"],
-    "UX-VT-2": ["Story 5.7"],
-    "UX-VT-3": ["Story 5.8"],
-    "UX-VT-4": ["Story 5.8"],
+    "UX-VT-1": ["Story 5.7", "Story 5.9"],
+    "UX-VT-2": ["Story 5.7", "Story 5.9"],
+    "UX-VT-3": ["Story 5.8", "Story 5.9"],
+    "UX-VT-4": ["Story 5.8", "Story 5.9"],
     "UX-CP-1": ["Story 4.9"],
     "UX-CP-2": ["Story 3.10"],
     "UX-CP-3": ["Story 5.2"],
@@ -1354,7 +1414,7 @@ requirement plus every AD-11 row.
     "UX-CP-11": ["Story 6.8"],
     "UX-CP-12": ["Story 4.8"],
     "UX-CP-13": ["Story 5.8"],
-    "UX-CP-14": ["Story 4.3"],
+    "UX-CP-14": ["Story 4.3", "Story 5.9"],
     "UX-CP-15": ["Story 6.11"],
     "UX-CP-16": ["Story 7.15"],
     "UX-ST-1": ["Story 5.6"],
@@ -1383,7 +1443,16 @@ requirement plus every AD-11 row.
     "UX-IP-4": ["Story 6.2"],
     "UX-IP-5": ["Story 6.3"],
     "UX-IP-6": ["Story 4.8"],
-    "UX-IP-7": ["Story 6.8"],
+    "UX-IP-7": [
+      "Story 6.3",
+      "Story 6.4",
+      "Story 6.6",
+      "Story 6.7",
+      "Story 6.8",
+      "Story 6.9",
+      "Story 6.11",
+      "Story 6.13"
+    ],
     "UX-IP-8": ["Story 7.15"],
     "UX-IP-9": ["Story 2.6"],
     "UX-IP-10": ["Story 6.10"],
@@ -1404,7 +1473,7 @@ requirement plus every AD-11 row.
     "UX-BUD-7": ["Story 5.9"],
     "UX-A11Y-1": ["Story 5.7", "Story 6.12"],
     "UX-A11Y-2": ["Story 5.3", "Story 6.12"],
-    "UX-A11Y-3": ["Story 6.11"],
+    "UX-A11Y-3": ["Story 5.9", "Story 6.11", "Story 6.13"],
     "UX-A11Y-4": ["Story 5.7"],
     "UX-A11Y-5": ["Story 5.7", "Story 6.12"],
     "SR-A11Y-1": ["Story 6.12"],
@@ -1459,6 +1528,7 @@ requirement plus every AD-11 row.
       "Story 5.5",
       "Story 5.7",
       "Story 5.9",
+      "Story 5.10",
       "Story 6.1",
       "Story 6.3",
       "Story 6.4",
@@ -1469,6 +1539,7 @@ requirement plus every AD-11 row.
       "Story 6.10",
       "Story 6.11",
       "Story 6.12",
+      "Story 6.13",
       "Story 7.1",
       "Story 7.2",
       "Story 7.3",
@@ -1534,7 +1605,8 @@ requirement plus every AD-11 row.
       "Story 6.9",
       "Story 6.10",
       "Story 6.11",
-      "Story 6.12"
+      "Story 6.12",
+      "Story 6.13"
     ],
     "AD-23": [
       "Story 7.2",
@@ -2032,9 +2104,9 @@ requirement plus every AD-11 row.
     },
     {
       "id": "AD11-FUT-43",
-      "owner": "Story 6.12",
-      "fixture": "tests/fixtures/implementation/action-aggregate-v1",
-      "assertion": "assert_sr_a11y_and_action_gate",
+      "owner": "Story 6.13",
+      "fixture": "tests/fixtures/implementation/action-journey-v1",
+      "assertion": "assert_complete_action_journey",
       "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
       "delivery": "future"
     },
@@ -2261,6 +2333,30 @@ requirement plus every AD-11 row.
       "assertion": "assert_installed_prior_forward_to_commit_decided",
       "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
       "delivery": "future"
+    },
+    {
+      "id": "AD11-FUT-71",
+      "owner": "Story 7.12",
+      "fixture": "tests/fixtures/implementation/first-install-success-v1",
+      "assertion": "assert_first_install_publish_ready_commit",
+      "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
+      "delivery": "future"
+    },
+    {
+      "id": "AD11-FUT-72",
+      "owner": "Story 5.10",
+      "fixture": "tests/fixtures/implementation/morning-navigation-journey-v1",
+      "assertion": "assert_complete_morning_navigation_journey",
+      "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
+      "delivery": "future"
+    },
+    {
+      "id": "AD11-FUT-73",
+      "owner": "Story 6.12",
+      "fixture": "tests/fixtures/implementation/action-accessibility-budget-v1",
+      "assertion": "assert_action_budgets_and_accessibility",
+      "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
+      "delivery": "future"
     }
   ]
 }
@@ -2284,13 +2380,13 @@ So that forbidden outward dependencies, alternate side-effect owners, and missin
 
 **Dependencies:** None.
 
-**Validation Expectations:** The owning oracle is tests/architecture_boundaries.rs and cargo test --locked --test architecture_boundaries; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/architecture_boundaries.rs and cargo test --locked --test architecture_boundaries; Contract C-23 rows AC-1.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Provider implementations and product behavior.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/architecture_boundaries.rs and cargo test --locked --test architecture_boundaries, **When** the named fixture's positive scenario is executed, **Then** forbidden outward dependencies, alternate side-effect owners, and missing release-CI ownership are rejected while the prescribed graph passes, **And** repeated runs over
+1. **Given** Rust 1.88 and symbolic stable with the fixed bootstrap fixture, **When** format, lint, `--locked` tests, hexagonal imports, Elm model/message/update/view/effect ownership, and Strategy/Adapter/Command seams run before Provider code, **Then** both lanes pass and every forbidden dependency/effect edge is rejected, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the concrete input and boundary named in this criterion, **When** a Provider module imports presentation or writes Host state directly, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2307,7 +2403,7 @@ So that every inventory row names its source behavior, fixture, oracle, consumer
 
 **Dependencies:** Story 1.1.
 
-**Validation Expectations:** The owning oracle is tests/compat/manifest.json and tests/compat/SHA256SUMS; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/compat/manifest.json and tests/compat/SHA256SUMS; Contract C-23 rows AC-1.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Implementing the Rust replacement.
 
@@ -2330,7 +2426,7 @@ So that the frozen corpus and live smoke compare exact bytes except for a specif
 
 **Dependencies:** Story 1.2.
 
-**Validation Expectations:** The owning oracle is tests/compat/validate.sh; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/compat/validate.sh; Contract C-23 rows AC-1.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** New canonical product contracts outside inherited compatibility.
 
@@ -2353,7 +2449,7 @@ So that canonicalJsonV1 remains newline-free, presenters add one terminator, and
 
 **Dependencies:** Story 1.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/validate.py; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/validate.py; Contract C-23 rows AC-1.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Provider collection and presentation layouts.
 
@@ -2376,7 +2472,7 @@ So that built-in, system, user, explicit, environment, and CLI values resolve in
 
 **Dependencies:** Story 1.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/config-and-limits-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/config-and-limits-v1; Contract C-23 rows AC-1.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Hot reload and Host mutation.
 
@@ -2399,7 +2495,7 @@ So that fresh and existing databases accept only the exact WAL, synchronous, for
 
 **Dependencies:** Story 1.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/sqlite-init-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/sqlite-init-v1; Contract C-23 rows AC-1.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Repositories for later aggregates and release backup.
 
@@ -2422,7 +2518,7 @@ So that later value stories can persist their own aggregates without competing s
 
 **Dependencies:** Story 1.6.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/repository-cas-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/repository-cas-v1; Contract C-23 rows AC-1.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Promise, plan, operation, baseline, Snapshot, collection, and release transaction ownership.
 
@@ -2445,7 +2541,7 @@ So that eligible unpinned rows prune oldest-first and pinned excess refuses only
 
 **Dependencies:** Story 1.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/retention-capacity-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/retention-capacity-v1; Contract C-23 rows AC-1.8-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Command execution and aggregate gates.
 
@@ -2468,7 +2564,7 @@ So that stdout/stderr drain independently, terminal result freezes at the decisi
 
 **Dependencies:** Story 1.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/command-runner-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/command-runner-v1; Contract C-23 rows AC-1.9-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Aggregate gate composition and Host mutations.
 
@@ -2491,7 +2587,7 @@ So that every registry row owned by Epic 1 is discovered and missing, duplicate,
 
 **Dependencies:** Story 1.9.
 
-**Validation Expectations:** The owning oracle is tests/validate_architecture_contracts.sh; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/validate_architecture_contracts.sh; Contract C-23 rows AC-1.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Implementing later epics or making the retired artifact discoverable.
 
@@ -2499,7 +2595,7 @@ So that every registry row owned by Epic 1 is discovered and missing, duplicate,
 
 1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named fixture's positive scenario is executed, **Then** every registry row owned by Epic 1 is discovered and missing, duplicate, stale, or self-generated evidence fails closed, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the active user override, **When** canonical `epics.md` is missing/non-final or the retired archive matches sprint-planning discovery, **Then** the validator exits 1 naming that exact invariant; otherwise canonical discovery plus archive quarantine exits 0, **And**
+2. **Given** the active user override, **When** canonical `epics.md` is missing, has an incoherent draft/final authority triplet, is assigned while non-final, or the retired archive matches sprint-planning discovery, **Then** the validator exits 1 naming that exact invariant; coherent review-time draft discovery and promoted-final discovery both pass with archive quarantine, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 2: Let Agents own runtime intent deterministically
@@ -2518,7 +2614,7 @@ So that declare, revise, renew, and close bind actor and owner to verified local
 
 **Dependencies:** Story 1.10.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/principal-authorization-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/principal-authorization-v1; Contract C-23 rows AC-2.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Promise fields and reconciliation.
 
@@ -2541,7 +2637,7 @@ So that valid declare/revise returns the original PromiseId and Lease on retry w
 
 **Dependencies:** Story 2.1.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-declare-revise-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-declare-revise-v1; Contract C-23 rows AC-2.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Heartbeat and close.
 
@@ -2564,7 +2660,7 @@ So that omitted lifetime creates the exact finite Lease and valid persistent int
 
 **Dependencies:** Story 2.2.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-lease-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-lease-v1; Contract C-23 rows AC-2.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Heartbeat transport and UI.
 
@@ -2587,7 +2683,7 @@ So that same actor and idempotency key returns the original renewal without dupl
 
 **Dependencies:** Story 2.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-heartbeat-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-heartbeat-v1; Contract C-23 rows AC-2.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Promise closure and Agent commands.
 
@@ -2610,7 +2706,7 @@ So that retry returns the same close result and history preserves one reason, ac
 
 **Dependencies:** Story 2.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-close-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/promise-close-v1; Contract C-23 rows AC-2.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Automatic cleanup and lifecycle actions.
 
@@ -2633,7 +2729,7 @@ So that each command and retry maps to one documented result/exit and references
 
 **Dependencies:** Story 2.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/agent-lifecycle-cli-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/agent-lifecycle-cli-v1; Contract C-23 rows AC-2.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** TUI and release commands.
 
@@ -2660,7 +2756,7 @@ So that the plan fingerprint and all cuts are immutable before spawn and no late
 
 **Dependencies:** Story 2.6.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/collection-plan-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/collection-plan-v1; Contract C-23 rows AC-3.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Worker transport and Provider logic.
 
@@ -2683,7 +2779,7 @@ So that epochs, worker IDs, LPT positions, process gate, makespan, margin, and c
 
 **Dependencies:** Story 3.1.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/dispatch-schedule-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/dispatch-schedule-v1; Contract C-23 rows AC-3.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** FD3 framing and collection results.
 
@@ -2706,7 +2802,7 @@ So that all four frames and exact key orders interoperate and each injected fail
 
 **Dependencies:** Story 3.2.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/ipc-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/ipc-v1; Contract C-23 rows AC-3.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Provider-specific Host reads.
 
@@ -2729,7 +2825,7 @@ So that complete and failed scopes normalize deterministic cron ObservationIdV1 
 
 **Dependencies:** Story 3.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-cron-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-cron-v1; Contract C-23 rows AC-3.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Other Providers and reconciliation.
 
@@ -2752,7 +2848,7 @@ So that d-Bus/read-only evidence yields stable unit/timer Observations and scope
 
 **Dependencies:** Story 3.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-systemd-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-systemd-v1; Contract C-23 rows AC-3.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Systemd mutation and release validation.
 
@@ -2775,7 +2871,7 @@ So that restart of the same full container identity preserves ObservationId whil
 
 **Dependencies:** Story 3.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-docker-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-docker-v1; Contract C-23 rows AC-3.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Docker actions.
 
@@ -2798,7 +2894,7 @@ So that pM2 restarts preserve or change identity only according to the exact bir
 
 **Dependencies:** Story 3.6.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-pm2-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-pm2-v1; Contract C-23 rows AC-3.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** PM2 actions.
 
@@ -2821,7 +2917,7 @@ So that frozen SelfProcessSetV1 and ownership hints suppress exact duplicates wh
 
 **Dependencies:** Story 3.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-process-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-process-v1; Contract C-23 rows AC-3.8-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Process signaling and action planning.
 
@@ -2844,7 +2940,7 @@ So that late/superseded reports cannot alter frozen candidate bytes and candidat
 
 **Dependencies:** Story 3.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/collection-candidate-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/collection-candidate-v1; Contract C-23 rows AC-3.9-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Snapshot persistence and presentation.
 
@@ -2863,11 +2959,11 @@ So that default and promoted scopes retain usable successes while withheld concl
 
 **Implementation Boundary:** Apply every Contract C-16 per-scope obligation/outcome row, exact reason token, aggregate precedence, duration/diagnostic, preserved partial truth, and strict exit before CollectionCandidateV1 freezes.
 
-**Requirement Mapping:** AD-11, AD-21, FR-14, FR-17, NFR-2, SM-C2, UX-CP-2, UX-FND-4, UX-ST-4, UX-ST-5.
+**Requirement Mapping:** FR-14, FR-17, NFR-2, UX-FND-4, UX-IA-10, UX-CP-2, UX-ST-4, UX-ST-5, AD-11, AD-21, SM-C2.
 
 **Dependencies:** Story 3.9.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/collection-obligation-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/collection-obligation-v1; Contract C-23 rows AC-3.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Provider detail inspection and reconciliation.
 
@@ -2890,7 +2986,7 @@ So that inspection is stable by typed ID and visibly names truncation/redaction 
 
 **Dependencies:** Story 3.10.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-inspect-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/provider-inspect-v1; Contract C-23 rows AC-3.11-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** TUI layout and Host mutation.
 
@@ -2917,7 +3013,7 @@ So that exact Provider identity or locator anchors and ordered secondary evidenc
 
 **Dependencies:** Story 3.11.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-correlation-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-correlation-v1; Contract C-23 rows AC-4.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Lifecycle labels and actions.
 
@@ -2940,7 +3036,7 @@ So that healthy, broken, unresolved, and inactive remain explicit and orthogonal
 
 **Dependencies:** Story 4.1.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-outcomes-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-outcomes-v1; Contract C-23 rows AC-4.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Observation labels and cleanup.
 
@@ -2963,7 +3059,7 @@ So that all duplicate members retain identity and labels while excess count is i
 
 **Dependencies:** Story 4.2.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-orphan-duplicate-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-orphan-duplicate-v1; Contract C-23 rows AC-4.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Stale/hot and action choice.
 
@@ -2986,7 +3082,7 @@ So that stale requires supported positive no-use evidence and hot requires enoug
 
 **Dependencies:** Story 4.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-stale-hot-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-stale-hot-v1; Contract C-23 rows AC-4.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Unmanaged/abandoned and safety.
 
@@ -3009,7 +3105,7 @@ So that each label names its exact positive and missing evidence and coexists wi
 
 **Dependencies:** Story 4.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1; Contract C-23 rows AC-4.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Safe-to-stop and operations.
 
@@ -3032,7 +3128,7 @@ So that the same frozen truth yields identical assessment/reasons and changed re
 
 **Dependencies:** Story 4.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/safe-to-stop-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/safe-to-stop-v1; Contract C-23 rows AC-4.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Immediate pre-mutation revalidation.
 
@@ -3055,7 +3151,7 @@ So that latest requested generation commits reports, diagnostics, Observations, 
 
 **Dependencies:** Story 4.6.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/snapshot-materialization-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/snapshot-materialization-v1; Contract C-23 rows AC-4.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Baseline acceptance and TUI.
 
@@ -3078,7 +3174,7 @@ So that eligible accept and audited incomplete override update only baseline/aud
 
 **Dependencies:** Story 4.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/baseline-acceptance-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/baseline-acceptance-v1; Contract C-23 rows AC-4.8-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Host mutation and automatic acceptance.
 
@@ -3100,7 +3196,7 @@ So that all BQ-1 through BQ-8 rows answer the exact question and withhold clean 
 
 **Dependencies:** Story 4.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/brief-eight-questions-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/brief-eight-questions-v1; Contract C-23 rows AC-4.9-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Grouping and TUI rendering.
 
@@ -3119,11 +3215,11 @@ So that identical findings produce identical grouping/order and group rows remai
 
 **Implementation Boundary:** Order attention first, infer Stack only from evidence, retain Ungrouped ambiguity, and run the complete Contract C-22 reconciliation/Brief journey gate.
 
-**Requirement Mapping:** FR-18, FR-19, FR-20, FR-21, FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-29, NFR-1, UJ-3, UJ-5, UX-CP-4, AD-4, AD-11, AD-18.
+**Requirement Mapping:** FR-18, FR-19, FR-20, FR-21, FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-29, NFR-1, UJ-3, UJ-5, UX-IA-2, UX-CP-4, AD-4, AD-11, AD-18.
 
 **Dependencies:** Story 4.9.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/brief-grouping-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/brief-grouping-v1; Contract C-23 rows AC-4.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Presentation styling and mutation.
 
@@ -3146,11 +3242,11 @@ So that bare, explicit format, TUI, deprecated fzf, help, internal worker, and n
 
 **Implementation Boundary:** Route raw argv before effects, preserve legacy noninteractive output, enter TUI only when eligible, and use one RAII terminal owner for every exit/panic/signal path.
 
-**Requirement Mapping:** AD-11, AD-14, AD-7, FR-30, FR-34, NFR-6, UX-FND-1, UX-IP-1, UX-RP-6.
+**Requirement Mapping:** FR-30, FR-34, NFR-6, UX-FND-1, UX-IA-10, UX-IP-1, UX-RP-6, AD-7, AD-11, AD-14.
 
 **Dependencies:** Story 4.10.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/presentation-routing-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/presentation-routing-v1; Contract C-23 rows AC-5.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Surface layout and lifecycle actions.
 
@@ -3173,7 +3269,7 @@ So that 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exac
 
 **Dependencies:** Story 5.1.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-responsive-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-responsive-v1; Contract C-23 rows AC-5.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Search and Host mutation.
 
@@ -3196,7 +3292,7 @@ So that valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Cle
 
 **Dependencies:** Story 5.2.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-navigation-search-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-navigation-search-v1; Contract C-23 rows AC-5.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Provider collection and mutation.
 
@@ -3219,7 +3315,7 @@ So that enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggrega
 
 **Dependencies:** Story 5.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-detail-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-detail-v1; Contract C-23 rows AC-5.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Collection or action execution.
 
@@ -3242,7 +3338,7 @@ So that plane intended work, Git code changes, and Telemetry events/measurements
 
 **Dependencies:** Story 5.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/external-boundary-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/external-boundary-v1; Contract C-23 rows AC-5.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** External API integration.
 
@@ -3264,7 +3360,7 @@ So that loading, refreshing, stale, partial-failure, unavailable-Provider, empty
 
 **Dependencies:** Story 5.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-refresh-states-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-refresh-states-v1; Contract C-23 rows AC-5.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Action outcome states.
 
@@ -3287,7 +3383,7 @@ So that keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, an
 
 **Dependencies:** Story 5.6.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-accessibility-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-accessibility-v1; Contract C-23 rows AC-5.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Action submission and release progress.
 
@@ -3310,7 +3406,7 @@ So that question-mark/Esc restores prior focus and invalid config emits one dete
 
 **Dependencies:** Story 5.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/help-config-recovery-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/help-config-recovery-v1; Contract C-23 rows AC-5.8-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** State goldens and benchmarks.
 
@@ -3327,13 +3423,13 @@ As a srvls Operator or maintainer,
 I want state/component goldens and ux budget gate,
 So that all UX-ST read-only states/components match immutable goldens and 30 post-warm-up iterations meet each UX-BUD default/range/p95 on the four-vCPU 8-GiB glibc-2.42 profile.
 
-**Implementation Boundary:** Own immutable read-only state/component goldens, ARCH-HOST-1 read-only budgets, and the Contract C-22 end-to-end morning/navigation gate including retention, baseline, refresh, Stack, unmatched detail, and removed `--fzf-lines` behavior.
+**Implementation Boundary:** Own immutable read-only component/voice/finding-marker goldens and ARCH-HOST-1 read-only rendering budgets only; the end-to-end morning route belongs to Story 5.10.
 
-**Requirement Mapping:** FR-27, FR-28, FR-29, FR-30, FR-31, FR-32, FR-33, FR-34, NFR-6, NFR-8, NFR-13, NFR-14, UJ-1, UX-BUD-1, UX-BUD-2, UX-BUD-3, UX-BUD-7, AD-11, ARCH-HOST-1.
+**Requirement Mapping:** FR-34, UX-VT-1, UX-VT-2, UX-VT-3, UX-VT-4, UX-CP-14, UX-BUD-1, UX-BUD-2, UX-BUD-3, UX-BUD-7, UX-A11Y-3, AD-11, ARCH-HOST-1.
 
 **Dependencies:** Story 5.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-state-budget-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/tui-state-budget-v1; Contract C-23 rows AC-5.9-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Lifecycle action implementation.
 
@@ -3343,6 +3439,27 @@ So that all UX-ST read-only states/components match immutable goldens and 30 pos
    identical input produce identical typed results and evidence.
 2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
+
+### Story 5.10: Complete morning investigation journey
+
+As a srvls Operator,
+I want one complete morning investigation journey,
+So that I can enter, understand withheld truth, navigate, inspect, accept a baseline, and leave without Host mutation.
+
+**Implementation Boundary:** Integrate only the already-owned read-only capabilities from Stories 3.11 through 5.9 into the Contract C-22 UJ-1 path; it adds route wiring and journey tests, not new collection, reconciliation, storage, or component implementations.
+
+**Requirement Mapping:** AD-11, FR-27, FR-28, FR-29, FR-30, FR-31, FR-32, FR-33, NFR-6, NFR-8, NFR-13, NFR-14, UJ-1.
+
+**Dependencies:** Story 5.9.
+
+**Validation Expectations:** Contract C-23 rows AC-5.10-P01/N01 are owned by tests/fixtures/implementation/morning-navigation-journey-v1 and require independent fixture approval before assignment.; Contract C-23 rows AC-5.10-P01/N01 require an independent approval artifact before assignment.
+
+**Out of Scope:** Lifecycle actions, new Provider reads, and new presentation components.
+
+**Acceptance Criteria:**
+
+1. **Given** a partial morning Snapshot, Accepted Baseline, unmatched Promise and Observation, and Stack/Ungrouped evidence, **When** the Operator follows Brief → filter → refresh → inspect → baseline → return → exit in TUI and `brief --linear`, **Then** committed truth remains navigable, every withheld reason and drill-down identity is visible, baseline changes only on confirmation, and no Host mutation occurs, **And** AC-5.10-P01 pins exact state/line bytes and exits.
+2. **Given** resize, hostile text, filtered-empty, Provider timeout, incompatible baseline, and redirected-output cuts, **When** the same journey runs, **Then** focus/identity persist, recovery guidance is explicit, redirected output stays non-TUI, and the terminal restores, **And** AC-5.10-N01 pins each result and forbids `--fzf-lines`.
 
 ## Epic 6: Act on one exact runtime safely
 
@@ -3358,9 +3475,9 @@ So that all Provider-by-kind cells and lowercase encodings match the complete ma
 
 **Requirement Mapping:** AD-11, AD-22, AD-6, FR-36, FR-40.
 
-**Dependencies:** Story 5.9.
+**Dependencies:** Story 5.10.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-kind-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-kind-v1; Contract C-23 rows AC-6.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Planning confirmation and execution.
 
@@ -3383,7 +3500,7 @@ So that supported/unsafe/unknown/stale/pending cells render exactly and accelera
 
 **Dependencies:** Story 6.1.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-menu-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-menu-v1; Contract C-23 rows AC-6.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Plan persistence and mutation.
 
@@ -3402,11 +3519,11 @@ So that start, Restart, Stop, Disable, Delete and every safety state select the 
 
 **Implementation Boundary:** Persist ActionPlanV1 with PlanId only, exact target/generation/policy/BootIdentity/TTL/actor/idempotency and Contract C-05 confirmation.
 
-**Requirement Mapping:** AD-11, AD-22, FR-38, FR-40, UX-CP-10, UX-IP-5, UX-ST-20.
+**Requirement Mapping:** FR-38, FR-40, UX-CP-10, UX-ST-20, UX-IP-5, UX-IP-7, AD-11, AD-22.
 
 **Dependencies:** Story 6.2.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-plan-confirmation-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-plan-confirmation-v1; Contract C-23 rows AC-6.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Pool, submit, and Host execution.
 
@@ -3425,11 +3542,11 @@ So that unchanged exact evidence authorizes submit while stale/reused/missing/am
 
 **Implementation Boundary:** After confirmation and strictly before mutation re-resolve every captured identity/capability/generation/policy/BootIdentity and recompute Safe-to-stop within ARCH-LIM-21.
 
-**Requirement Mapping:** AD-11, AD-22, FR-26, FR-37, FR-40, UX-ST-14.
+**Requirement Mapping:** FR-26, FR-37, FR-40, UX-ST-14, UX-IP-7, AD-11, AD-22.
 
 **Dependencies:** Story 6.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-revalidation-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-revalidation-v1; Contract C-23 rows AC-6.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Pool ownership and Provider mutation.
 
@@ -3452,7 +3569,7 @@ So that available slots reserve deterministically and saturation returns pre-lau
 
 **Dependencies:** Story 6.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-pool-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-pool-v1; Contract C-23 rows AC-6.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Atomic submit and UI.
 
@@ -3471,11 +3588,11 @@ So that retry returns the same operation and phase/evidence transitions are gap-
 
 **Implementation Boundary:** Consume a valid plan by CAS, allocate OperationId only at submit, enforce exact-target/idempotency uniqueness, persist only planned/launch-authorized/executing/verifying, and implement Contract C-20 shared POSIX action lock plus persisted/read-back ActionExecutorHandoffV1 before launch.
 
-**Requirement Mapping:** AD-11, AD-22, FR-39, FR-40, NFR-12.
+**Requirement Mapping:** FR-39, FR-40, NFR-12, UX-FND-3, UX-IP-7, AD-11, AD-22.
 
 **Dependencies:** Story 6.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-admission-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-admission-v1; Contract C-23 rows AC-6.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Provider execution and final outcome.
 
@@ -3494,11 +3611,11 @@ So that each supported matrix cell invokes only its exact D-Bus/socket/protocol/
 
 **Implementation Boundary:** Execute systemd/Docker/PM2/direct-process/Launch-Mechanism effects only in the Contract C-20 lock owner under Contracts C-10 and C-18, with direct signal encoded as stop parameters.
 
-**Requirement Mapping:** AD-11, AD-15, AD-22, FR-40, NFR-5.
+**Requirement Mapping:** FR-40, NFR-5, UX-IP-7, AD-11, AD-15, AD-22.
 
 **Dependencies:** Story 6.6.
 
-**Validation Expectations:** The owning oracles are tests/fixtures/implementation/action-executor-v1 and tests/fixtures/implementation/provider-privilege-environment-v1; both fixture families are checked in for independent review before production implementation.
+**Validation Expectations:** The owning oracles are tests/fixtures/implementation/action-executor-v1 and tests/fixtures/implementation/provider-privilege-environment-v1; both fixture families are checked in for independent review before production implementation.; Contract C-23 rows AC-6.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Verification and presentation.
 
@@ -3521,7 +3638,7 @@ So that 100-ms submit acknowledgement and periodic phase updates retain exact op
 
 **Dependencies:** Story 6.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-status-surface-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-status-surface-v1; Contract C-23 rows AC-6.8-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Outcome decision and shutdown.
 
@@ -3540,11 +3657,11 @@ So that every verification predicate and race resolves to exactly one ordered ou
 
 **Implementation Boundary:** Collect OperationId-correlated post-launch Provider evidence and apply Contract C-06 as the sole OperationCoordinator terminal CAS.
 
-**Requirement Mapping:** AD-11, AD-22, FR-40, SM-3, UJ-4, UX-ST-10, UX-ST-11, UX-ST-12, UX-ST-13, UX-ST-15, UX-ST-9.
+**Requirement Mapping:** FR-40, UJ-4, UX-ST-9, UX-ST-10, UX-ST-11, UX-ST-12, UX-ST-13, UX-ST-15, UX-IP-7, AD-11, AD-22, SM-3.
 
 **Dependencies:** Story 6.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-outcome-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-outcome-v1; Contract C-23 rows AC-6.9-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Shutdown recovery and aggregate gate.
 
@@ -3567,7 +3684,7 @@ So that pre-launch exit refuses; executing/verifying uncertainty resolves conser
 
 **Dependencies:** Story 6.9.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-shutdown-recovery-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-shutdown-recovery-v1; Contract C-23 rows AC-6.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Human-linear parity.
 
@@ -3586,11 +3703,11 @@ So that tUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, 
 
 **Implementation Boundary:** Expose exact typed action plan, execute, status, acknowledgement, outcome, stdout/stderr, and exit contracts with no alternate stdin grammar.
 
-**Requirement Mapping:** AD-11, AD-22, FR-40, UX-A11Y-3, UX-CP-15, UX-IP-11.
+**Requirement Mapping:** FR-40, UX-IA-10, UX-CP-15, UX-IP-7, UX-IP-11, UX-A11Y-3, AD-11, AD-22.
 
 **Dependencies:** Story 6.10.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-linear-machine-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-linear-machine-v1; Contract C-23 rows AC-6.11-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Aggregate action gate.
 
@@ -3607,13 +3724,13 @@ As a srvls Operator or maintainer,
 I want a complete action and SR-A11Y-1 gate,
 So that TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate withheld truth, inspect, review safety, submit an exact plan, and retrieve all five outcomes.
 
-**Implementation Boundary:** Run enum, matrix, plan, pool, admission, executor, status, outcome, shutdown, parity, budgets, responsive active-operation preservation, confirmation/help accessibility, submitted-operation disposition, and the complete linear morning/action journey under one gate.
+**Implementation Boundary:** Own only action accessibility, active-operation responsive preservation, confirmation/help behavior, submitted-operation disposition, and exact UX-BUD-4/5/6 thresholds; the complete journey belongs to Story 6.13.
 
-**Requirement Mapping:** FR-35, FR-36, FR-37, FR-38, FR-39, FR-40, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-4, UX-RP-5, UX-BUD-4, UX-BUD-5, UX-BUD-6, UX-A11Y-1, UX-A11Y-2, UX-A11Y-5, SR-A11Y-1, AD-11, AD-22.
+**Requirement Mapping:** FR-40, UX-RP-5, UX-BUD-4, UX-BUD-5, UX-BUD-6, UX-A11Y-1, UX-A11Y-2, UX-A11Y-5, SR-A11Y-1, AD-11, AD-22.
 
 **Dependencies:** Story 6.11.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-aggregate-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/action-aggregate-v1; Contract C-23 rows AC-6.12-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Release implementation.
 
@@ -3623,6 +3740,27 @@ So that TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate
    identical input produce identical typed results and evidence.
 2. **Given** the concrete input and boundary named in this criterion, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
+
+### Story 6.13: Complete exact-target action journey
+
+As a srvls Operator,
+I want one complete exact-target action journey,
+So that plan, confirmation, admission, execution, verification, and outcome remain one inspectable operation across every surface.
+
+**Implementation Boundary:** Integrate Stories 6.1 through 6.12 into the Contract C-22 UJ-4 and UX-IP-7 path; it adds journey routing and parity tests without reimplementing enum, plan, pool, executor, persistence, verification, or presentation owners.
+
+**Requirement Mapping:** AD-11, AD-22, FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-4, UX-FND-3, UX-IP-7, UX-A11Y-3.
+
+**Dependencies:** Story 6.12.
+
+**Validation Expectations:** Contract C-23 rows AC-6.13-P01/N01 are owned by tests/fixtures/implementation/action-journey-v1 and require independent fixture approval before assignment.; Contract C-23 rows AC-6.13-P01/N01 require an independent approval artifact before assignment.
+
+**Out of Scope:** Release actions and changes to any prior domain/executor contract.
+
+**Acceptance Criteria:**
+
+1. **Given** exact safe and acknowledged-unknown targets, **When** TUI and linear paths perform select → Action Menu → plan → confirm → revalidate → submit → execute → verify → inspect outcome, **Then** one ActionKindV1, identity tuple, PlanId, OperationId, four durable phases, evidence chain, and five-outcome vocabulary remain byte-equivalent across surfaces, **And** AC-6.13-P01 pins every transition/result/exit.
+2. **Given** stale identity, duplicate submission, expired plan, unsafe target, refresh/navigation, signal, storage-finalization, and replacement cuts, **When** the journey runs, **Then** the exact architecture-native refusal/outcome wins, no privilege prompt or detached mutation occurs, and status remains retrievable, **And** AC-6.13-N01 pins precedence and no-write/no-replay proofs.
 
 ## Epic 7: Upgrade and recover the installed pair without split truth
 
@@ -3638,9 +3776,9 @@ So that the admitted final artifact alone binds compiler/component/manifest/sour
 
 **Requirement Mapping:** AD-11, AD-12, FR-42, FR-43, NFR-15.
 
-**Dependencies:** Story 6.12.
+**Dependencies:** Story 6.13.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json; Contract C-23 rows AC-7.1-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Installation mutation and consumer migration.
 
@@ -3663,7 +3801,7 @@ So that traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss
 
 **Dependencies:** Story 7.1.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json; Contract C-23 rows AC-7.2-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Transaction planning and release commands.
 
@@ -3682,11 +3820,11 @@ So that each exact verb and argument set routes to one application command and d
 
 **Implementation Boundary:** Parse exactly Contract C-19 `release install|upgrade|validate|status|rollback` argv/result/exit/confirmation rows without mutation implementation.
 
-**Requirement Mapping:** AD-11, AD-23, FR-43.
+**Requirement Mapping:** FR-43, UX-IA-10, AD-11, AD-23.
 
 **Dependencies:** Story 7.2.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/release-command-surface-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/release-command-surface-v1; Contract C-23 rows AC-7.3-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Transaction execution and aggregate gate.
 
@@ -3709,7 +3847,7 @@ So that ordered unit-contract and pair readback names every byte/hash/path/enabl
 
 **Dependencies:** Story 7.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/consumer-discovery-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/consumer-discovery-v1; Contract C-23 rows AC-7.4-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Consumer replacement and rollback.
 
@@ -3717,7 +3855,7 @@ So that ordered unit-contract and pair readback names every byte/hash/path/enabl
 
 1. **Given** tests/fixtures/implementation/consumer-discovery-v1, **When** discovery readback completes, **Then** every pair-specific byte/hash/path/enablement is frozen before any preimage, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** an extra consumer, missing occurrence, script, ambiguous path, or preimage capture precedes the manifest, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** an extra consumer, missing occurrence, script, or ambiguous path, **When** preimage capture begins before ordered ManagedConsumerUnitContractV1 and BrownfieldConsumerPairsV1 readback completes, **Then** the owning acceptance test rejects the implementation and proves no preimage or mutation occurred, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.5: UpgradeTransaction planning, preimages, and staging
@@ -3732,7 +3870,7 @@ So that all preimages and checksums are immutable/read back before the first eff
 
 **Dependencies:** Story 7.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/upgrade-installed-prior-plan-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/upgrade-installed-prior-plan-v1; Contract C-23 rows AC-7.5-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Forward activation, validation, and recovery.
 
@@ -3755,7 +3893,7 @@ So that each metrics and snapshot pair changes only its source fragment and load
 
 **Dependencies:** Story 7.5.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json; Contract C-23 rows AC-7.6-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** FD4 validation and recovery.
 
@@ -3778,7 +3916,7 @@ So that forward, installed-prior recovery, and explicit rollback bind exact dire
 
 **Dependencies:** Story 7.6.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/fd4-request.json; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/fd4-request.json; Contract C-23 rows AC-7.7-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Commit decision and recovery policy.
 
@@ -3801,13 +3939,13 @@ So that each pending/complete effect advances in exact AD-23 order to the durabl
 
 **Dependencies:** Story 7.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-forward-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-forward-v1; Contract C-23 rows AC-7.8-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** KnownGood publication and crash takeover.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/forward.transitions.jsonl, **When** the named fixture's positive scenario is executed, **Then** each pending/complete effect and event/revision advances in exact AD-23 order to `commit-decided` or starts pre-decision restore, **And** repeated runs over
+1. **Given** tests/fixtures/implementation/installed-prior-forward-v1, **When** the approved installed-prior rows execute, **Then** each pending/complete effect and event/revision advances in exact AD-23 order to `commit-decided` or starts pre-decision restore, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the concrete input and boundary named in this criterion, **When** a mutating child, split pair, skipped readback, forward-only evidence reuse, or terminal alias appears, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3824,7 +3962,7 @@ So that each generic pre-decision crash cut resumes from readback without claimi
 
 **Dependencies:** Story 7.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-predecision-takeover-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-predecision-takeover-v1; Contract C-23 rows AC-7.9-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** KnownGood-specific and FirstInstall branches.
 
@@ -3847,13 +3985,13 @@ So that publication happens only after decision and no extra pointer field exist
 
 **Dependencies:** Story 7.9.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-known-good-v1; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-known-good-v1; Contract C-23 rows AC-7.10-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** FirstInstall and explicit rollback.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/known-good-publication-pending.manifest.json, **When** the named fixture's positive scenario is executed, **Then** publication happens only after decision and no extra pointer field exists; resumed cuts preserve the sole canonical candidate, **And** repeated runs over
+1. **Given** tests/fixtures/implementation/installed-prior-known-good-v1, **When** the approved installed-prior publication/ready/commit rows execute, **Then** publication happens only after decision and no extra pointer field exists; resumed cuts preserve the sole canonical candidate, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the concrete input and boundary named in this criterion, **When** policy/evidence extension, pre-decision publish, older accidental selection, or ready-before-readback occurs, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3870,7 +4008,7 @@ So that only exact absence with no foreign displacement creates the sentinel and
 
 **Dependencies:** Story 7.10.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/first-install-plan-v1/revision-zero.json; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/first-install-plan-v1/revision-zero.json; Contract C-23 rows AC-7.11-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** FirstInstall forward/recovery execution.
 
@@ -3893,15 +4031,15 @@ So that failure restores byte-total declared absence and returns forward-failed-
 
 **Dependencies:** Story 7.11.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracles are tests/fixtures/implementation/first-install-success-v1 and tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl; both require Contract C-23 approval.; Contract C-23 rows AC-7.12-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Explicit rollback planning.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl, **When** the named fixture's positive scenario is executed, **Then** failure restores byte-total declared absence and returns forward-failed-recovered only after all readbacks, **And** repeated runs over
+1. **Given** tests/fixtures/implementation/first-install-success-v1, **When** FirstInstall reaches `commit-decided`, **Then** it publishes KnownGood generation 1, persists/read-backs ready admission, and only then terminalizes `committed`, including every publication/ready/commit crash cut, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the concrete input and boundary named in this criterion, **When** a sidecar/unit/enablement/path remains, foreign replacement is deleted, absent binary is invoked, or partial recovery terminalizes, **Then** the owning acceptance test rejects the implementation and proves no unauthorized side effect occurred, **And**
+2. **Given** first-install recovery cuts, **When** forward execution fails, **Then** byte-total declared absence is restored and read back before `forward-failed-recovered`; a remaining sidecar/unit/enablement/path, foreign deletion, absent-binary invocation, or partial restore cannot terminalize, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.13: Explicit rollback plan and confirmation
@@ -3916,7 +4054,7 @@ So that installed target freezes source/target generations and byte-equal retain
 
 **Dependencies:** Story 7.12.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/implementation/rollback-plan-v1/revision-zero.json; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/rollback-plan-v1/revision-zero.json; Contract C-23 rows AC-7.13-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Rollback execution and validation.
 
@@ -3939,7 +4077,7 @@ So that successful rollback returns rolled-back with exact generations and prese
 
 **Dependencies:** Story 7.13.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl; Contract C-23 rows AC-7.14-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Aggregate release gate.
 
@@ -3962,7 +4100,7 @@ So that every AD-11 release registry row and exact final-artifact Host smoke pas
 
 **Dependencies:** Story 7.14.
 
-**Validation Expectations:** The owning oracle is tests/validate_architecture_contracts.sh; the story begins by checking in these fixture rows and expected bytes for independent review before production implementation.
+**Validation Expectations:** The owning oracle is tests/validate_architecture_contracts.sh; Contract C-23 rows AC-7.15-P01/N01 require an independent approval artifact before assignment.
 
 **Out of Scope:** Publishing or deploying release artifacts, and changing the user override.
 
