@@ -201,6 +201,7 @@
       <action>Get current status value for development_status[{{story_key}}]</action>
 
       <check if="current status == 'ready-for-dev' OR (current status == 'review' AND review_continuation == true)">
+        <action>Immediately re-run the C-23 assignment command and re-read the canonical source status; HALT on any changed evidence before writing `in-progress`</action>
         <action>Update the story in the sprint status report to = "in-progress"</action>
         <output>🚀 Starting work on story {{story_key}}
           Status updated: ready-for-dev → in-progress

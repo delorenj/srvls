@@ -62,6 +62,10 @@ def canonical_rows() -> dict[str, dict[str, str]]:
     plural_mentions = re.findall(r"Stories \d+\.\d+[^\n]*", epics)
     if any(not re.match(r"Stories \d+\.\d+ through \d+\.\d+", mention) for mention in plural_mentions):
         fail("unsupported plural Story reference; use explicit singular references or one same-Epic range")
+    malformed = [token for token in re.findall(r"\bStor(?:y|ies)\s+([0-9][0-9.]*)", epics)
+                 if not re.fullmatch(r"\d+\.\d+", token.rstrip("."))]
+    if malformed:
+        fail(f"malformed Story reference tokens: {sorted(set(malformed))}")
     for row_id, row in rows.items():
         if set(row) != {"rowId", "storyId", "kind", "criterionMarkdown", "criterionSha256"}:
             fail(f"{row_id} has unknown or missing keys")
@@ -188,6 +192,8 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
         oracle = binding["oraclePath"]
         if len({binding["fixturePath"], binding["runnerPath"], binding["expectedResultPath"]}) != 3:
             fail(f"Story {story} oracle fixture, runner, and expectation paths must be distinct")
+        if len({binding["fixtureSha256"], binding["runnerSha256"], binding["expectedResultSha256"]}) != 3:
+            fail(f"Story {story} oracle fixture, runner, and expectation bytes must be role-distinct")
         for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("runnerPath", "runnerSha256"), ("expectedResultPath", "expectedResultSha256")):
             if not isinstance(binding[hash_key], str) or not SHA.fullmatch(binding[hash_key]):
                 fail(f"Story {story} {hash_key} is invalid")
@@ -277,6 +283,11 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
             changed |= subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", item["path"]], cwd=ROOT).returncode != 0
         if not changed:
             fail(f"Story {story} implementation manifest contains no implemented change")
+        evidence_paths = {entry["resultPath"] for entry in results if isinstance(entry, dict) and "resultPath" in entry}
+        actual_changed = set(git("diff", "--name-only", approval_commit, data["implementationCommit"]).splitlines()) - evidence_paths
+        declared_changed = {item["path"] for item in files}
+        if actual_changed != declared_changed:
+            fail(f"Story {story} implementation manifest must equal the complete implementation diff")
         if git_path_exists(approval_commit, result["resultPath"]):
             fail(f"Story {story} executed result is not fresh implementation evidence")
         with tempfile.TemporaryDirectory(prefix="srvls-oracle-") as temporary:
@@ -291,19 +302,25 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
                 destination.write_bytes(git_file_bytes(data["implementationCommit"], item["path"]))
                 destination.chmod(0o500)
             runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
+            trace_dir = isolated / "trace"; trace_dir.mkdir()
             try:
                 executed = subprocess.run(
                     ["bwrap", "--unshare-all", "--die-with-parent", "--new-session",
                      "--ro-bind", str(isolated), "/work", "--ro-bind", "/usr", "/usr",
                      "--ro-bind", "/bin", "/bin", "--ro-bind", "/lib", "/lib",
                      "--ro-bind", "/lib64", "/lib64", "--proc", "/proc", "--dev", "/dev",
-                     "--tmpfs", "/tmp", "--chdir", "/work", "--clearenv",
+                     "--tmpfs", "/tmp", "--bind", str(trace_dir), "/trace", "--chdir", "/work", "--clearenv",
                      "--setenv", "PATH", "/usr/bin:/bin", "--setenv", "LANG", "C", "--setenv", "LC_ALL", "C",
+                     "/usr/bin/strace", "-f", "-e", "trace=openat", "-o", "/trace/access",
                      "/work/runner", "/work/implementation", "/work/fixture"],
                     cwd=isolated, capture_output=True, timeout=10,
                 )
             except subprocess.TimeoutExpired:
                 fail(f"Story {story} approved runner exceeded the 10-second replay budget")
+            access = (trace_dir / "access").read_text(errors="replace") if (trace_dir / "access").is_file() else ""
+            for item in files:
+                if f'/work/implementation/{item["relativePath"]}' not in access:
+                    fail(f"Story {story} runner did not consume implementation file {item['relativePath']}")
         if executed.returncode != result["exitCode"] or hashlib.sha256(executed.stdout).hexdigest() != result["resultSha256"]:
             fail(f"Story {story} approved runner replay does not reproduce the attested result: {executed.stderr.decode(errors='replace')[:240]}")
         if result["resultSha256"] != binding["expectedResultSha256"]:

@@ -141,18 +141,30 @@ def hermetic_git_gate() -> None:
         commit("approve 1.2", "reviewer@example.test")
         approval.validate_assignment("1.2", rows)
         baseline_approval = json.loads((approvals / "1.2-v1.json").read_text())
+        def reject_story2(payload: dict[str, object], label: str, email: str = "reviewer@example.test") -> None:
+            (approvals / "1.2-v1.json").write_text(json.dumps(payload))
+            commit(label, email)
+            try:
+                approval.validate_assignment("1.2", rows)
+            except SystemExit:
+                pass
+            else:
+                require(False, f"{label} escaped")
+            (approvals / "1.2-v1.json").write_text(json.dumps(baseline_approval))
+            commit(f"restore after {label}", "reviewer@example.test")
+
+        mutations = []
+        unknown = json.loads(json.dumps(baseline_approval)); unknown["unknown"] = True; mutations.append((unknown, "unknown-key mutation"))
+        criterion = json.loads(json.dumps(baseline_approval)); criterion["criterionSha256"][0] = "0" * 64; mutations.append((criterion, "criterion mutation"))
+        cardinality = json.loads(json.dumps(baseline_approval)); cardinality["oracleBindings"] = []; mutations.append((cardinality, "oracle-cardinality mutation"))
+        fixture_hash = json.loads(json.dumps(baseline_approval)); fixture_hash["oracleBindings"][0]["fixtureSha256"] = "0" * 64; mutations.append((fixture_hash, "fixture-hash mutation"))
+        expected_hash = json.loads(json.dumps(baseline_approval)); expected_hash["oracleBindings"][0]["expectedResultSha256"] = "0" * 64; mutations.append((expected_hash, "expected-hash mutation"))
+        verdict = json.loads(json.dumps(baseline_approval)); verdict["verdict"] = "rejected"; mutations.append((verdict, "verdict mutation"))
+        for payload, label in mutations:
+            reject_story2(payload, label)
         bad_runner = json.loads(json.dumps(baseline_approval))
         bad_runner["oracleBindings"][0]["runnerSha256"] = "0" * 64
-        (approvals / "1.2-v1.json").write_text(json.dumps(bad_runner))
-        commit("runner hash attack", "reviewer@example.test")
-        try:
-            approval.validate_assignment("1.2", rows)
-        except SystemExit:
-            pass
-        else:
-            require(False, "runner-hash mutation escaped")
-        (approvals / "1.2-v1.json").write_text(json.dumps(baseline_approval))
-        commit("restore approval", "reviewer@example.test")
+        reject_story2(bad_runner, "runner-hash mutation")
         same_principal_commit = commit("second fixture-principal commit", "fixture@example.test")
         same_principal = json.loads((approvals / "1.2-v1.json").read_text())
         same_principal["reviewerCommit"] = same_principal_commit

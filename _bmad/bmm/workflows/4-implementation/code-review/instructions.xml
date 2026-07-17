@@ -198,12 +198,14 @@
       <action>Find development_status key matching {{story_key}}</action>
 
       <check if="{{new_status}} == 'done'">
+        <action>Immediately re-run both assignment and `--complete` gates and re-read source state; HALT on changed evidence</action>
         <action>Update development_status[{{story_key}}] = "done"</action>
         <action>Save file, preserving ALL comments and structure</action>
         <output>✅ Sprint status synced: {{story_key}} → done</output>
       </check>
 
       <check if="{{new_status}} == 'in-progress'">
+        <action>Immediately re-run the assignment gate and re-read source state; HALT on changed evidence</action>
         <action>Update development_status[{{story_key}}] = "in-progress"</action>
         <action>Save file, preserving ALL comments and structure</action>
         <output>🔄 Sprint status synced: {{story_key}} → in-progress</output>
