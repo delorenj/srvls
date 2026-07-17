@@ -519,8 +519,8 @@ commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
 forbidden until this pre-assignment approval passes. After implementation,
 `<story-id>-completed-v1.json` separately binds the derived approval commit to
-an implementation commit and one executed result path/SHA-256 for every ordered
-oracle binding; every result must equal its independently approved expected
+an implementation commit and one runner path/SHA-256, zero exit code, and fresh
+executed result path/SHA-256 for every ordered oracle binding; every result must equal its independently approved expected
 SHA-256. Every dependent Story requires that fully validated completion object
 and requires its completion commit to precede the dependent approval. The implementation may not
 recapture or update approved rows in the same change.

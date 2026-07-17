@@ -169,12 +169,16 @@
   </step>
 
   <step n="5" goal="Update story status and sync sprint tracking">
+    <action>Derive exact {{story_id}} from {{story_key}} and require canonical {sprint_status}; HALT if either is unavailable</action>
+    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}`; HALT on non-zero before any Story or sprint-status write</action>
     <!-- Determine new status based on review outcome -->
     <check if="all HIGH and MEDIUM issues fixed AND all ACs implemented">
+      <action>Run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on non-zero</action>
       <action>Set {{new_status}} = "done"</action>
       <action>Update story Status field to "done"</action>
     </check>
     <check if="HIGH or MEDIUM issues remain OR ACs not fully implemented">
+      <action>Require the canonical source state to be `review`; HALT for any other source state</action>
       <action>Set {{new_status}} = "in-progress"</action>
       <action>Update story Status field to "in-progress"</action>
     </check>

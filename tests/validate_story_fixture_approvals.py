@@ -23,7 +23,7 @@ APPROVAL_KEYS = {
 }
 BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "expectedResultPath", "expectedResultSha256"}
 COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "oracleResults", "verdict"}
-RESULT_KEYS = {"oraclePath", "resultPath", "resultSha256"}
+RESULT_KEYS = {"oraclePath", "runnerPath", "runnerSha256", "exitCode", "resultPath", "resultSha256"}
 
 
 def fail(message: str) -> None:
@@ -108,6 +108,13 @@ def git_file_hash(commit: str, path: str) -> str:
     except subprocess.CalledProcessError:
         fail(f"{path} is absent from declared commit {commit}")
     return hashlib.sha256(content).hexdigest()
+
+
+def git_path_exists(commit: str, path: str) -> bool:
+    return subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}:{path}"], cwd=ROOT,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0
 
 
 def declared_oracles(story: str) -> list[str]:
@@ -218,6 +225,14 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
     for binding, result in zip(bindings, results, strict=True):
         if set(result) != RESULT_KEYS or result["oraclePath"] != binding["oraclePath"]:
             fail(f"Story {story} completion result binding is invalid")
+        if result["exitCode"] != 0 or not within_oracle(result["runnerPath"], result["oraclePath"]):
+            fail(f"Story {story} completion lacks an approved successful oracle runner")
+        if git_file_hash(approval["fixtureAuthorCommit"], result["runnerPath"]) != result["runnerSha256"]:
+            fail(f"Story {story} runner bytes are not fixture-author approved")
+        if not within_oracle(result["resultPath"], result["oraclePath"]):
+            fail(f"Story {story} executed result escapes its owning oracle")
+        if git_path_exists(approval_commit, result["resultPath"]):
+            fail(f"Story {story} executed result is not fresh implementation evidence")
         if result["resultSha256"] != binding["expectedResultSha256"]:
             fail(f"Story {story} executed result differs from approved expectation")
         if git_file_hash(data["implementationCommit"], result["resultPath"]) != result["resultSha256"]:

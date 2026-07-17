@@ -73,6 +73,7 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
 
 Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue without fixing:</ask>
 <check if="user provided corrections">
+<action>For every Story correction above `backlog`, derive its exact Story ID and require `python3 tests/validate_story_fixture_approvals.py &lt;story_id&gt;` to exit zero; for `review` or `done`, also require `python3 tests/validate_story_fixture_approvals.py --complete &lt;story_id&gt;`; HALT the entire correction batch on any failure</action>
 <action>Update sprint-status.yaml with corrected values</action>
 <action>Re-parse the file with corrected statuses</action>
 </check>

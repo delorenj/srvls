@@ -87,6 +87,7 @@ def hermetic_git_gate() -> None:
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
         (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
+        (oracle / "runner").write_bytes(b"runner"); (oracle2 / "runner").write_bytes(b"runner")
         fixture_commit = commit("fixtures", "fixture@example.test")
         reviewer_commit = commit("review evidence", "reviewer@example.test")
         rows = {
@@ -112,11 +113,16 @@ def hermetic_git_gate() -> None:
         (approvals / "1.1-v1.json").write_text(json.dumps(approval_payload("1.1")))
         approval_commit = commit("approve 1.1", "reviewer@example.test")
         (root / "implementation").write_text("done")
+        (oracle / "actual").write_bytes(b"expected"); (oracle2 / "actual").write_bytes(b"expected")
         implementation_commit = commit("implement 1.1", "implementer@example.test")
         (approvals / "1.1-completed-v1.json").write_text(json.dumps({
             "schema": "srvls-story-completion-v1", "storyId": "1.1", "approvalCommit": approval_commit,
             "implementationCommit": implementation_commit,
-            "oracleResults": [{"oraclePath": path, "resultPath": f"{path}/expected", "resultSha256": hashlib.sha256(b"expected").hexdigest()} for path in approval.declared_oracles("1.1")],
+            "oracleResults": [{
+                "oraclePath": path, "runnerPath": f"{path}/runner",
+                "runnerSha256": hashlib.sha256(b"runner").hexdigest(), "exitCode": 0,
+                "resultPath": f"{path}/actual", "resultSha256": hashlib.sha256(b"expected").hexdigest(),
+            } for path in approval.declared_oracles("1.1")],
             "verdict": "completed",
         }))
         completion_commit = commit("complete 1.1", "reviewer@example.test")
@@ -124,6 +130,29 @@ def hermetic_git_gate() -> None:
         (approvals / "1.2-v1.json").write_text(json.dumps(approval_payload("1.2")))
         commit("approve 1.2", "reviewer@example.test")
         approval.validate_assignment("1.2", rows)
+        same_principal = json.loads((approvals / "1.2-v1.json").read_text())
+        same_principal["reviewerCommit"] = fixture_commit
+        (approvals / "1.2-v1.json").write_text(json.dumps(same_principal))
+        commit("same principal attack", "fixture@example.test")
+        try:
+            approval.validate_assignment("1.2", rows)
+        except SystemExit:
+            pass
+        else:
+            require(False, "same-principal fixture/reviewer attack escaped")
+        baseline_completion = json.loads((approvals / "1.1-completed-v1.json").read_text())
+        escaped = json.loads(json.dumps(baseline_completion))
+        escaped["oracleResults"][0]["resultPath"] = "implementation"
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(escaped))
+        commit("result escape attack", "reviewer@example.test")
+        try:
+            approval.validate_completion("1.1", rows)
+        except SystemExit:
+            pass
+        else:
+            require(False, "result-path oracle escape escaped")
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(baseline_completion))
+        commit("restore completion", "reviewer@example.test")
         mutated = json.loads((approvals / "1.1-completed-v1.json").read_text())
         mutated["implementationCommit"] = mutated["approvalCommit"]
         (approvals / "1.1-completed-v1.json").write_text(json.dumps(mutated))
