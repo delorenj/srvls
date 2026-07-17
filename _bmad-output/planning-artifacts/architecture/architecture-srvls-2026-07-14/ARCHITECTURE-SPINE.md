@@ -510,7 +510,15 @@ flowchart LR
   exact-boundary and one-byte-over requests and results, maximum valid scope
   assignments, nested raw-byte vectors, wrong-plan/same-generation,
   wrong-plan/same-scope, request/result and scope mismatch, stdout/stderr
-  isolation, timeout, signal, and no-discovery path. Combined fixtures cover
+  isolation, timeout, signal, no-discovery path, and every row of the AD-25
+  descriptor-ownership table. A `duplicate-parent-end` fixture injects an
+  extra reference to the coordinator endpoint into the worker side, and a
+  `duplicate-child-end` fixture injects an extra reference to the worker
+  endpoint into each process in turn. Their negative controls prove that the
+  applicable peer cannot observe EOF while the duplicate remains; the
+  acceptance cases require the pre-Hello descriptor audit to close every
+  injected reference and then prove the exact post-Result clean EOF and
+  closure sequence. Combined fixtures cover
   malformed-frame plus exit 64, oversize plus parent cleanup signal, and trusted
   worker-error plus exit 70. Those combinations assert that later cleanup/reap
   status is excluded from immutable candidate bytes and retained only as
@@ -529,11 +537,21 @@ flowchart LR
   PID/birth, old-PID reuse, forged owner publication, and a second recovery-owner
   crash; the complete public release-event
   and UX-state mapping, sidecar restore, and the storage-unavailable shutdown
-  exception. Release fixtures cover exact-artifact ABI proof, every managed
-  absolute `ExecStart` rewrite and loaded readback, paired timer-triggered
-  success, whole-pair rollback, every crash edge from validation through durable
-  commit decision, KnownGood publication, ready admission, and terminal commit,
-  and explicit post-validation rollback from KnownGoodReleaseV1. The existing
+  exception. Release fixtures cover the AD-12 `StableToolchainEvidenceV1`
+  match and a freshly fetched 1.97.1 manifest against a stale cached 1.97.0
+  compiler that must fail before compile; exact-artifact ABI proof; every
+  managed absolute `ExecStart` rewrite; and AD-23 forward and rollback
+  validation. For both directions, table cases inject wrong fragment, target,
+  monotonic or calendar schedule, accuracy or randomized delay, persistence,
+  wake or reactivation value, and disabled-but-active enablement. Fresh
+  invocation cases inject an already-active service, `RemainAfterExit=yes`,
+  unchanged or zero InvocationID, non-advancing start time, and stale
+  successful exit fields. Every such case must fail the pair; matching cases
+  prove the exact loaded contract, timer-correlated candidate invocation, and
+  whole-pair rollback. Fixtures retain every crash edge from validation
+  through durable commit decision, KnownGood publication, ready admission,
+  and terminal commit, and explicit post-validation rollback from
+  KnownGoodReleaseV1. The existing
   Python smoke suite and named timer checks
   remain live opt-in integration lanes and CI requires no Host service.
 
@@ -544,8 +562,23 @@ flowchart LR
   rollback, and install-path ambiguity
 - **Rule:** ship one Rust 2024 binary crate for
   `x86_64-unknown-linux-gnu` and glibc 2.42 with committed `Cargo.lock`, MSRV
-  1.88, explicit Cargo resolver 3, and current-stable CI from the bootstrap
-  story. Required gates are
+  1.88 and explicit Cargo resolver 3. The bootstrap story and release CI each
+  have a pinned MSRV lane plus a symbolic moving `stable` lane; the moving
+  lane is never replaced by a permanently pinned point release. Before any
+  Rust or Cargo compile, each of those CI entry points fetches fresh official
+  `channel-rust-stable.toml` metadata, refreshes the installed `stable`
+  channel, runs `rustc --version --verbose`, and persists one
+  `StableToolchainEvidenceV1` artifact. Its required fields are the stable
+  manifest date, `[pkg.rust]` release string and full `git_commit_hash`, the
+  complete verbose output, and its parsed `release`, `commit-hash`,
+  `commit-date`, and `host`. The parsed compiler release and full commit hash
+  must exactly equal the freshly fetched manifest identity before compilation.
+  The reviewed 2026-07-16 target is Rust 1.97.1, manifest release
+  `1.97.1 (8bab26f4f 2026-07-14)`, and full commit
+  `8bab26f4f68e0e26f0bb7960be334d5b520ea452`; a cached 1.97.0 compiler,
+  stale manifest date, or release/commit mismatch fails before the first
+  build command. Bootstrap retains the evidence as a CI artifact; release CI
+  additionally binds its digest into the release proof record. Required gates are
   `cargo fmt --check`, locked clippy with warnings denied, locked all-target
   tests at MSRV and stable, compatibility goldens, migration tests, and release
   asset smoke. Build in a pinned glibc-2.42 image; release CI runs
@@ -560,14 +593,19 @@ flowchart LR
   values. A foreign bypass needs an explicit disposition; `--force` never
   silently rewrites it. Every managed absolute `ExecStart`, including
   `srvls-metrics.service` and `srvls-snapshot.service`, is staged to the
-  canonical activated binary with its matching database backup and paired
-  timer definition and enablement. After `systemctl --user daemon-reload`,
-  validation reads back each loaded `ExecStart`, observes the paired timer's
-  trigger timestamp advance, and requires service `Result=success` and
-  `ExecMainStatus=0`. Any failed check restores binary and link, matching state,
-  service and timer definitions and enablement, and daemon state as one pair,
-  reloads, and proves the restored pair. AD-23 owns the durable ordering and
-  retained rollback bundle. Split crates only after three independent
+  canonical activated binary with its matching database backup and the
+  manifest-owned AD-23 `ManagedConsumerUnitContractV1` for its service/timer
+  pair. After `systemctl --user daemon-reload` and before any trigger proof,
+  validation must read back and exactly match that normalized loaded-unit
+  contract and each unit's declared enablement result. It then produces the
+  AD-23 `TimerInvocationAcceptanceV1` from a fresh candidate invocation
+  originating through the exact paired timer. Any property, enablement,
+  trigger, invocation, start, or exit mismatch restores binary and link,
+  matching state, service and timer definitions and enablement, and daemon
+  state as one pair, reloads, and runs the same exact validator against the
+  prior manifest. AD-23 owns the schemas, durable ordering, forward and
+  rollback postconditions, and retained rollback bundle. Split crates only
+  after three independent
   consumers.
 
 ### AD-13 — Identity is typed, exact, and generation-bound
@@ -1176,7 +1214,7 @@ schema and tested as contracts, not duplicated constants.
   ID, old and new install generations, immutable original-owner identity,
   ordered ReleaseRecoveryAttemptV1 records and active attempt, binary and
   database paths and hashes, old and new schemas,
-  StateBackupManifestV1, consumer definitions and enablement, current
+  StateBackupManifestV1, ordered `ManagedConsumerUnitContractV1` records, current
   step, ordered step and ReleaseEventV1 records, and a domain-separated SHA-256
   checksum over its AD-24 canonical payload bytes excluding the checksum field.
   Every admission or transaction replacement creates a unique
@@ -1189,11 +1227,12 @@ schema and tested as contracts, not duplicated constants.
   Every forward effect is one ordered step: stage binary, verify checksum,
   isolated smoke, persist recovering admission, create backup, migrate and
   verify state, activate binary, rewrite consumers, daemon-reload, read back
-  loaded consumers, force or await and verify timer-unit activation, validate
+  loaded consumer contracts, force or await and prove a fresh timer-originated
+  candidate invocation, validate
   candidate, stage KnownGood candidate, persist `commit-decided`, publish
   KnownGood, persist ready admission, and commit transaction. Every rollback
   effect is likewise explicit: restore binary, restore state, restore consumer
-  definitions and enablement, rollback-daemon-reload, validate restored pair,
+  contracts, rollback-daemon-reload, validate restored pair,
   persist ready admission, and complete the transaction as rolled back. Before
   an effect, atomic manifest replacement records
   `pending`, attempt number, idempotency key, and pre-effect evidence and is
@@ -1204,28 +1243,84 @@ schema and tested as contracts, not duplicated constants.
   rerun read-only; candidate validation reruns only after the current
   ReleaseRecoveryAttemptV1 is durably published and uses a fresh attempt-bound
   FD4 exchange; file, link, unit, admission, and known-good writes
-  compare exact hash/target and complete or atomically replace; daemon-reload and
-  timer triggers safely rerun; backup, migrate, and restore call the typed
+  compare exact hash/target and complete or atomically replace; daemon-reload
+  and timer validation rerun from new property and invocation baselines;
+  backup, migrate, and restore call the typed
   coordinator to verify schema, hash, sidecars, and integrity before completing
   or selecting rollback. No recovery step infers completion from phase name.
 
   `StateBackupManifestV1` requires the SQLite backup API or an explicitly
   equivalent checkpointed method, no live restore connections, database/WAL/SHM
   disposition, content hashes, schema and integrity verification, and file plus
-  parent-directory fsync. Consumer validation enforces AD-12 for every managed
-  absolute `ExecStart`: canonical target after daemon-reload, one activation
-  originating through each paired timer unit, timer trigger advancement,
-  service `Result=success`, and `ExecMainStatus=0`.
-  Activation and rollback treat binary/link, database, service and timer
-  definitions and enablement, and daemon state as one pair; any failed check
-  restores and revalidates the whole pair. Foreign absolute consumers require
-  an explicit `unchanged | migrated | blocked` disposition.
+  parent-directory fsync.
+
+  `ManagedConsumerUnitContractV1` is prepared from the transaction's intended
+  staged bytes and enablement policy before the first consumer effect; expected
+  values are never learned from post-reload state. Each ordered service/timer
+  pair stores the exact service and timer names and the complete intended
+  fragment and drop-in bytes needed to restore either generation. For each
+  unit, `UnitFragmentIdentityV1` stores the normalized absolute `FragmentPath`,
+  its SHA-256, tagged `SourcePath`, and the ordered normalized `DropInPaths`
+  with their SHA-256 values. The service contract stores the exact configured
+  portion of loaded `ExecStart` as an ordered list of binary path, complete
+  argv, and ignore-failure flag, discarding only the D-Bus tuple's runtime
+  timestamps, PID, code, and status; it also requires
+  `RemainAfterExit=false`. The timer contract stores exact target `Unit`;
+  `TimersMonotonic` normalized as sorted `(base, offset_usec)` tuples with
+  duplicates retained and dynamic next-elapse values removed;
+  `TimersCalendar` normalized as sorted `(base, manager-normalized expression)`
+  tuples with duplicates retained and dynamic next-elapse values removed;
+  `OnClockChange`, `OnTimezoneChange`, `AccuracyUSec`,
+  `RandomizedDelayUSec`, `FixedRandomDelay`, `Persistent`, `WakeSystem`,
+  `RemainAfterElapse`, and `DeferReactivation`. Every duration is an exact
+  unsigned microsecond value and every boolean is explicit.
+
+  Each unit contract also declares exactly one enablement readback mechanism
+  and expected result: either exact D-Bus `UnitFileState`, or a separate
+  one-unit `systemctl --user is-enabled` invocation with exact stdout token and
+  exit status. An implementation may not query multiple units and accept the
+  command's any-enabled success, nor switch mechanisms after a mismatch.
+  After `systemctl --user daemon-reload`, one post-effect readback requires
+  `NeedDaemonReload=false`, byte-equal fragment identity and hashes, and exact
+  normalized service, timer, and enablement values before trigger validation.
+  ActiveState never substitutes for enablement. A wrong fragment, ExecStart,
+  timer target, schedule, accuracy, randomized delay, persistence, wake or
+  reactivation value, or a disabled-but-active unit fails this postcondition.
+
+  Every paired-timer acceptance then creates a new
+  `TimerInvocationAcceptanceV1`. Before forcing or awaiting that exact timer,
+  it requires the target service to be inactive, confirms the loaded service
+  has `RemainAfterExit=false`, and captures baseline timer
+  `LastTriggerUSecMonotonic`, service `InvocationID`, and service
+  `ExecMainStartTimestampMonotonic`. Acceptance requires a later
+  `LastTriggerUSecMonotonic` strictly greater than baseline, then a service
+  sample with a nonzero InvocationID different from baseline and an
+  `ExecMainStartTimestampMonotonic` strictly greater than baseline and at or
+  after that advanced trigger. A later terminal sample must retain that exact
+  new invocation ID and start timestamp and report `Result=success`,
+  `ExecMainCode=CLD_EXITED`, and `ExecMainStatus=0`. All samples and their
+  observation boot times are stored as post-effect evidence and must fall
+  strictly before the validation deadline. One invocation cannot satisfy two
+  timer acceptances. An already-active target, `RemainAfterExit=yes`, no new
+  nonzero invocation, a start predating the trigger, or stale success fields
+  therefore cannot pass.
+
+  Forward validation applies those two schemas against the staged candidate
+  contract; rollback revalidation applies the same schemas against the prior
+  contract from the transaction or KnownGood bundle and takes fresh baselines.
+  Both directions fail on wrong target, schedule, delay, persistence,
+  enablement, or invocation correlation. A forward failure enters the existing
+  whole-pair restore path; a rollback mismatch leaves admission recovering and
+  returns `upgrade-recovery-required` rather than claiming recovery.
+  Activation and rollback continue to treat binary/link, database, service and
+  timer contracts, enablement, and daemon state as one pair. Foreign absolute
+  consumers require an explicit `unchanged | migrated | blocked` disposition.
 
   Successful candidate and consumer validation first stages one
   `KnownGoodCandidateV1` inside UpgradeTransactionV1; it is not the published
   rollback record. The candidate contains the exact prior binary and hash or an
   explicit first-install-absent sentinel, matching state backup and schema,
-  consumer and timer definitions and enablement, prior install generation, and
+  prior `ManagedConsumerUnitContractV1` records, prior install generation, and
   every integrity hash. A subsequent fsynced manifest replacement marks
   `commit-decided` complete and binds that candidate, target install generation,
   and expected published checksum. This is the irreversible commit decision.
@@ -1411,19 +1506,39 @@ schema and tested as contracts, not duplicated constants.
 
 - **Binds:** cli, collection, subprocesses, Collector adapters, diagnostics
 - **Prevents:** CLI/worker routing drift, unauthenticated internal invocation,
-  incompatible framing, stdio corruption, and child-side rediscovery
+  incompatible framing, suppressed EOF, stdio corruption, and child-side
+  rediscovery
 - **Rule:** the parent launches the exact current executable with sole raw argv
   profile `__srvls-worker-v1`, makes the child leader of a dedicated
-  generation-owned process group, creates an `AF_UNIX SOCK_STREAM` socketpair,
-  enables `SO_PASSCRED` on the parent endpoint before spawn, and maps only the
-  child endpoint to inherited FD 3. The coordinator allocates the request ID and
+  generation-owned process group, and creates the connected pair as
+  `socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0)`. Call its coordinator
+  endpoint `P0` and worker endpoint `C0`. It enables `SO_PASSCRED` on `P0`
+  before spawn and maps only `C0` to inherited FD 3. The coordinator allocates
+  the request ID and
   cryptographically random 256-bit one-time channel capability before spawn.
   The child refuses before Ready or Host work unless FD 3 is a Unix stream;
   child-side `SO_PEERCRED` has the invoking UID and a PID equal to `getppid()`;
   and `/proc/self/exe` and `/proc/<parent>/exe` have the same device and inode.
-  It sets FD 3 close-on-exec before launching any Provider child. Before one
+  It sets FD 3 close-on-exec before Hello and keeps it set before launching any
+  Provider child. Before one
   accepted Request it may only authenticate, exchange Hello/Ready, and wait: it
   must not fork, clone, or launch any Provider or helper process.
+
+  Descriptor ownership is exact and is part of FD3 authentication:
+
+  | Lifecycle cut | Coordinator descriptors | Worker descriptors | Required closure and proof |
+  | --- | --- | --- | --- |
+  | Pair created, before spawn | exactly `P0` and `C0`, both close-on-exec | no worker exists | No duplicate is permitted except the tracked FD3 mapping needed by the spawn file actions. |
+  | Spawn returns a child PID / worker pre-exec | exactly `P0`; the coordinator closes `C0` and every temporary or duplicate worker-end descriptor before its first Hello byte | pre-exec maps `C0` to descriptor 3, clears close-on-exec on exactly FD3 only for the exec of `__srvls-worker-v1`, then closes `P0`, original `C0` when distinct from 3, and every temporary or duplicate descriptor | The one close-on-exec exception spans only that same-binary exec; every opposite endpoint and duplicate closes in its owning process rather than relying on exit. |
+  | Worker entry, before Hello | exactly one descriptor referring to `P0`, still close-on-exec; zero descriptors referring to `C0` | exactly FD3 referring to `C0`; zero descriptors referring to `P0`; FD3 close-on-exec restored | Both sides audit the tracked file actions and endpoint identity. Any extra original, duplicated, or opposite endpoint is `fd-peer-auth`; its owner closes it and no Hello is accepted. No FD3 duplicate may be created after this cut. |
+  | One complete Result | retain `P0` only until the clean-EOF trust cut | after writing the complete Result, call `shutdown(FD3, SHUT_WR)` and close FD3 | The coordinator requires clean EOF with no trailing byte, then closes `P0`. The worker has no FD3 endpoint and the coordinator has no pair endpoint after this row. |
+  | Any setup, authentication, framing, timeout, cancellation, signal, or cleanup failure | close every coordinator-owned `P0`, `C0`, or temporary copy after freezing required failure evidence | close every worker-owned FD3, original, opposite, or temporary copy before returning or exiting; after a Result attempt, write-shutdown first when possible | Cleanup is idempotent, closes only descriptors owned in that process, and never depends on close-on-exec, child exit, group reap, or the peer to release the last reference. |
+
+  Immediately after spawn, the only live open file descriptions for the pair
+  are therefore one `P0` in the coordinator and exactly FD3 in the worker.
+  The `duplicate-parent-end` and `duplicate-child-end` AD-11 fixtures inject
+  forbidden extra references on both sides and prove the audit closes them
+  before Hello, so neither direction's required EOF can be suppressed.
 
   FD3 protocol v1 framing is exactly `length:u32be || canonical_json_bytes` in
   this four-frame direction sequence and no other: parent `WorkerHelloV1`, child
@@ -1674,22 +1789,27 @@ schema and tested as contracts, not duplicated constants.
   request, capability, plan and schedule fingerprints, repository revision,
   generation, scope, assignment fingerprint, every reservation field,
   arithmetic, and deadline-bound admission;
-  no mismatched or unrequested result becomes evidence. A Result frame becomes
-  syntactically trusted only after its exact declared payload is followed by
-  clean EOF with no trailing byte. A `report` result additionally requires
+  no mismatched or unrequested result becomes evidence. After writing its one
+  complete Result frame, the worker must successfully write-shutdown and close
+  FD3 as required by the ownership table. A Result frame becomes syntactically
+  trusted only after its exact declared payload is followed by clean EOF with
+  no trailing byte; the parent then closes `P0`. A `report` result additionally requires
   direct exit `0`; all three facts must occur strictly before both deadlines.
   A clean `protocol-error | worker-error` result selects its cause at that EOF
   cut and excludes later wait status as specified above.
 
   Worker stdin is `/dev/null`; worker stdout and stderr are `/dev/null` and are
   never transport. Provider stdout/stderr are independently captured under the
-  frozen reservations and returned only as typed bounded fields on FD 3. Exit
+  frozen reservations and returned only as typed bounded fields on FD 3. FD3
+  remains close-on-exec, and the ownership audit leaves no other pair
+  descriptor for a Provider process to inherit. Exit
   `0` means one syntactically valid result frame was written, regardless of the
   Collector outcome; `64` is framing, schema, version, or identity mismatch;
   `70` is internal failure before a valid result; and `77` is FD3 or peer
   authentication failure. Provider exit is data inside the report, not the
   worker exit code. At deadline equality, timeout, supersession cancellation,
-  SIGINT, or SIGTERM, the parent closes result admission, terminates the worker process
+  SIGINT, or SIGTERM, the parent closes result admission and its coordinator
+  endpoint, terminates the worker process
   group under AD-10/AD-20, and accepts no later frame; a direct-wait failure cut
   retains its exact signal while later cleanup status is only
   WorkerReapEvidenceV1. Provider commands remain in the worker's dedicated process
@@ -1730,13 +1850,15 @@ retain the defaults and valid ranges in `EXPERIENCE.md` unchanged.
 
 ## Stack
 
-The versions below are the reviewed 2026-07-16 lock targets; compatible
-requirements may be broader, but `Cargo.lock` and locked CI own the resolution.
+The versions below are the reviewed 2026-07-16 lock targets and dated
+toolchain evidence. Compatible requirements may be broader, but `Cargo.lock`
+and locked CI own dependency resolution; the Rust `stable` lane remains a
+symbolic moving channel governed by AD-12 rather than a permanent point pin.
 
 | Name | Version |
 | --- | --- |
 | Rust MSRV / edition | 1.88.0 / 2024 |
-| Rust current-stable lane | 1.97.0 at review |
+| Rust current-stable evidence / CI channel | 1.97.1 at review (manifest 2026-07-16, commit `8bab26f4f68e0e26f0bb7960be334d5b520ea452`) / symbolic `stable` |
 | ratatui / default Crossterm line | 0.30.2 / 0.29 |
 | clap | 4.6.2 |
 | serde | 1.0.228 |
