@@ -1,12 +1,16 @@
 ---
 type: canonical-epics
-status: remediated-draft
-assignable: false
-implementationAuthority: false
-remediationBatch: batch-2
+status: final
+assignable: true
+implementationAuthority: true
+remediationBatch: accepted-r22
 stepsCompleted:
   - validate-prerequisites
   - design-epics
+  - create-stories
+  - validate-coverage
+  - independent-review-r22
+  - final-promotion
 inputDocuments:
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md
@@ -17,7 +21,7 @@ inputDocuments:
 
 # srvls Canonical Epics and Stories
 
-## Authority, Draft Status, and Path Override
+## Authority, Final Status, and Path Override
 
 This is the user-directed batch-2 canonical decomposition at
 _bmad-output/planning-artifacts/epics.md. It replaces the planning-root
@@ -27,9 +31,10 @@ digest, discovery globs, and every runtime architecture contract remain
 binding. Story 1.10 owns the authorized validator revision; final promotion
 requires both canonical discovery and archive quarantine checks to pass.
 
-This artifact is a remediated draft, nonassignable, and not implementation
-authority. Concrete stories and GWT criteria are review contracts; no story may
-be assigned until a later explicit promotion changes both authority fields.
+This artifact is final, current, assignable, and the canonical implementation
+authority. Concrete stories and GWT criteria are implementation contracts; a
+story may be assigned only through the fail-closed C-23 approval and canonical
+sprint-status transition gates.
 Source precedence remains PRD, addendum, UX, then architecture. The user's
 post-source checkpoint decision `UD-EPIC-C-1` (requirements confirmed complete
 and correct) selects rejection from FR-6's allowed alternative and explicitly
