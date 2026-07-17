@@ -88,6 +88,8 @@
         - story_title: remainder after second dash (e.g., "user-authentication")
       </action>
       <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
+      <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+      <check if="the C-23 command exits non-zero"><action>HALT</action></check>
       <action>Store story_key for later use (e.g., "1-2-user-authentication")</action>
 
       <!-- Mark epic as in-progress if this is first story -->
@@ -145,6 +147,8 @@
       - story_title: remainder after second dash (e.g., "user-authentication")
     </action>
     <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
+    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+    <check if="the C-23 command exits non-zero"><action>HALT</action></check>
     <action>Store story_key for later use (e.g., "1-2-user-authentication")</action>
 
     <!-- Mark epic as in-progress if this is first story -->
@@ -303,14 +307,7 @@
     <template-output file="{default_output_file}">
     story_completion_status</template-output>
 
-    <!-- CRITICAL: C-23 is a fail-closed assignment gate. -->
-    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
-    <check if="the C-23 command exits non-zero">
-      <output>STOP: fixture approval, reviewer separation, commit ancestry, or a declared predecessor is not valid for {{story_id}}.</output>
-      <action>Do not create, assign, save ready-for-dev status, or update sprint status</action>
-      <action>HALT</action>
-    </check>
-    <!-- CRITICAL: Set status to ready-for-dev only after C-23 passes. -->
+    <!-- Set status only after the Step 1 C-23 preflight has passed. -->
     <action>Set story Status to: "ready-for-dev"</action>
     <action>Add completion note: "Ultimate
     context engine analysis completed - comprehensive developer guide created"</action>

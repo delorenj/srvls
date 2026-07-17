@@ -214,9 +214,10 @@
       </check>
 
       <check if="current status is neither ready-for-dev nor in-progress">
-        <output>⚠️ Unexpected story status: {{current_status}}
-          Expected ready-for-dev or in-progress. Continuing anyway...
+        <output>🚫 Unexpected story status: {{current_status}}
+          Expected ready-for-dev or in-progress.
         </output>
+        <action>HALT</action>
       </check>
 
       <action>Store {{current_sprint_status}} for later use</action>

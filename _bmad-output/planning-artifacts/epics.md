@@ -509,10 +509,12 @@ expected observable result and precedence. Before a story may be assigned, a
 reviewer who is not its fixture author must commit
 `_bmad-output/implementation-artifacts/fixture-approvals/<story-id>-v1.json`.
 The exact `srvls-fixture-approval-v1` object contains only `schema`, `storyId`,
-the ordered two `rowIds`, their ordered `criterionSha256` values, `fixturePath`,
-`fixtureSha256`, `expectedResultPath`, `expectedResultSha256`,
-`reviewerCommit`, `fixtureAuthorCommit`, and `verdict: approved`. The named
-fixture paths must be the Story's declared owning oracle, the named author
+the ordered two `rowIds`, their ordered `criterionSha256` values,
+`oracleBindings`, `reviewerCommit`, `fixtureAuthorCommit`, and
+`verdict: approved`. `oracleBindings` has exactly one ordered object for every
+declared owning oracle, each containing only `oraclePath`, `fixturePath`,
+`fixtureSha256`, `expectedResultPath`, and `expectedResultSha256`. The named
+fixture paths must bind every Story-declared owning oracle, the named author
 commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
 forbidden until this pre-assignment approval passes. After implementation,
