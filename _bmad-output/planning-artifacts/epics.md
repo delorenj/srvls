@@ -24,14 +24,16 @@ _bmad-output/planning-artifacts/epics.md. It replaces the planning-root
 tombstone, explicitly rebutting architecture finding F-01. The override changes
 only the artifact path and expected tombstone assertion. The retired archive,
 digest, discovery globs, and every runtime architecture contract remain
-binding. Until the quarantine validator is separately revised, its only
-acceptable failure is planning-root tombstone does not fail closed.
+binding. Story 1.10 owns the authorized validator revision; final promotion
+requires both canonical discovery and archive quarantine checks to pass.
 
 This artifact is a remediated draft, nonassignable, and not implementation
 authority. Concrete stories and GWT criteria are review contracts; no story may
 be assigned until a later explicit promotion changes both authority fields.
-Precedence is final PRD, addendum, final UX spines, final architecture spine
-except the path override above, then this artifact.
+Precedence is the final architecture and the user's seam-closure mission, then
+the PRD/addendum and UX spines. For the two formerly open alternatives this
+means: either missing persistent-intent prerequisite rejects with no write,
+and duplicate membership never selects an excess-safe instance.
 
 Exactly seven user-value epics and 73 sequential stories follow. Dependencies
 contain only exact earlier Story IDs. Each story retains user value,
@@ -298,7 +300,8 @@ Only SIGKILL or fatal synchronous signal is exceptional.
 
 Architecture-native names are ReleaseBinaryArtifactV1, UpgradeTransactionV1,
 KnownGoodReleaseV1, FirstInstallAbsentV1, StableToolchainEvidenceV1, and
-ManagedConsumerManifestV1; aliases are forbidden. Commands are exactly
+ManagedConsumerUnitContractV1 and BrownfieldConsumerPairsV1; aliases are
+forbidden. Commands are exactly
 srvls release install | upgrade | validate | status | rollback. recover does
 not exist. Agent/linear use exact typed argv, deterministic stdout, human
 stderr, fixed exits, and no stdin grammar.
@@ -316,14 +319,16 @@ traditional process POSIX record locks only: F_SETLK/F_SETLKW, SEEK_SET,
 reopen, dup, stdio, inherited descriptors, or closing another descriptor for the
 inode are forbidden. Shared work drains before exclusive state sampling.
 
-StableToolchainEvidenceV1 binds a freshly fetched official stable 1.97.1
-manifest/components/compiler, Cargo.lock, source, and exact artifact hash. A
-selected stale 1.97.0 compiler fails before compile. The admitted final artifact
+StableToolchainEvidenceV1 records the freshly fetched compiler version for the
+symbolic moving `stable` lane plus the pinned Rust 1.88 MSRV lane, Cargo.lock,
+source, and exact artifact hash. A cached or point-pinned substitute fails
+before compile. The admitted final artifact
 alone gets checksum, readelf glibc-2.42 proof, and smoke.
 
-ManagedConsumerManifestV1 freezes exactly two sorted metrics/snapshot
-service/timer pairs before preimages. Migration replaces exactly two canonical
-deployed-executable occurrences. Every other fragment, drop-in, shell operator,
+Ordered ManagedConsumerUnitContractV1 rows and BrownfieldConsumerPairsV1 freeze
+the sorted metrics and snapshot service/timer pairs before preimages. Migration
+replaces the source fragment and loaded ExecStart occurrence in each pair.
+Every other fragment, drop-in, shell operator,
 timer property, enablement, and scalar is byte-identical; scripts and deviations
 are rejected.
 
@@ -371,6 +376,18 @@ health, reconciliation, ownership, or Safe-to-stop evidence.
 
 ### Contract C-14: Eight Brief Questions
 
+1. BQ-1: What Agents created?
+2. BQ-2: What changed?
+3. BQ-3: What should be running?
+4. BQ-4: What is actually running?
+5. BQ-5: What is missing?
+6. BQ-6: What is unexplained?
+7. BQ-7: Which Heartbeats were lost?
+8. BQ-8: Which Runtimes are duplicate, stale, abandoned, unmanaged, or hot?
+
+Each row carries completeness, baseline/current IDs, Evidence Window, timezone,
+multi-label counts, and exact drill-down IDs.
+
 ### Contract C-15: Same-Host Agent Trust and Lease Admission
 
 Agent commands use the effective local OS principal obtained from the accepted
@@ -415,12 +432,13 @@ credential may affect bytes or authority.
 
 ### Contract C-19: Release Command Grammar and Toolchain Lanes
 
-`release plan|apply|status|recover|rollback` accept only explicit
+`release install|upgrade|validate|status|rollback` accept only explicit
 `--transaction ID`, `--format human|linear|json`, and verb-appropriate
 `--artifact PATH`; unknown/duplicate/missing arguments return
-`invalid_arguments`/exit 2/no write. `apply` confirms the immutable plan;
-`rollback` requires the exact token `rollback <TransactionId>`; status and
-recover never prompt. Bootstrap and release CI run Rust 1.88 MSRV plus symbolic
+`invalid_arguments`/exit 2/no write. `install` and `upgrade` confirm the
+immutable transaction plan;
+`rollback` requires the exact token `rollback <TransactionId>`; validate and
+status never prompt. Bootstrap and release CI run Rust 1.88 MSRV plus symbolic
 moving `stable`, resolver 3, `--locked`, and record compiler/manifest identity
 before compilation; `stable` is never replaced by a permanent point pin.
 
@@ -445,18 +463,6 @@ at revision-zero immutable plans. Forward execution ends at
 their recovery cuts are owned together afterward. The aggregate executes both
 pairs through every forward, rollback, FirstInstall, takeover, and crash cut.
 
-1. BQ-1: What Agents created?
-2. BQ-2: What changed?
-3. BQ-3: What should be running?
-4. BQ-4: What is actually running?
-5. BQ-5: What is missing?
-6. BQ-6: What is unexplained?
-7. BQ-7: Which Heartbeats were lost?
-8. BQ-8: Which Runtimes are duplicate, stale, abandoned, unmanaged, or hot?
-
-Each row carries completeness, baseline/current IDs, Evidence Window, timezone,
-multi-label counts, and exact drill-down IDs.
-
 ## Machine-Checkable Coverage Registry
 
 The JSON block is normative. It explicitly distinguishes the 83 non-
@@ -479,7 +485,7 @@ requirement plus every AD-11 row.
     "architectureLimits": 24,
     "hostProfiles": 1,
     "supplementalMetrics": 9,
-    "ad11Rows": 68
+    "ad11Rows": 82
   },
   "inventory": {
     "functional": [
@@ -824,9 +830,17 @@ requirement plus every AD-11 row.
     "Story 2.1": ["AD-11", "FR-7"],
     "Story 2.2": ["AD-11", "FR-1", "FR-2", "FR-7"],
     "Story 2.3": ["AD-11", "AD-17", "FR-3", "FR-6", "FR-7", "NFR-10"],
-    "Story 2.4": ["FR-4", "FR-7"],
-    "Story 2.5": ["FR-5", "FR-7"],
-    "Story 2.6": ["FR-7", "NFR-7", "SM-5", "UJ-2", "UX-IA-10", "UX-IP-9"],
+    "Story 2.4": ["AD-11", "FR-4", "FR-7"],
+    "Story 2.5": ["AD-11", "FR-5", "FR-7"],
+    "Story 2.6": [
+      "AD-11",
+      "FR-7",
+      "NFR-7",
+      "SM-5",
+      "UJ-2",
+      "UX-IA-10",
+      "UX-IP-9"
+    ],
     "Story 3.1": ["AD-11", "AD-21", "FR-14"],
     "Story 3.2": ["AD-10", "AD-11", "AD-21", "FR-14", "NFR-3"],
     "Story 3.3": ["AD-11", "AD-21", "AD-25", "FR-14"],
@@ -851,6 +865,7 @@ requirement plus every AD-11 row.
     "Story 3.11": ["AD-21", "FR-14", "FR-15", "UX-CP-7", "UX-IA-4", "UX-ST-17"],
     "Story 4.1": ["AD-11", "AD-18", "FR-18", "FR-26", "NFR-1"],
     "Story 4.2": [
+      "AD-11",
       "AD-18",
       "FR-19",
       "FR-20",
@@ -869,8 +884,8 @@ requirement plus every AD-11 row.
       "UX-CP-14"
     ],
     "Story 4.4": ["AD-11", "AD-18", "FR-23", "FR-24", "FR-26", "UJ-5"],
-    "Story 4.5": ["AD-18", "FR-25", "FR-26", "SM-C3", "UX-FND-5"],
-    "Story 4.6": ["AD-18", "FR-26"],
+    "Story 4.5": ["AD-11", "AD-18", "FR-25", "FR-26", "SM-C3", "UX-FND-5"],
+    "Story 4.6": ["AD-11", "AD-18", "FR-26"],
     "Story 4.7": ["AD-11", "AD-18", "AD-5", "FR-26", "FR-27"],
     "Story 4.8": [
       "AD-11",
@@ -892,7 +907,7 @@ requirement plus every AD-11 row.
       "UX-CP-1",
       "UX-IA-1"
     ],
-    "Story 4.10": ["AD-18", "AD-4", "FR-26", "FR-29", "UX-CP-4"],
+    "Story 4.10": ["AD-11", "AD-18", "AD-4", "FR-26", "FR-29", "UX-CP-4"],
     "Story 5.1": [
       "AD-11",
       "AD-14",
@@ -980,7 +995,7 @@ requirement plus every AD-11 row.
       "UX-IP-5",
       "UX-ST-20"
     ],
-    "Story 6.4": ["AD-22", "FR-26", "FR-37", "FR-40", "UX-ST-14"],
+    "Story 6.4": ["AD-11", "AD-22", "FR-26", "FR-37", "FR-40", "UX-ST-14"],
     "Story 6.5": ["AD-11", "AD-22", "FR-40"],
     "Story 6.6": ["AD-11", "AD-22", "FR-39", "FR-40", "NFR-12"],
     "Story 6.7": ["AD-11", "AD-15", "AD-22", "FR-40", "NFR-5"],
@@ -999,7 +1014,14 @@ requirement plus every AD-11 row.
       "UX-ST-9"
     ],
     "Story 6.10": ["AD-11", "AD-22", "FR-40", "UX-IP-10"],
-    "Story 6.11": ["AD-22", "FR-40", "UX-A11Y-3", "UX-CP-15", "UX-IP-11"],
+    "Story 6.11": [
+      "AD-11",
+      "AD-22",
+      "FR-40",
+      "UX-A11Y-3",
+      "UX-CP-15",
+      "UX-IP-11"
+    ],
     "Story 6.12": [
       "AD-11",
       "AD-22",
@@ -1007,14 +1029,18 @@ requirement plus every AD-11 row.
       "SR-A11Y-1",
       "UX-BUD-4",
       "UX-BUD-5",
-      "UX-BUD-6"
+      "UX-BUD-6",
+      "UX-RP-5",
+      "UX-A11Y-1",
+      "UX-A11Y-2",
+      "UX-A11Y-5"
     ],
     "Story 7.1": ["AD-11", "AD-12", "FR-42", "FR-43", "NFR-15"],
     "Story 7.2": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.3": ["AD-23", "FR-43"],
+    "Story 7.3": ["AD-11", "AD-23", "FR-43"],
     "Story 7.4": ["AD-11", "AD-23", "FR-43"],
     "Story 7.5": ["AD-23", "FR-43"],
-    "Story 7.6": ["AD-23", "FR-43"],
+    "Story 7.6": ["AD-11", "AD-23", "FR-43"],
     "Story 7.7": ["AD-11", "AD-23", "FR-43"],
     "Story 7.8": ["AD-23", "FR-43"],
     "Story 7.9": ["AD-11", "AD-23", "FR-43"],
@@ -1254,7 +1280,7 @@ requirement plus every AD-11 row.
     "UX-RP-2": ["Story 5.2"],
     "UX-RP-3": ["Story 5.2"],
     "UX-RP-4": ["Story 5.2"],
-    "UX-RP-5": ["Story 5.2"],
+    "UX-RP-5": ["Story 5.2", "Story 6.12"],
     "UX-RP-6": ["Story 5.1"],
     "UX-BUD-1": ["Story 5.9"],
     "UX-BUD-2": ["Story 5.9"],
@@ -1263,11 +1289,11 @@ requirement plus every AD-11 row.
     "UX-BUD-5": ["Story 6.12"],
     "UX-BUD-6": ["Story 6.12"],
     "UX-BUD-7": ["Story 5.9"],
-    "UX-A11Y-1": ["Story 5.7"],
-    "UX-A11Y-2": ["Story 5.3"],
+    "UX-A11Y-1": ["Story 5.7", "Story 6.12"],
+    "UX-A11Y-2": ["Story 5.3", "Story 6.12"],
     "UX-A11Y-3": ["Story 6.11"],
     "UX-A11Y-4": ["Story 5.7"],
-    "UX-A11Y-5": ["Story 5.7"],
+    "UX-A11Y-5": ["Story 5.7", "Story 6.12"],
     "SR-A11Y-1": ["Story 6.12"],
     "AD-1": ["Story 1.1"],
     "AD-2": ["Story 1.7"],
@@ -1292,6 +1318,9 @@ requirement plus every AD-11 row.
       "Story 2.1",
       "Story 2.2",
       "Story 2.3",
+      "Story 2.4",
+      "Story 2.5",
+      "Story 2.6",
       "Story 3.1",
       "Story 3.2",
       "Story 3.3",
@@ -1303,11 +1332,15 @@ requirement plus every AD-11 row.
       "Story 3.9",
       "Story 3.10",
       "Story 4.1",
+      "Story 4.2",
       "Story 4.3",
       "Story 4.4",
+      "Story 4.5",
+      "Story 4.6",
       "Story 4.7",
       "Story 4.8",
       "Story 4.9",
+      "Story 4.10",
       "Story 5.1",
       "Story 5.3",
       "Story 5.5",
@@ -1315,15 +1348,19 @@ requirement plus every AD-11 row.
       "Story 5.9",
       "Story 6.1",
       "Story 6.3",
+      "Story 6.4",
       "Story 6.5",
       "Story 6.6",
       "Story 6.7",
       "Story 6.9",
       "Story 6.10",
+      "Story 6.11",
       "Story 6.12",
       "Story 7.1",
       "Story 7.2",
+      "Story 7.3",
       "Story 7.4",
+      "Story 7.6",
       "Story 7.7",
       "Story 7.9",
       "Story 7.10",
@@ -2086,6 +2123,14 @@ requirement plus every AD-11 row.
       "assertion": "assert_two_pair_all_effects_all_cuts",
       "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
       "delivery": "future"
+    },
+    {
+      "id": "AD11-FUT-68",
+      "owner": "Story 6.7",
+      "fixture": "tests/fixtures/implementation/provider-privilege-environment-v1",
+      "assertion": "assert_absolute_allowlist_cwd_min_env_sudo_redaction_results",
+      "aggregateCommand": "bash tests/validate_architecture_contracts.sh",
+      "delivery": "future"
     }
   ]
 }
@@ -2116,9 +2161,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/architecture_boundaries.rs and cargo test --locked --test architecture_boundaries, **When** the named oracle executes its enumerated positive rows, **Then** forbidden outward dependencies, alternate side-effect owners, and missing release-CI ownership are rejected while the prescribed graph passes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/architecture_boundaries.rs and cargo test --locked --test architecture_boundaries, **When** the named fixture's positive scenario is executed, **Then** forbidden outward dependencies, alternate side-effect owners, and missing release-CI ownership are rejected while the prescribed graph passes, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a Provider module imports presentation or writes Host state directly, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a Provider module imports presentation or writes Host state directly, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.2: Checked-in inherited behavior inventory
@@ -2140,9 +2185,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/compat/manifest.json and tests/compat/SHA256SUMS, **When** the named oracle executes its enumerated positive rows, **Then** every inherited surface has a source behavior, fixed fixture, independent oracle, live consumer, lane, and version, while any new field is additive only in a new version and leaves inherited bytes unchanged, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/compat/manifest.json and tests/compat/SHA256SUMS, **When** the named fixture's positive scenario is executed, **Then** every inherited surface has a source behavior, fixed fixture, independent oracle, live consumer, lane, and version, while any new field is additive only in a new version and leaves inherited bytes unchanged, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** an inherited surface or consumer has no fixed row, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** an inherited surface or consumer has no fixed row, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.3: Two-lane compatibility oracle
@@ -2164,9 +2209,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/compat/validate.sh, **When** the named oracle executes its enumerated positive rows, **Then** the frozen corpus and live smoke compare exact bytes except for a specifically typed deviation row, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/compat/validate.sh, **When** the named fixture's positive scenario is executed, **Then** the frozen corpus and live smoke compare exact bytes except for a specifically typed deviation row, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a generic semantic normalizer, self-captured golden, or unlisted difference is attempted, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a generic semantic normalizer, self-captured golden, or unlisted difference is attempted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.4: Canonical encodings and typed identities
@@ -2188,9 +2233,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/validate.py, **When** the named oracle executes its enumerated positive rows, **Then** CanonicalJsonV1 remains newline-free, presenters add one terminator, and independent encoders agree on every fixed byte, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/validate.py, **When** the named fixture's positive scenario is executed, **Then** CanonicalJsonV1 remains newline-free, presenters add one terminator, and independent encoders agree on every fixed byte, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** an unknown key, wrong order, mutable identity field, self-generated expected byte, or trailing newline appears, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** an unknown key, wrong order, mutable identity field, self-generated expected byte, or trailing newline appears, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.5: Typed configuration and all limits
@@ -2212,9 +2257,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/config-and-limits-v1, **When** the named oracle executes its enumerated positive rows, **Then** built-in, system, user, explicit, environment, and CLI values resolve in fixed order with complete provenance and exact derived cuts, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/config-and-limits-v1, **When** the named fixture's positive scenario is executed, **Then** built-in, system, user, explicit, environment, and CLI values resolve in fixed order with complete provenance and exact derived cuts, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** an unknown, duplicate, malformed, out-of-range, hidden lower-precedence, or clamped value is supplied, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** an unknown, duplicate, malformed, out-of-range, hidden lower-precedence, or clamped value is supplied, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.6: Fail-closed SQLite initialization
@@ -2236,9 +2281,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/sqlite-init-v1, **When** the named oracle executes its enumerated positive rows, **Then** fresh and existing databases accept only the exact WAL, synchronous, foreign-key, busy-timeout, schema, and permission contract, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/sqlite-init-v1, **When** the named fixture's positive scenario is executed, **Then** fresh and existing databases accept only the exact WAL, synchronous, foreign-key, busy-timeout, schema, and permission contract, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a pragma type/value, mode, integrity, migration, or invariant mismatches, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a pragma type/value, mode, integrity, migration, or invariant mismatches, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.7: Atomic repositories and current-pointer CAS
@@ -2260,9 +2305,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/repository-cas-v1, **When** the named oracle executes its enumerated positive rows, **Then** a typed test aggregate commits atomically and only an expected-revision CAS may advance its test current pointer, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/repository-cas-v1, **When** the named fixture's positive scenario is executed, **Then** a typed test aggregate commits atomically and only an expected-revision CAS may advance its test current pointer, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a stale writer, late Collector, or concurrent replacement attempts a newer-truth overwrite, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a stale writer, late Collector, or concurrent replacement attempts a newer-truth overwrite, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.8: Deterministic retention and capacity mode
@@ -2284,9 +2329,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/retention-capacity-v1, **When** the named oracle executes its enumerated positive rows, **Then** eligible unpinned rows prune oldest-first and pinned excess refuses only the canonical new-write classes while admitted finalization continues, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/retention-capacity-v1, **When** the named fixture's positive scenario is executed, **Then** eligible unpinned rows prune oldest-first and pinned excess refuses only the canonical new-write classes while admitted finalization continues, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a pin is selected, an archive/vacuum/reset path appears, or alternate degraded admission is chosen, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a pin is selected, an archive/vacuum/reset path appears, or alternate degraded admission is chosen, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.9: Bounded read-only CommandRunner
@@ -2308,9 +2353,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/command-runner-v1, **When** the named oracle executes its enumerated positive rows, **Then** stdout/stderr drain independently, terminal result freezes at the decision cut, and later reap evidence cannot rewrite it, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/command-runner-v1, **When** the named fixture's positive scenario is executed, **Then** stdout/stderr drain independently, terminal result freezes at the decision cut, and later reap evidence cannot rewrite it, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** shell interpolation, mutating Provider use, unbounded capture, sequential drain, or reap-before-result is attempted, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** shell interpolation, mutating Provider use, unbounded capture, sequential drain, or reap-before-result is attempted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 1.10: Foundation contract gate
@@ -2332,9 +2377,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named oracle executes its enumerated positive rows, **Then** every registry row owned by Epic 1 is discovered and missing, duplicate, stale, or self-generated evidence fails closed, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named fixture's positive scenario is executed, **Then** every registry row owned by Epic 1 is discovered and missing, duplicate, stale, or self-generated evidence fails closed, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** the user override is active or another planning quarantine invariant changes, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** the user override is active or another planning quarantine invariant changes, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 2: Let Agents own runtime intent deterministically
@@ -2360,7 +2405,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/principal-authorization-v1, **When** the named oracle executes its enumerated positive rows, **Then** declare, revise, renew, and close bind actor and owner to verified local credentials with deterministic unauthorized outcomes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/principal-authorization-v1, **When** the named fixture's positive scenario is executed, **Then** declare, revise, renew, and close bind actor and owner to verified local credentials with deterministic unauthorized outcomes, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** peer uid 1000 owns the Promise, **When** peer uid 1001 attempts revise, renew, or close, **Then** each returns `unauthorized_owner`/exit 4 with no event or row change, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -2386,7 +2431,7 @@ and assertions are fixed independently of the implementation under test.
 
 1. **Given** revision 3 and changed owner-approved fields, **When** expected revision 3 is revised twice with one idempotency key, **Then** revision 4 and exactly one revision event are returned both times; expected revision 2 returns `revision_conflict`/exit 4 with no write, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a required field, locator, owner, mechanism, count, or opaque-reference type is invalid, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a required field, locator, owner, mechanism, count, or opaque-reference type is invalid, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.3: Finite Leases and valid persistence
@@ -2408,9 +2453,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-lease-v1, **When** the named oracle executes its enumerated positive rows, **Then** omitted lifetime creates the exact finite Lease and valid persistent intent records its durable authority, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-lease-v1, **When** the named fixture's positive scenario is executed, **Then** omitted lifetime creates the exact finite Lease and valid persistent intent records its durable authority, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** invalid persistent intent is submitted or wall rollback would extend ownership, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** invalid persistent intent is submitted or wall rollback would extend ownership, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.4: Idempotent Heartbeats
@@ -2421,7 +2466,7 @@ So that same actor and idempotency key returns the original renewal without dupl
 
 **Implementation Boundary:** Renew one owned Promise with caller identity, event sequence, cadence, grace, Lease ceiling, and exact late/unauthorized/malformed/closed/unknown outcomes.
 
-**Requirement Mapping:** FR-4, FR-7.
+**Requirement Mapping:** AD-11, FR-4, FR-7.
 
 **Dependencies:** Story 2.3.
 
@@ -2432,9 +2477,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-heartbeat-v1, **When** the named oracle executes its enumerated positive rows, **Then** same actor and idempotency key returns the original renewal without duplicate event and never extends beyond the Lease rule, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-heartbeat-v1, **When** the named fixture's positive scenario is executed, **Then** same actor and idempotency key returns the original renewal without duplicate event and never extends beyond the Lease rule, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** Heartbeat arrives after Lease, after close, under another owner, or across invalid boot evidence, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** Heartbeat arrives after Lease, after close, under another owner, or across invalid boot evidence, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.5: Close intent without Host mutation
@@ -2445,7 +2490,7 @@ So that retry returns the same close result and history preserves one reason, ac
 
 **Implementation Boundary:** Append exactly one released, completed, or revoked close event and retain the projection/history without stopping a Runtime.
 
-**Requirement Mapping:** FR-5, FR-7.
+**Requirement Mapping:** AD-11, FR-5, FR-7.
 
 **Dependencies:** Story 2.4.
 
@@ -2456,9 +2501,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-close-v1, **When** the named oracle executes its enumerated positive rows, **Then** retry returns the same close result and history preserves one reason, actor, sequence, and prior revision, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/promise-close-v1, **When** the named fixture's positive scenario is executed, **Then** retry returns the same close result and history preserves one reason, actor, sequence, and prior revision, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a second reason, unknown Promise, unauthorized actor, or Provider mutation is requested, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a second reason, unknown Promise, unauthorized actor, or Provider mutation is requested, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 2.6: Exact Agent lifecycle commands
@@ -2469,7 +2514,7 @@ So that each command and retry maps to one documented result/exit and references
 
 **Implementation Boundary:** Expose typed argv declare, revise, query, renew, close, and validate with deterministic JSON/linear stdout, human stderr, stable framing, exits, and no ambiguous stdin grammar.
 
-**Requirement Mapping:** FR-7, NFR-7, SM-5, UJ-2, UX-IA-10, UX-IP-9.
+**Requirement Mapping:** AD-11, FR-7, NFR-7, SM-5, UJ-2, UX-IA-10, UX-IP-9.
 
 **Dependencies:** Story 2.5.
 
@@ -2480,9 +2525,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/agent-lifecycle-cli-v1, **When** the named oracle executes its enumerated positive rows, **Then** each command and retry maps to one documented result/exit and references the same canonical lifecycle aggregates, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/agent-lifecycle-cli-v1, **When** the named fixture's positive scenario is executed, **Then** each command and retry maps to one documented result/exit and references the same canonical lifecycle aggregates, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** unknown argv, stdin payload, ANSI/progress on stdout, or an undocumented interactive gate is introduced, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** unknown argv, stdin payload, ANSI/progress on stdout, or an undocumented interactive gate is introduced, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 3: See the actual work running on the Host
@@ -2508,9 +2553,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/collection-plan-v1, **When** the named oracle executes its enumerated positive rows, **Then** the plan fingerprint and all cuts are immutable before spawn and no later truth lookup changes obligation or input, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/collection-plan-v1, **When** the named fixture's positive scenario is executed, **Then** the plan fingerprint and all cuts are immutable before spawn and no later truth lookup changes obligation or input, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** any cut, wall clock, policy, Promise, baseline, operation, history, or current pointer is read after admission, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** any cut, wall clock, policy, Promise, baseline, operation, history, or current pointer is read after admission, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.2: Deterministic DispatchSchedule and reservations
@@ -2532,9 +2577,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/dispatch-schedule-v1, **When** the named oracle executes its enumerated positive rows, **Then** epochs, worker IDs, LPT positions, process gate, makespan, margin, and cutoff match all three exact vectors, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/dispatch-schedule-v1, **When** the named fixture's positive scenario is executed, **Then** epochs, worker IDs, LPT positions, process gate, makespan, margin, and cutoff match all three exact vectors, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a completion timing changes a frozen reservation or equality at a cut allocates work, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a completion timing changes a frozen reservation or equality at a cut allocates work, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.3: Authenticated same-binary FD3 exchange
@@ -2556,9 +2601,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/ipc-v1, **When** the named oracle executes its enumerated positive rows, **Then** all four frames and exact key orders interoperate and each injected failure selects one total diagnostic without post-cut rewrite, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/ipc-v1, **When** the named fixture's positive scenario is executed, **Then** all four frames and exact key orders interoperate and each injected failure selects one total diagnostic without post-cut rewrite, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a duplicate FD, replay, wrong credential, size boundary, expired reservation, bare exit, signal, or late reap occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a duplicate FD, replay, wrong credential, size boundary, expired reservation, bare exit, signal, or late reap occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.4: Cron scope collection
@@ -2580,9 +2625,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-cron-v1, **When** the named oracle executes its enumerated positive rows, **Then** complete and failed scopes normalize deterministic cron ObservationIdV1 values and never expose a mutation capability, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-cron-v1, **When** the named fixture's positive scenario is executed, **Then** complete and failed scopes normalize deterministic cron ObservationIdV1 values and never expose a mutation capability, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** permissions, non-UTF-8 paths, duplicate physical rows, malformed schedules, or partial sources occur, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** permissions, non-UTF-8 paths, duplicate physical rows, malformed schedules, or partial sources occur, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.5: Systemd scope collection
@@ -2604,9 +2649,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-systemd-v1, **When** the named oracle executes its enumerated positive rows, **Then** D-Bus/read-only evidence yields stable unit/timer Observations and scoped failure outcomes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-systemd-v1, **When** the named fixture's positive scenario is executed, **Then** D-Bus/read-only evidence yields stable unit/timer Observations and scoped failure outcomes, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** manager ownership changes, unit properties disappear, access denies, or paired timer evidence conflicts, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** manager ownership changes, unit properties disappear, access denies, or paired timer evidence conflicts, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.6: Docker scope collection
@@ -2628,9 +2673,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-docker-v1, **When** the named oracle executes its enumerated positive rows, **Then** restart of the same full container identity preserves ObservationId while runtime evidence changes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-docker-v1, **When** the named fixture's positive scenario is executed, **Then** restart of the same full container identity preserves ObservationId while runtime evidence changes, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a mutable timestamp, short ID, name, image, PID, or Compose label enters identity, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a mutable timestamp, short ID, name, image, PID, or Compose label enters identity, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.7: PM2 scope collection
@@ -2652,9 +2697,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-pm2-v1, **When** the named oracle executes its enumerated positive rows, **Then** PM2 restarts preserve or change identity only according to the exact birth tuple and retain bounded state/restart evidence, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-pm2-v1, **When** the named fixture's positive scenario is executed, **Then** PM2 restarts preserve or change identity only according to the exact birth tuple and retain bounded state/restart evidence, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** OS PID, mutable uptime, display order, or namespace alone becomes identity, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** OS PID, mutable uptime, display order, or namespace alone becomes identity, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.8: Direct-process collection and exact suppression
@@ -2676,9 +2721,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-process-v1, **When** the named oracle executes its enumerated positive rows, **Then** frozen SelfProcessSetV1 and ownership hints suppress exact duplicates while unrelated or escaped processes remain observable, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-process-v1, **When** the named fixture's positive scenario is executed, **Then** frozen SelfProcessSetV1 and ownership hints suppress exact duplicates while unrelated or escaped processes remain observable, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** weak parent/name/cwd evidence, whole-descendant suppression, PID reuse, or unresolved child cleanup occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** weak parent/name/cwd evidence, whole-descendant suppression, PID reuse, or unresolved child cleanup occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.9: Immutable CollectionCandidate reduction
@@ -2700,9 +2745,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/collection-candidate-v1, **When** the named oracle executes its enumerated positive rows, **Then** late/superseded reports cannot alter frozen candidate bytes and candidate creation performs no Snapshot CAS, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/collection-candidate-v1, **When** the named fixture's positive scenario is executed, **Then** late/superseded reports cannot alter frozen candidate bytes and candidate creation performs no Snapshot CAS, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a Collector, worker reap, reducer retry, or display layer rewrites candidate truth, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a Collector, worker reap, reducer retry, or display layer rewrites candidate truth, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.10: Complete obligation and strict policy
@@ -2726,7 +2771,7 @@ and assertions are fixed independently of the implementation under test.
 
 1. **Given** the fixed positive fixtures in tests/fixtures/implementation/collection-obligation-v1, **When** obligation policy is compiled, **Then** invoking-user cron, /etc cron, system/user systemd, and visible direct processes are required; root cron is optional-promotable; Docker and PM2 are optional until detection or active Promise; other-user systemd and PM2 are not-applicable/out-of-scope; and only supported optional scopes may be promoted to required, **And** every complete, partial, unavailable, denied, timed-out, or invalid-output result retains duration, diagnostic, applicable reason, usable evidence, and withheld conclusions.
    **And** identical input produces the identical aggregate reason and exit.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** incomplete evidence is treated as empty, absent, healthy, or safe, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** incomplete evidence is treated as empty, absent, healthy, or safe, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 3.11: Bounded Provider evidence inspection
@@ -2748,9 +2793,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-inspect-v1, **When** the named oracle executes its enumerated positive rows, **Then** inspection is stable by typed ID and visibly names truncation/redaction and the winning bound, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/provider-inspect-v1, **When** the named fixture's positive scenario is executed, **Then** inspection is stable by typed ID and visibly names truncation/redaction and the winning bound, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** raw control bytes, unrestricted logs, secrets, row identity, or another Observation's failure leaks, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** raw control bytes, unrestricted logs, secrets, row identity, or another Observation's failure leaks, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 4: Reconcile intended and actual runtime truth
@@ -2776,9 +2821,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-correlation-v1, **When** the named oracle executes its enumerated positive rows, **Then** exact Provider identity or locator anchors and ordered secondary evidence produce deterministic edges without summing or UI influence, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-correlation-v1, **When** the named fixture's positive scenario is executed, **Then** exact Provider identity or locator anchors and ordered secondary evidence produce deterministic edges without summing or UI influence, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** provider/anchor conflict, equal maxima, weak name-only evidence, or later state lookup occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** provider/anchor conflict, equal maxima, weak name-only evidence, or later state lookup occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.2: Orthogonal lifecycle, evidence, and Promise outcomes
@@ -2789,7 +2834,7 @@ So that healthy, broken, unresolved, and inactive remain explicit and orthogonal
 
 **Implementation Boundary:** Apply every Contract C-17 lifecycle/evidence/outcome row; unresolved is active-intent-only and expired or closed intent is inactive without erasing other findings.
 
-**Requirement Mapping:** AD-18, FR-19, FR-20, FR-26, SM-2, UJ-3, UX-FND-2.
+**Requirement Mapping:** AD-11, AD-18, FR-19, FR-20, FR-26, SM-2, UJ-3, UX-FND-2.
 
 **Dependencies:** Story 4.1.
 
@@ -2800,9 +2845,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-outcomes-v1, **When** the named oracle executes its enumerated positive rows, **Then** healthy requires intended exact count and sufficient evidence; broken requires sufficient absence; otherwise unresolved remains explicit, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-outcomes-v1, **When** the named fixture's positive scenario is executed, **Then** healthy requires intended exact count and sufficient evidence; broken requires sufficient absence; otherwise unresolved remains explicit, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** Collector failure, near match, expired Lease, or conflicting identity is presented as healthy/broken certainty, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** Collector failure, near match, expired Lease, or conflicting identity is presented as healthy/broken certainty, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.3: Orphan and duplicate-set findings
@@ -2824,9 +2869,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-orphan-duplicate-v1, **When** the named oracle executes its enumerated positive rows, **Then** all duplicate members retain identity and labels while excess count is intended-count arithmetic only, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-orphan-duplicate-v1, **When** the named fixture's positive scenario is executed, **Then** all duplicate members retain identity and labels while excess count is intended-count arithmetic only, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a member is named excess, selected for deletion, or claimed Agent-created without evidence, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a member is named excess, selected for deletion, or claimed Agent-created without evidence, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.4: Positive-evidence stale and hot findings
@@ -2848,9 +2893,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-stale-hot-v1, **When** the named oracle executes its enumerated positive rows, **Then** stale requires supported positive no-use evidence and hot requires enough retained timestamped samples, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-stale-hot-v1, **When** the named fixture's positive scenario is executed, **Then** stale requires supported positive no-use evidence and hot requires enough retained timestamped samples, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** missing samples, one spike, age alone, or UI color produces a label, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** missing samples, one spike, age alone, or UI color produces a label, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.5: Unmanaged and abandoned truth without cleanup
@@ -2861,7 +2906,7 @@ So that each label names its exact positive and missing evidence and coexists wi
 
 **Implementation Boundary:** Classify from Durable Ownership, Launch Mechanism, Lease, Heartbeat, and explicit closure evidence while retaining all truth and performing no stop.
 
-**Requirement Mapping:** AD-18, FR-25, FR-26, SM-C3, UX-FND-5.
+**Requirement Mapping:** AD-11, AD-18, FR-25, FR-26, SM-C3, UX-FND-5.
 
 **Dependencies:** Story 4.4.
 
@@ -2872,9 +2917,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1, **When** the named oracle executes its enumerated positive rows, **Then** each label names its exact positive and missing evidence and coexists with other findings, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1, **When** the named fixture's positive scenario is executed, **Then** each label names its exact positive and missing evidence and coexists with other findings, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** expiry, closure, orphan, or unmanaged state triggers mutation or deletes evidence, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** expiry, closure, orphan, or unmanaged state triggers mutation or deletes evidence, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.6: Explainable conservative Safe-to-stop
@@ -2885,7 +2930,7 @@ So that the same frozen truth yields identical assessment/reasons and changed re
 
 **Implementation Boundary:** Compute safe, unsafe, or unknown with identity, contradictions, missing evidence, ownership, purpose, lifetime, mechanism, policy, and provenance; recalculate after refresh.
 
-**Requirement Mapping:** AD-18, FR-26.
+**Requirement Mapping:** AD-11, AD-18, FR-26.
 
 **Dependencies:** Story 4.5.
 
@@ -2896,9 +2941,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/safe-to-stop-v1, **When** the named oracle executes its enumerated positive rows, **Then** the same frozen truth yields identical assessment/reasons and changed refresh truth recomputes it, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/safe-to-stop-v1, **When** the named fixture's positive scenario is executed, **Then** the same frozen truth yields identical assessment/reasons and changed refresh truth recomputes it, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a label, group, opaque reference, expired Lease, or prior assessment authorizes mutation, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a label, group, opaque reference, expired Lease, or prior assessment authorizes mutation, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.7: Sole Snapshot materialization and current CAS
@@ -2920,9 +2965,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/snapshot-materialization-v1, **When** the named oracle executes its enumerated positive rows, **Then** latest requested generation commits reports, diagnostics, Observations, resources, findings, Brief material, revisions, and current together, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/snapshot-materialization-v1, **When** the named fixture's positive scenario is executed, **Then** latest requested generation commits reports, diagnostics, Observations, resources, findings, Brief material, revisions, and current together, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a superseded candidate, partial transaction, other layer, or late report attempts current, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a superseded candidate, partial transaction, other layer, or late report attempts current, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.8: Explicit Accepted Baseline and Evidence Window
@@ -2945,7 +2990,7 @@ and assertions are fixed independently of the implementation under test.
 **Acceptance Criteria:**
 
 1. **Given** an eligible complete current Snapshot and the fixed baseline-acceptance fixtures, **When** the deterministic baseline command addresses that exact Snapshot, **Then** successful confirmation changes only baseline/audit and the Brief immediately recomputes new/resolved/changed/persisting with baseline/current timestamps and configured timezone, **And** refresh, exit, scheduled candidates, and actions never advance the baseline.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** an incomplete or incompatible Snapshot lacks every missing scope, a nonempty reason, principal, timestamp, and the exact typed word override, or when first-run/incompatible truth attempts to invent a change set, **Then** acceptance fails with baseline unchanged and no Host mutation, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** an incomplete or incompatible Snapshot lacks every missing scope, a nonempty reason, principal, timestamp, and the exact typed word override, or when first-run/incompatible truth attempts to invent a change set, **Then** acceptance fails with baseline unchanged and no Host mutation, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.9: Eight-question deterministic Brief
@@ -2967,9 +3012,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-eight-questions-v1, **When** the named oracle executes its enumerated positive rows, **Then** all BQ-1 through BQ-8 rows answer the exact question and withhold clean claims when required evidence is incomplete, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-eight-questions-v1, **When** the named fixture's positive scenario is executed, **Then** all BQ-1 through BQ-8 rows answer the exact question and withhold clean claims when required evidence is incomplete, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a row is missing, renamed, double-counted, or answered from display/group state, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a row is missing, renamed, double-counted, or answered from display/group state, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 4.10: Deterministic attention, Stack, and Ungrouped grouping
@@ -2980,7 +3025,7 @@ So that identical findings produce identical grouping/order and group rows remai
 
 **Implementation Boundary:** Order attention first, infer Stack only from evidence, normalize paths, apply deterministic candidates/facets, and retain ambiguity as inspectable Ungrouped.
 
-**Requirement Mapping:** AD-18, AD-4, FR-26, FR-29, UX-CP-4.
+**Requirement Mapping:** AD-11, AD-18, AD-4, FR-26, FR-29, UX-CP-4.
 
 **Dependencies:** Story 4.9.
 
@@ -2991,9 +3036,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-grouping-v1, **When** the named oracle executes its enumerated positive rows, **Then** identical findings produce identical grouping/order and group rows remain read-only, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/brief-grouping-v1, **When** the named fixture's positive scenario is executed, **Then** identical findings produce identical grouping/order and group rows remain read-only, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a benchmark-dependent branch, group action, or hidden ambiguity is introduced, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a benchmark-dependent branch, group action, or hidden ambiguity is introduced, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 5: Navigate one accessible terminal product
@@ -3019,18 +3064,18 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/presentation-routing-v1, **When** the named oracle executes its enumerated positive rows, **Then** bare, explicit format, TUI, deprecated fzf, help, internal worker, and namespace argv select one exact profile with clean stdout, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/presentation-routing-v1, **When** the named fixture's positive scenario is executed, **Then** bare, explicit format, TUI, deprecated fzf, help, internal worker, and namespace argv select one exact profile with clean stdout, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** invalid config, explicit TUI failure, redirect, TERM=dumb, panic, or signal could fall through or corrupt terminal, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** invalid config, explicit TUI failure, redirect, TERM=dumb, panic, or signal could fall through or corrupt terminal, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.2: Responsive Brief and Explorer layouts
 
 As a srvls Operator or maintainer,
 I want responsive brief and explorer layouts,
-So that 120x30, 80x24, 60x20, below-minimum, live-resize, and redirected fixtures match exact component/layout rules.
+So that 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exact component/layout rules.
 
-**Implementation Boundary:** Render full, compact, narrow, below-minimum, resize, and redirected contracts with stable reading order, identity, completeness, modal, and focus state.
+**Implementation Boundary:** Render full, compact, narrow, below-minimum, and resize contracts with stable reading order, identity, completeness, modal, and focus state; redirected output belongs only to Story 5.1.
 
 **Requirement Mapping:** FR-34, UX-CP-3, UX-IA-2, UX-RP-1, UX-RP-2, UX-RP-3, UX-RP-4, UX-RP-5.
 
@@ -3043,9 +3088,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-responsive-v1, **When** the named oracle executes its enumerated positive rows, **Then** 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exact component/layout rules, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-responsive-v1, **When** the named fixture's positive scenario is executed, **Then** 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exact component/layout rules, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** resize loses model/focus, hides modal semantics, or turns color/icon/geometry into meaning, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** resize loses model/focus, hides modal semantics, or turns color/icon/geometry into meaning, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.3: Keyboard, facets, focus, and exact Unicode search
@@ -3067,9 +3112,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** the named oracle executes its enumerated positive rows, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** the named fixture's positive scenario is executed, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** simple fold, NFKC, locale, lossy bytes, row-index focus, or action retargeting occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** simple fold, NFKC, locale, lossy bytes, row-index focus, or action retargeting occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.4: Runtime and evidence detail surfaces
@@ -3091,9 +3136,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-detail-v1, **When** the named oracle executes its enumerated positive rows, **Then** Enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggregate and missing evidence is a visible row, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-detail-v1, **When** the named fixture's positive scenario is executed, **Then** Enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggregate and missing evidence is a visible row, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** friendly name, group, opaque reference, or raw content becomes identity/truth, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** friendly name, group, opaque reference, or raw content becomes identity/truth, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.5: Affirmative external-system boundary
@@ -3116,7 +3161,7 @@ and assertions are fixed independently of the implementation under test.
 **Acceptance Criteria:**
 
 1. **Given** the fixed positive fixtures in tests/fixtures/implementation/external-boundary-v1, **When** opaque references are rendered, **Then** Plane remains authoritative for intended work, Git for code changes, and Telemetry for events/measurements; each reference is labeled display-only and never affects Runtime identity, health, reconciliation, safety, or mutation authority, **And** repeated runs over identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** srvls fetches, mutates, interprets health from, reconciles with, or authorizes from any reference, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** srvls fetches, mutates, interprets health from, reconciles with, or authorizes from any reference, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.6: Nonblocking refresh and explicit application states
@@ -3138,9 +3183,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-refresh-states-v1, **When** the named oracle executes its enumerated positive rows, **Then** loading, refreshing, stale, partial-failure, unavailable-Provider, empty, and bounded-detail fixtures render exact recovery guidance, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-refresh-states-v1, **When** the named fixture's positive scenario is executed, **Then** loading, refreshing, stale, partial-failure, unavailable-Provider, empty, and bounded-detail fixtures render exact recovery guidance, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** refresh blocks navigation, clears current truth, advances baseline, or presents incomplete as empty, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** refresh blocks navigation, clears current truth, advances baseline, or presents incomplete as empty, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.7: Text-first accessibility and hostile-text safety
@@ -3162,9 +3207,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-accessibility-v1, **When** the named oracle executes its enumerated positive rows, **Then** keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, and motion-free fixtures preserve all meaning, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-accessibility-v1, **When** the named fixture's positive scenario is executed, **Then** keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, and motion-free fixtures preserve all meaning, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** color, glyph, animation, cursor motion, large geometry, or trusted Host text is required, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** color, glyph, animation, cursor motion, large geometry, or trusted Host text is required, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.8: Help and invalid-configuration recovery
@@ -3186,9 +3231,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/help-config-recovery-v1, **When** the named oracle executes its enumerated positive rows, **Then** question-mark/Esc restores prior focus and invalid config emits one deterministic linear/JSON error before TUI, collection, SQLite, or mutation, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/help-config-recovery-v1, **When** the named fixture's positive scenario is executed, **Then** question-mark/Esc restores prior focus and invalid config emits one deterministic linear/JSON error before TUI, collection, SQLite, or mutation, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** help omits a key/safety/linear/exit rule or config silently clamps/hides a lower source, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** help omits a key/safety/linear/exit rule or config silently clamps/hides a lower source, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 5.9: State/component goldens and UX budget gate
@@ -3210,9 +3255,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-state-budget-v1, **When** the named oracle executes its enumerated positive rows, **Then** all UX-ST read-only states/components match immutable goldens and 30 post-warm-up iterations meet each UX-BUD default/range/p95 on the four-vCPU 8-GiB glibc-2.42 profile, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-state-budget-v1, **When** the named fixture's positive scenario is executed, **Then** all UX-ST read-only states/components match immutable goldens and 30 post-warm-up iterations meet each UX-BUD default/range/p95 on the four-vCPU 8-GiB glibc-2.42 profile, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 6: Act on one exact runtime safely
@@ -3238,9 +3283,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-kind-v1, **When** the named oracle executes its enumerated positive rows, **Then** all Provider-by-kind cells and lowercase encodings match the complete matrix, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-kind-v1, **When** the named fixture's positive scenario is executed, **Then** all Provider-by-kind cells and lowercase encodings match the complete matrix, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** signal, alias, unknown, wrong case, provider-local enum, or unsupported cell is accepted, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** signal, alias, unknown, wrong case, provider-local enum, or unsupported cell is accepted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.2: Discoverable exact-target Action Menu
@@ -3262,9 +3307,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-menu-v1, **When** the named oracle executes its enumerated positive rows, **Then** supported/unsafe/unknown/stale/pending cells render exactly and accelerators enter the same plan path, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-menu-v1, **When** the named fixture's positive scenario is executed, **Then** supported/unsafe/unknown/stale/pending cells render exactly and accelerators enter the same plan path, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** row, name, group, cron, incomplete identity, or unsupported action widens a target, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** row, name, group, cron, incomplete identity, or unsupported action widens a target, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.3: Immutable ActionPlan and complete confirmation matrix
@@ -3286,9 +3331,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-plan-confirmation-v1, **When** the named oracle executes its enumerated positive rows, **Then** Start, Restart, Stop, Disable, Delete and every safety state select the exact availability/token/focus rule, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-plan-confirmation-v1, **When** the named fixture's positive scenario is executed, **Then** Start, Restart, Stop, Disable, Delete and every safety state select the exact availability/token/focus rule, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** OperationId is allocated, Cancel is not focused, Esc submits, or confirmation can be bypassed, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** OperationId is allocated, Cancel is not focused, Esc submits, or confirmation can be bypassed, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.4: Immediate identity, capability, and safety revalidation
@@ -3299,7 +3344,7 @@ So that unchanged exact evidence authorizes submit while stale/reused/missing/am
 
 **Implementation Boundary:** After confirmation and strictly before mutation re-resolve every captured identity/capability/generation/policy/BootIdentity and recompute Safe-to-stop within ARCH-LIM-21.
 
-**Requirement Mapping:** AD-22, FR-26, FR-37, FR-40, UX-ST-14.
+**Requirement Mapping:** AD-11, AD-22, FR-26, FR-37, FR-40, UX-ST-14.
 
 **Dependencies:** Story 6.3.
 
@@ -3312,7 +3357,7 @@ and assertions are fixed independently of the implementation under test.
 
 1. **Given** Contract C-05 confirmation has completed, **When** immediate revalidation preserves exact identity/capability/generation/policy/BootIdentity, **Then** safe submits, acknowledged unknown submits, unsafe refuses, and Promise-origin Start treats stop safety as not-applicable; all stale/reused/missing/ambiguous/expired drift refuses with no launch, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** display name, row, cached assessment, or post-deadline evidence passes, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** display name, row, cached assessment, or post-deadline evidence passes, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.5: Separate bounded action pool primitive
@@ -3334,9 +3379,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-pool-v1, **When** the named oracle executes its enumerated positive rows, **Then** available slots reserve deterministically and saturation returns pre-launch refusal without creating a running task, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-pool-v1, **When** the named fixture's positive scenario is executed, **Then** available slots reserve deterministically and saturation returns pre-launch refusal without creating a running task, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** collection slots, late admission, hidden queue, starvation, or Provider launch consumes capacity, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** collection slots, late admission, hidden queue, starvation, or Provider launch consumes capacity, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.6: Atomic operation admission and handoff
@@ -3358,9 +3403,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-admission-v1, **When** the named oracle executes its enumerated positive rows, **Then** retry returns the same operation and phase/evidence transitions are gap-free and architecture-native, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-admission-v1, **When** the named fixture's positive scenario is executed, **Then** retry returns the same operation and phase/evidence transitions are gap-free and architecture-native, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** queued/admitted/running/refused durable aliases, duplicate target, expired plan, or launch before launch-authorized occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** queued/admitted/running/refused durable aliases, duplicate target, expired plan, or launch before launch-authorized occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.7: In-process exact-target executors
@@ -3382,9 +3427,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-executor-v1, **When** the named oracle executes its enumerated positive rows, **Then** each supported matrix cell invokes only its exact D-Bus/socket/protocol/kernel target and records LaunchReceiptV1, **And** repeated runs over
+1. **Given** Contract C-18 fixtures for every collector and executor, **When** each adapter runs, **Then** it uses its absolute allowlist or in-process API, cwd `/`, minimal environment, `sudo -n` only, redacted argv/diagnostics, and distinct `denied` versus execution-error results while recording LaunchReceiptV1, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** CommandRunner, shell, mutating systemctl child, raw command, signal kind, broad privilege, or wrong identity is used, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** inherited PATH, locale, shell, ambient credential, interactive sudo, wrong cwd, non-allowlisted executable, unredacted secret, or collapsed denial/error fixtures, **When** an adapter is admitted, **Then** it fails with `provider_environment_violation`/exit 4/no mutation, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.8: Operation-status surface integration
@@ -3406,9 +3451,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-status-surface-v1, **When** the named oracle executes its enumerated positive rows, **Then** 100-ms submit acknowledgement and periodic phase updates retain exact operation/target and durable repository truth, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-status-surface-v1, **When** the named fixture's positive scenario is executed, **Then** 100-ms submit acknowledgement and periodic phase updates retain exact operation/target and durable repository truth, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** focus move, refresh, resize, repeated key, or concurrent operation misattributes or hides status, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** focus move, refresh, resize, repeated key, or concurrent operation misattributes or hides status, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.9: Fresh verification and total outcome precedence
@@ -3430,9 +3475,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-outcome-v1, **When** the named oracle executes its enumerated positive rows, **Then** every verification predicate and race resolves to exactly one ordered outcome with evidence, reason, and next safe step, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-outcome-v1, **When** the named fixture's positive scenario is executed, **Then** every verification predicate and race resolves to exactly one ordered outcome with evidence, reason, and next safe step, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** command exit alone verifies, a diagnostic creates an alias, or replacement becomes stale-identity, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** command exit alone verifies, a diagnostic creates an alias, or replacement becomes stale-identity, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.10: Signal, exit, and durable finalization recovery
@@ -3454,9 +3499,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-shutdown-recovery-v1, **When** the named oracle executes its enumerated positive rows, **Then** pre-launch exit refuses; executing/verifying uncertainty resolves conservatively; storage failure keeps the owner alive until terminal truth persists, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-shutdown-recovery-v1, **When** the named fixture's positive scenario is executed, **Then** pre-launch exit refuses; executing/verifying uncertainty resolves conservatively; storage failure keeps the owner alive until terminal truth persists, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** q/Esc detaches, repeated signal changes truth, orderly exit leaves a nonterminal operation, or mutation replays, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** q/Esc detaches, repeated signal changes truth, orderly exit leaves a nonterminal operation, or mutation replays, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.11: Human-linear and machine action parity
@@ -3467,7 +3512,7 @@ So that tUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, 
 
 **Implementation Boundary:** Expose exact typed action plan, execute, status, acknowledgement, outcome, stdout/stderr, and exit contracts with no alternate stdin grammar.
 
-**Requirement Mapping:** AD-22, FR-40, UX-A11Y-3, UX-CP-15, UX-IP-11.
+**Requirement Mapping:** AD-11, AD-22, FR-40, UX-A11Y-3, UX-CP-15, UX-IP-11.
 
 **Dependencies:** Story 6.10.
 
@@ -3478,9 +3523,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-linear-machine-v1, **When** the named oracle executes its enumerated positive rows, **Then** TUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, outcome, evidence, and reasons, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-linear-machine-v1, **When** the named fixture's positive scenario is executed, **Then** TUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, outcome, evidence, and reasons, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a surface renames a kind/outcome, accepts raw stdin, emits ANSI/progress, or bypasses confirmation, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a surface renames a kind/outcome, accepts raw stdin, emits ANSI/progress, or bypasses confirmation, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 6.12: Complete action and SR-A11Y-1 gate
@@ -3489,9 +3534,9 @@ As a srvls Operator or maintainer,
 I want a complete action and SR-A11Y-1 gate,
 So that TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate withheld truth, inspect, review safety, submit an exact plan, and retrieve all five outcomes.
 
-**Implementation Boundary:** Run enum, matrix, plan, pool, admission, executor, status, outcome, shutdown, parity, budgets, and complete linear morning/action journey under one gate.
+**Implementation Boundary:** Run enum, matrix, plan, pool, admission, executor, status, outcome, shutdown, parity, budgets, responsive active-operation preservation, confirmation/help accessibility, submitted-operation disposition, and the complete linear morning/action journey under one gate.
 
-**Requirement Mapping:** AD-11, AD-22, FR-40, SR-A11Y-1, UX-BUD-4, UX-BUD-5, UX-BUD-6.
+**Requirement Mapping:** AD-11, AD-22, FR-40, SR-A11Y-1, UX-BUD-4, UX-BUD-5, UX-BUD-6, UX-RP-5, UX-A11Y-1, UX-A11Y-2, UX-A11Y-5.
 
 **Dependencies:** Story 6.11.
 
@@ -3502,9 +3547,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-aggregate-v1, **When** the named oracle executes its enumerated positive rows, **Then** TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate withheld truth, inspect, review safety, submit exact plan, and retrieve all five outcomes, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/action-aggregate-v1, **When** the named fixture's positive scenario is executed, **Then** TERM=dumb and NO_COLOR fixtures answer all eight Brief questions, locate withheld truth, inspect, review safety, submit exact plan, and retrieve all five outcomes, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ## Epic 7: Upgrade and recover the installed pair without split truth
@@ -3530,9 +3575,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json, **When** the named oracle executes its enumerated positive rows, **Then** the admitted final artifact alone binds compiler/component/manifest/source/Cargo.lock/checksum/ABI/smoke evidence, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json, **When** the named fixture's positive scenario is executed, **Then** the admitted final artifact alone binds compiler/component/manifest/source/Cargo.lock/checksum/ABI/smoke evidence, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** cached 1.97.0, stale manifest, another artifact, generic ldd, or compile-before-evidence is selected, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** cached 1.97.0, stale manifest, another artifact, generic ldd, or compile-before-evidence is selected, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.2: Traditional POSIX admission and action handoff
@@ -3554,9 +3599,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json, **When** the named oracle executes its enumerated positive rows, **Then** traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss, CLOEXEC, shared drain, and handoff, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json, **When** the named fixture's positive scenario is executed, **Then** traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss, CLOEXEC, shared drain, and handoff, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** flock/lockf/OFD, reopen/dup/stdio/inheritance/close, state sampling before drain, or detach occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** flock/lockf/OFD, reopen/dup/stdio/inheritance/close, state sampling before drain, or detach occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.3: Canonical release command surfaces
@@ -3565,9 +3610,9 @@ As a srvls Operator or maintainer,
 I want canonical release command surfaces,
 So that each exact verb and argument set routes to one application command and deterministic non-TUI record.
 
-**Implementation Boundary:** Parse exactly Contract C-19 `release plan|apply|status|recover|rollback` argv/result/exit/confirmation rows without mutation implementation.
+**Implementation Boundary:** Parse exactly Contract C-19 `release install|upgrade|validate|status|rollback` argv/result/exit/confirmation rows without mutation implementation.
 
-**Requirement Mapping:** AD-23, FR-43.
+**Requirement Mapping:** AD-11, AD-23, FR-43.
 
 **Dependencies:** Story 7.2.
 
@@ -3578,10 +3623,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/release-command-surface-v1, **When** the named oracle executes its enumerated positive rows, **Then** each exact verb and argument set routes to one application command and deterministic non-TUI record, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/release-command-surface-v1, **When** the named fixture's positive scenario is executed, **Then** each exact verb and argument set routes to one application command and deterministic non-TUI record, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** missing, duplicate, or unknown Contract C-19 arguments, **When** any verb is parsed, **Then** it returns `invalid_arguments`/exit 2/no write and rollback accepts only `rollback <TransactionId>`, **And**
-   exact typed result before any unauthorized side effect, **And**
+2. **Given** missing, duplicate, or unknown Contract C-19 arguments, **When** any verb is parsed, **Then** it returns `invalid_arguments`/exit 2/no write and rollback confirmation accepts only the exact token `rollback <TransactionId>`, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.4: Managed consumer manifest before preimages
@@ -3596,16 +3640,16 @@ So that manifest readback names every byte/hash/path/enablement and exists befor
 
 **Dependencies:** Story 7.3.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json; expected bytes
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/consumer-discovery-v1; expected bytes
 and assertions are fixed independently of the implementation under test.
 
 **Out of Scope:** Consumer replacement and rollback.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json, **When** the named oracle executes its enumerated positive rows, **Then** manifest readback names every byte/hash/path/enablement and exists before any UpgradeTransactionV1 preimage, **And** repeated runs over
+1. **Given** tests/fixtures/implementation/consumer-discovery-v1, **When** discovery readback completes, **Then** every pair-specific byte/hash/path/enablement is frozen before any preimage, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** an extra consumer, missing occurrence, script, ambiguous path, or preimage capture precedes the manifest, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** an extra consumer, missing occurrence, script, ambiguous path, or preimage capture precedes the manifest, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.5: UpgradeTransaction planning, preimages, and staging
@@ -3620,27 +3664,27 @@ So that all preimages and checksums are immutable/read back before the first eff
 
 **Dependencies:** Story 7.4.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/initial-transaction-created.manifest.json; expected bytes
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/upgrade-installed-prior-plan-v1; expected bytes
 and assertions are fixed independently of the implementation under test.
 
 **Out of Scope:** Forward activation, validation, and recovery.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/initial-transaction-created.manifest.json, **When** the named oracle executes its enumerated positive rows, **Then** all preimages and checksums are immutable/read back before the first effect and every manifest replacement is file-fsync/rename/directory-fsync crash safe, **And** repeated runs over
+1. **Given** installed-prior fixtures in tests/fixtures/implementation/upgrade-installed-prior-plan-v1, **When** planning completes, **Then** all preimages/checksums are read back before the first effect, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a preimage is absent/late, type alias appears, capacity is insufficient, or stage differs from admitted artifact, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a preimage is absent/late, type alias appears, capacity is insufficient, or stage differs from admitted artifact, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.6: Exact in-owner consumer migration
 
 As a srvls Operator or maintainer,
 I want exact in-owner consumer migration,
-So that candidate and readback hashes differ only at the two manifest-authorized byte spans.
+So that each metrics and snapshot pair changes only its source fragment and loaded ExecStart occurrence.
 
 **Implementation Boundary:** For each independently bound metrics and snapshot pair, replace its source fragment and loaded ExecStart occurrence and keep every other byte/property/enablement unchanged using in-process filesystem and manager ownership.
 
-**Requirement Mapping:** AD-23, FR-43.
+**Requirement Mapping:** AD-11, AD-23, FR-43.
 
 **Dependencies:** Story 7.5.
 
@@ -3651,9 +3695,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json, **When** the named oracle executes its enumerated positive rows, **Then** candidate and readback hashes differ only at the two manifest-authorized byte spans, **And** repeated runs over
+1. **Given** independently bound metrics and snapshot pairs, **When** rewrite completes, **Then** exactly two pair-qualified occurrences per pair differ and every other byte/property is identical, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** script/config normalization, bounded deviation, extra replacement, mutating child systemctl, or partial pair appears, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** script/config normalization, bounded deviation, extra replacement, mutating child systemctl, or partial pair appears, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.7: Closed FD4 candidate validation and shared D-Bus cut
@@ -3675,9 +3719,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/fd4-request.json, **When** the named oracle executes its enumerated positive rows, **Then** forward, installed-prior recovery, and explicit rollback bind exact directional generations/artifact/schema and all four evidence classes to one attempt, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/fd4-request.json, **When** the named fixture's positive scenario is executed, **Then** forward, installed-prior recovery, and explicit rollback bind exact directional generations/artifact/schema and all four evidence classes to one attempt, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** extra field, replay, wrong peer/owner/order/generation/hash/schema/deadline, manager change, sequence gap, or trailing byte occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** extra field, replay, wrong peer/owner/order/generation/hash/schema/deadline, manager change, sequence gap, or trailing byte occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.8: Forward install and upgrade execution
@@ -3692,16 +3736,16 @@ So that each pending/complete effect advances in exact AD-23 order to the durabl
 
 **Dependencies:** Story 7.7.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/forward.transitions.jsonl; expected bytes
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-forward-v1; expected bytes
 and assertions are fixed independently of the implementation under test.
 
 **Out of Scope:** KnownGood publication and crash takeover.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/forward.transitions.jsonl, **When** the named oracle executes its enumerated positive rows, **Then** each pending/complete effect and event/revision advances in exact AD-23 order to `commit-decided` or starts pre-decision restore, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/forward.transitions.jsonl, **When** the named fixture's positive scenario is executed, **Then** each pending/complete effect and event/revision advances in exact AD-23 order to `commit-decided` or starts pre-decision restore, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a mutating child, split pair, skipped readback, forward-only evidence reuse, or terminal alias appears, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a mutating child, split pair, skipped readback, forward-only evidence reuse, or terminal alias appears, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.9: Generic owner takeover and recovery engine
@@ -3716,16 +3760,16 @@ So that each generic pre-decision crash cut resumes from readback without claimi
 
 **Dependencies:** Story 7.8.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/owner-takeover.transitions.jsonl; expected bytes
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-predecision-takeover-v1; expected bytes
 and assertions are fixed independently of the implementation under test.
 
 **Out of Scope:** KnownGood-specific and FirstInstall branches.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/owner-takeover.transitions.jsonl, **When** the named oracle executes its enumerated positive rows, **Then** each crash cut resumes from readback and ends committed, forward-failed-recovered, rolled-back, or upgrade-recovery-required as applicable, **And** repeated runs over
+1. **Given** installed-prior pre-decision cuts, **When** takeover resumes from readback, **Then** it ends at `commit-decided`, `forward-failed-recovered`, or `upgrade-recovery-required` without terminal commit, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** generic recovery assumes KnownGood publication, rewinds a complete effect, invents restored/failed-needs-manual, or detaches, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** generic recovery assumes KnownGood publication, rewinds a complete effect, invents restored/failed-needs-manual, or detaches, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.10: Commit-bound KnownGood publication and recovery
@@ -3740,16 +3784,16 @@ So that publication happens only after decision and no extra pointer field exist
 
 **Dependencies:** Story 7.9.
 
-**Validation Expectations:** The owning oracle is tests/fixtures/contracts/release-transaction-v1/known-good-publication-pending.manifest.json; expected bytes
+**Validation Expectations:** The owning oracle is tests/fixtures/implementation/installed-prior-known-good-v1; expected bytes
 and assertions are fixed independently of the implementation under test.
 
 **Out of Scope:** FirstInstall and explicit rollback.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/known-good-publication-pending.manifest.json, **When** the named oracle executes its enumerated positive rows, **Then** publication happens only after decision and no extra pointer field exists; resumed cuts preserve the sole canonical candidate, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/known-good-publication-pending.manifest.json, **When** the named fixture's positive scenario is executed, **Then** publication happens only after decision and no extra pointer field exists; resumed cuts preserve the sole canonical candidate, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** policy/evidence extension, pre-decision publish, older accidental selection, or ready-before-readback occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** policy/evidence extension, pre-decision publish, older accidental selection, or ready-before-readback occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.11: FirstInstall absence planning
@@ -3771,9 +3815,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/first-install-absent-pending-consumer-removal.manifest.json, **When** the named oracle executes its enumerated positive rows, **Then** only exact absence with no foreign displacement creates the sentinel and restore plan, **And** repeated runs over
+1. **Given** tests/fixtures/implementation/first-install-plan-v1/revision-zero.json, **When** absence planning completes, **Then** exact absence creates the sentinel and restore plan with no effects, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** foreign file/symlink, partial absence, fabricated prior binary, nonzero generation, or deletion occurs, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** foreign file/symlink, partial absence, fabricated prior binary, nonzero generation, or deletion occurs, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.12: FirstInstall execution and absence recovery
@@ -3795,9 +3839,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl, **When** the named oracle executes its enumerated positive rows, **Then** failure restores byte-total declared absence and returns forward-failed-recovered only after all readbacks, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/first-install-recovery.transitions.jsonl, **When** the named fixture's positive scenario is executed, **Then** failure restores byte-total declared absence and returns forward-failed-recovered only after all readbacks, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a sidecar/unit/enablement/path remains, foreign replacement is deleted, absent binary is invoked, or partial recovery terminalizes, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a sidecar/unit/enablement/path remains, foreign replacement is deleted, absent binary is invoked, or partial recovery terminalizes, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.13: Explicit rollback plan and confirmation
@@ -3819,9 +3863,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/explicit-rollback-ready-admission-pending.manifest.json, **When** the named oracle executes its enumerated positive rows, **Then** installed target freezes source/target generations and byte-equal retained bundle; sentinel retry returns identical no-transaction result, **And** repeated runs over
+1. **Given** tests/fixtures/implementation/rollback-plan-v1/revision-zero.json and exact `rollback <TransactionId>` confirmation, **When** planning completes, **Then** source/target generations and retained bundle freeze while sentinel retry returns identical no-transaction result, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** rollback repoints directly, lacks confirmation, creates work for sentinel, or reuses the forward transaction, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** rollback repoints directly, lacks confirmation, creates work for sentinel, or reuses the forward transaction, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.14: Explicit rollback execution and displaced-source publication
@@ -3843,9 +3887,9 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl, **When** the named oracle executes its enumerated positive rows, **Then** successful rollback returns rolled-back with exact generations and preserves future reversal direction, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl, **When** the named fixture's positive scenario is executed, **Then** successful rollback returns rolled-back with exact generations and preserves future reversal direction, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** forward evidence substitutes for reverse evidence, old target remains KnownGood, pair is partial, or rollback alias appears, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** forward evidence substitutes for reverse evidence, old target remains KnownGood, pair is partial, or rollback alias appears, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.15: Release aggregate and Host smoke gate
@@ -3867,7 +3911,7 @@ and assertions are fixed independently of the implementation under test.
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named oracle executes its enumerated positive rows, **Then** every AD-11 release registry row and exact final-artifact Host smoke passes, with current versus future deliverables distinguished, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** the named fixture's positive scenario is executed, **Then** every AD-11 release registry row and exact final-artifact Host smoke passes, with current versus future deliverables distinguished, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** the enumerated oracle rows named by Validation Expectations, including every applicable negative, boundary, race, and crash cut, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** the capability fails closed with the row's named result token, schema bytes, precedence, and exit before any unauthorized side effect, **And**
+2. **Given** the named fixture corpus containing the concrete scenario in this criterion, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** the capability fails closed with `contract_violation` in CanonicalJsonV1 with exit 4 and no write before any unauthorized side effect, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
