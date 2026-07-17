@@ -23,6 +23,93 @@
     "encoder_under_test": "never invoked by capture, replay, or validation",
     "refresh_policy": "candidate output is external to the repository and requires manual review plus a new ledger entry"
   },
+  "compatibility_disposition": {
+    "schema": "srvls-compatibility-disposition-v1",
+    "default": "inherited",
+    "approved_deviations": [
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.help-is-table",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "help",
+          "collection_started": false,
+          "stdout_bytes": "Usage%3A%20srvls%20%5BOPTIONS%5D%20%5BCOMMAND%5D%0A%0AOptions%3A%0A%20%20--json%20%20%20Emit%20legacy%20JSON%20inventory%0A%20%20--prom%20%20%20Emit%20Prometheus%20metrics%0A%20%20--md%20%20%20%20%20Emit%20Markdown%20inventory%0A%20%20--table%20%20Emit%20table%20inventory%0A%20%20--tui%20%20%20%20Open%20the%20terminal%20UI%0A%20%20--fzf%20%20%20%20Deprecated%20alias%20for%20--tui%0A%20%20-h%2C%20--help%20%20Print%20help%0A",
+          "stderr_bytes": "",
+          "exit_status": 0
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Use srvls --help; help is rendered without Host collection.",
+          "legacy fzf preview and action bindings": "Unaffected by this case.",
+          "script consumers": "Do not parse help; use a named machine profile."
+        }
+      },
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.help-plus-json",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "help",
+          "collection_started": false,
+          "stdout_bytes": "Usage%3A%20srvls%20%5BOPTIONS%5D%20%5BCOMMAND%5D%0A%0AOptions%3A%0A%20%20--json%20%20%20Emit%20legacy%20JSON%20inventory%0A%20%20--prom%20%20%20Emit%20Prometheus%20metrics%0A%20%20--md%20%20%20%20%20Emit%20Markdown%20inventory%0A%20%20--table%20%20Emit%20table%20inventory%0A%20%20--tui%20%20%20%20Open%20the%20terminal%20UI%0A%20%20--fzf%20%20%20%20Deprecated%20alias%20for%20--tui%0A%20%20-h%2C%20--help%20%20Print%20help%0A",
+          "stderr_bytes": "",
+          "exit_status": 0
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Remove --json when asking for help.",
+          "legacy fzf preview and action bindings": "Unaffected by this case.",
+          "script consumers": "Use srvls --json without --help for inventory bytes."
+        }
+      },
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.unknown-is-table",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "argument-error",
+          "collection_started": false,
+          "stdout_bytes": "",
+          "stderr_bytes": "error%3A%20unexpected%20argument%20%27--definitely-unknown%27%0A",
+          "exit_status": 2
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Correct or remove the unknown option; inventory is not collected.",
+          "legacy fzf preview and action bindings": "Unaffected by this case.",
+          "script consumers": "Treat the nonzero result as an invocation error."
+        }
+      },
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.fzf-lines-wins",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "argument-error",
+          "collection_started": false,
+          "stdout_bytes": "",
+          "stderr_bytes": "error%3A%20retired%20option%20%27--fzf-lines%27%3B%20use%20%27--fzf%27%20or%20%27--json%27%0A",
+          "exit_status": 2,
+          "replacement_argv": ["srvls --fzf", "srvls --json"]
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Use srvls --fzf for the deprecated ratatui alias.",
+          "legacy fzf preview and action bindings": "Migrate to the ratatui interaction model; no reload helper remains.",
+          "script consumers": "Use srvls --json for a supported structured inventory stream."
+        }
+      }
+    ]
+  },
   "volatile_substitutions": [
     {
       "id": "clock.utc-now",
@@ -104,12 +191,16 @@
     {
       "name": "srvls-metrics.service",
       "surface": "--prom",
-      "oracle": "output.prometheus"
+      "oracle": "output.prometheus",
+      "definition_authority": "host-managed-user-systemd",
+      "release_oracle": "release-transaction-v1/brownfield-consumer-pairs.json#metrics"
     },
     {
       "name": "srvls-snapshot.service",
       "surface": "--md",
-      "oracle": "output.markdown"
+      "oracle": "output.markdown",
+      "definition_authority": "host-managed-user-systemd",
+      "release_oracle": "release-transaction-v1/brownfield-consumer-pairs.json#snapshot"
     },
     {
       "name": "legacy fzf preview and action bindings",

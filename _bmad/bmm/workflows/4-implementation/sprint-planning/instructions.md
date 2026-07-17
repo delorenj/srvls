@@ -1,5 +1,7 @@
 # Sprint Planning - Sprint Status Generator
 
+<!-- markdownlint-disable MD033 MD036 MD040 -->
+
 <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml</critical>
 
@@ -9,8 +11,8 @@
 
 **Epic Discovery Process:**
 
-1. **Search for whole document first** - Look for `epics.md`, `bmm-epics.md`, or any `*epic*.md` file
-2. **Check for sharded version** - If whole document not found, look for `epics/index.md`
+1. **Search for whole document first** - Use exactly the workflow's `*epic*.md` pattern in the planning-artifacts root.
+2. **Check for sharded version** - If no whole document exists, use exactly `*epic*/*.md` below that root.
 3. **If sharded version found**:
    - Read `index.md` to understand the document structure
    - Read ALL epic section files listed in the index (e.g., `epic-1.md`, `epic-2.md`, etc.)
@@ -18,7 +20,7 @@
    - This ensures complete sprint status coverage
 4. **Priority**: If both whole and sharded versions exist, use the whole document
 
-**Fuzzy matching**: Be flexible with document names - users may use variations like `epics.md`, `bmm-epics.md`, `user-stories.md`, etc.
+**No fuzzy aliases**: `user-stories.md`, story-only names, and files outside those two machine-readable patterns are not sprint-planning inputs. Rename a new canonical artifact to an `*epic*.md` name only after it is authoritative and assignable.
 
 <workflow>
 

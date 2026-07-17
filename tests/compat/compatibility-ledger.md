@@ -54,7 +54,7 @@ All clock, local-time rendering, load, identity/path, tool-result, source-path,
 and traceback substitutions are exhaustive in `manifest.json`. No other value
 was normalized.
 
-### Consumer disposition
+### COMPAT-0002 consumer disposition
 
 | Consumer | Frozen surface | Disposition |
 | --- | --- | --- |
@@ -76,6 +76,64 @@ was normalized.
 | Empty inspection and stdout/stderr placement | `fixtures/cli-matrix.json` |
 | Inspection argv, truncation, missing tools, Docker log merge | `fixtures/inspect-matrix.json` |
 | Every action/type argv and hostile target identity | `fixtures/action-matrix.json` |
+
+## COMPAT-0002 — Rust CLI routing corrections
+
+- **Status:** approved deviation
+- **Effective version:** Rust CLI v1
+- **Old behavior version:** Python baseline v1
+- **Affected cases:** `flags.help-is-table`, `flags.help-plus-json`,
+  `flags.unknown-is-table`, and `flags.fzf-lines-wins`
+- **Rationale:** the Python baseline performed Host collection for help and
+  unknown arguments, silently accepted extra arguments, and exposed the
+  internal external-fzf reload stream. AD-7 requires routing and argument
+  failure before configuration, collection, terminal setup, mutation, or any
+  other side effect.
+- **Version impact:** deliberate CLI behavior change at the Rust CLI v1
+  boundary. The Python baseline v1 golden bytes remain immutable historical
+  evidence and are not rewritten to resemble the replacement.
+- **Migration window:** Python baseline v1 retains its frozen behavior; Rust CLI
+  v1 and later apply the replacement assertions below from first release.
+
+### Replacement assertions
+
+| Case | Selected profile | Collection | exact stdout | exact stderr | Exit | Replacement |
+| --- | --- | --- | --- | --- | --- | --- |
+| `flags.help-is-table` | `help` | must not start | `HELP_V1` below | empty | 0 | `srvls --help` |
+| `flags.help-plus-json` | `help` | must not start | `HELP_V1` below | empty | 0 | remove `--json` for help; remove `--help` for JSON inventory |
+| `flags.unknown-is-table` | `argument-error` | must not start | empty | `error: unexpected argument '--definitely-unknown'\n` | 2 | correct or remove the unknown option |
+| `flags.fzf-lines-wins` | `argument-error` | must not start | empty | `error: retired option '--fzf-lines'; use '--fzf' or '--json'\n` | 2 | `srvls --fzf` for ratatui or `srvls --json` for scripts |
+
+`HELP_V1` is the following literal UTF-8 byte stream, including its final line
+feed and with no stderr bytes:
+
+```text
+Usage: srvls [OPTIONS] [COMMAND]
+
+Options:
+  --json   Emit legacy JSON inventory
+  --prom   Emit Prometheus metrics
+  --md     Emit Markdown inventory
+  --table  Emit table inventory
+  --tui    Open the terminal UI
+  --fzf    Deprecated alias for --tui
+  -h, --help  Print help
+```
+
+The manifest stores these streams with the shared uppercase-percent raw-byte
+codec. Rust CLI v1 must match stdout, stderr, and exit status exactly; token
+containment, arbitrary nonempty help, and arbitrary nonzero status are not
+replacement assertions.
+
+### Consumer disposition
+
+| Consumer | Disposition |
+| --- | --- |
+| Human CLI users | Help remains available without Host collection; unknown and retired options fail before collection. |
+| Legacy fzf preview and action bindings | Migrate to the ratatui interaction model through the deprecated `--fzf` alias; the reload helper has no successor. |
+| Script consumers | Continue using inherited `--json`, `--prom`, `--md`, or `--table` contracts; replace `--fzf-lines` with supported `--json`. |
+| `srvls-metrics.service` | Unaffected; its inherited `--prom` bytes remain frozen. |
+| `srvls-snapshot.service` | Unaffected; its inherited `--md` bytes remain frozen. |
 
 ## Required fields for a future entry
 

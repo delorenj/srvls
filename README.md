@@ -30,7 +30,7 @@ passwordless `sudo` (for the root crontab; silently skipped otherwise).
 ### Item types
 
 | type | what |
-|---|---|
+| --- | --- |
 | `cron` | user crontab, root crontab, `/etc/crontab`, `/etc/cron.d/*` |
 | `sys-svc` / `sys-timer` | systemd system scope services / timers |
 | `usr-svc` / `usr-timer` | systemd `--user` scope services / timers |
@@ -78,7 +78,7 @@ srvls --md > docs/inventory/$(date +%F).md
 live inspect (status + recent logs). Keybinds act in place and reload the list:
 
 | key | action |
-|---|---|
+| --- | --- |
 | `enter` | inspect (status + recent logs) |
 | `ctrl-s` | stop |
 | `ctrl-r` | restart |
@@ -108,6 +108,11 @@ source file and line). System-scope (`sys-*`) actions go through `sudo`.
 ## Integration pattern: metrics + nightly snapshots
 
 How this runs in production on big-chungus — two systemd user timers:
+
+The unit files are host-managed rather than deployable assets in this repo.
+Their normalized 2026-07-17 source/candidate contracts and two-pair rollback
+direction are frozen by
+`tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json`.
 
 **1. Prometheus textfile collector, every 5 minutes** (`srvls-metrics.timer`):
 

@@ -18,7 +18,8 @@ script or invokes a replacement implementation.
   pin, fixture hash, exact stdout/stderr, termination, return value, tool lookup,
   and child argv/outcome sequence.
 - `manifest.json` records provenance, every volatile substitution, the five
-  matrices, coverage, exclusions, and named deployed consumers.
+  matrices, coverage, exclusions, named deployed consumers, and the exhaustive
+  inherited-versus-approved-deviation disposition of all 94 cases.
 - `compatibility-ledger.md` records version impact and consumer disposition.
 - `SHA256SUMS` freezes every intentional oracle file except the hash list itself.
 - `replay_oracle.py` renders the frozen reference and validates byte equality.
@@ -37,6 +38,13 @@ Direct-process collection is intentionally absent: the frozen Python program
 has no such Provider and AD-9 keeps direct-process Observations off legacy
 presenters. The manifest records this as an explicit unsupported legacy case.
 
+The two named host-managed user-systemd consumers retain separate authorities:
+this corpus owns their inherited `--prom` and `--md` output bytes, while
+`release-transaction-v1/brownfield-consumer-pairs.json` owns their exact
+normalized service/timer definitions, candidate rewrites, and rollback
+direction. `replay_oracle.py` requires both anchors for metrics and Snapshot;
+an output-only deployed-consumer row is invalid.
+
 ## Validation
 
 Run:
@@ -53,9 +61,16 @@ Validation does four things without network or Host mutation:
 3. replays every fixture in memory against only the frozen Python blob; and
 4. compares the complete rendered bytes with the checked-in goldens.
 
-A future Rust compatibility test consumes fixture inputs and golden assertions
-as independent bytes. It must not call `capture-baseline.sh`, derive expected
-values from its own presenters, or rewrite these files.
+A future Rust compatibility test consumes fixture inputs and assertions as
+independent evidence. For the 90 `inherited` cases it compares against the
+historical golden bytes. For the four `approved-deviation` cases it preserves
+those historical bytes as provenance but applies the exact replacement
+assertion in `manifest.json`. It must not call `capture-baseline.sh`, derive
+expected values from its own presenters, or rewrite these files.
+
+Those four replacement assertions are byte-total: COMPAT-0002 freezes exact
+uppercase-percent stdout and stderr plus one numeric exit status. Predicate-only
+help, diagnostic-token, generic nonempty, and generic nonzero assertions fail.
 
 ## Capture and change control
 

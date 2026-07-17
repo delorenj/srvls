@@ -4,29 +4,25 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import struct
 import sys
 import unicodedata
 import uuid
 from pathlib import Path
 
+from canonical_json_v1 import (
+    canonical_json_bytes,
+    parse_canonical_json,
+    percent_encode,
+    validate_negative_vectors,
+)
+
 
 ROOT = Path(__file__).resolve().parent
-UNRESERVED = frozenset(b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
 
 
 def fail(message: str) -> None:
     raise AssertionError(message)
-
-
-def canonical(value: object) -> bytes:
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        allow_nan=False,
-        separators=(",", ":"),
-    ).encode("utf-8")
 
 
 def read_canonical(relative: str) -> tuple[object, bytes]:
@@ -36,9 +32,10 @@ def read_canonical(relative: str) -> tuple[object, bytes]:
     data = stored[:-1] if stored.endswith(b"\n") else stored
     if data.endswith(b"\n"):
         fail(f"{relative}: more than one repository text terminator")
-    value = json.loads(data)
-    if canonical(value) != data:
-        fail(f"{relative}: bytes are not CanonicalJsonV1")
+    try:
+        value = parse_canonical_json(data)
+    except ValueError as exc:
+        fail(f"{relative}: {exc}")
     return value, data
 
 
@@ -47,7 +44,7 @@ def domain_hash(domain: str, payload: bytes) -> str:
 
 
 def percent(data: bytes) -> str:
-    return "".join(chr(byte) if byte in UNRESERVED else f"%{byte:02X}" for byte in data)
+    return percent_encode(data)
 
 
 def u16(value: int) -> bytes:
@@ -190,13 +187,30 @@ def provider_scope_bytes(case: dict[str, object]) -> bytes:
 
 
 def verify_manifest() -> None:
+    seen: set[str] = set()
     for line in (ROOT / "manifest.sha256").read_text().splitlines():
         if not line:
             continue
         expected, relative = line.split("  ", 1)
+        path = Path(relative)
+        if path.is_absolute() or ".." in path.parts:
+            fail(f"unsafe manifest path: {relative}")
+        if relative in seen:
+            fail(f"duplicate manifest path: {relative}")
+        seen.add(relative)
         actual = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
         if actual != expected:
             fail(f"manifest mismatch: {relative}")
+    actual_files = {
+        path.relative_to(ROOT).as_posix()
+        for path in ROOT.rglob("*")
+        if path.is_file()
+        and path.name != "manifest.sha256"
+        and "release-transaction-v1" not in path.relative_to(ROOT).parts
+        and "__pycache__" not in path.relative_to(ROOT).parts
+    }
+    if seen != actual_files:
+        fail(f"manifest file set mismatch: {sorted(seen ^ actual_files)}")
 
 
 def projection_field(row: dict[str, object], name: str) -> object:
@@ -219,7 +233,7 @@ def verify_projection(projection: dict[str, object], label: str) -> None:
         for row in projection[key]:
             row_preimage = dict(row)
             row_fingerprint = row_preimage.pop("fingerprint")
-            if domain_hash(domain, canonical(row_preimage)) != row_fingerprint:
+            if domain_hash(domain, canonical_json_bytes(row_preimage)) != row_fingerprint:
                 fail(f"{label}: {key} fingerprint mismatch")
 
 
@@ -228,22 +242,29 @@ def verify_policy_and_plans() -> None:
     expected = (ROOT / "policy-snapshot-v1/default.policy-fingerprint").read_text().strip()
     if domain_hash("srvls-policy-v1", policy_bytes) != expected:
         fail("PolicyFingerprint mismatch")
-    for stem in ("minimal", "nonempty"):
+    plans: dict[str, dict[str, object]] = {}
+    for stem, manifest_stem in (
+        ("minimal", "minimal"),
+        ("nonempty", "nonempty"),
+        ("prior-baseline", "nonempty"),
+    ):
         plan, plan_bytes = read_canonical(f"collection-plan-v1/{stem}.preimage.json")
+        plans[stem] = plan
         expected_plan = (ROOT / f"collection-plan-v1/{stem}.collection-plan-fingerprint").read_text().strip()
         if domain_hash("srvls-collection-plan-v1", plan_bytes) != expected_plan:
             fail(f"{stem}: CollectionPlanFingerprint mismatch")
         if plan["policy_snapshot"] != policy or plan["policy_fingerprint"] != expected:
             fail(f"{stem}: embedded policy mismatch")
-        manifest = (ROOT / f"collection-plan-v1/{stem}.scope-manifest.bin").read_bytes()
+        manifest = (ROOT / f"collection-plan-v1/{manifest_stem}.scope-manifest.bin").read_bytes()
         if percent(manifest) != plan["scope_manifest"]:
             fail(f"{stem}: ScopeManifest bytes mismatch")
         if domain_hash("srvls-scopes-v1", manifest) != plan["scope_manifest_fingerprint"]:
             fail(f"{stem}: ScopeManifestFingerprint mismatch")
-        schedule = canonical(plan["dispatch_schedule"])
+        schedule = canonical_json_bytes(plan["dispatch_schedule"])
         if domain_hash("srvls-dispatch-schedule-v1", schedule) != plan["dispatch_schedule_fingerprint"]:
             fail(f"{stem}: DispatchScheduleFingerprint mismatch")
-    nonempty, _ = read_canonical("collection-plan-v1/nonempty.preimage.json")
+    nonempty = plans["nonempty"]
+    prior = plans["prior-baseline"]
     if b"active-promise" not in (ROOT / "collection-plan-v1/nonempty.scope-manifest.bin").read_bytes():
         fail("nonempty: active-promise reason absent")
     rows = nonempty["resource_history_cut"]["rows"]
@@ -251,16 +272,56 @@ def verify_policy_and_plans() -> None:
         fail("nonempty: complete ObservationId resource row absent")
     if nonempty["accepted_baseline_cut"]["kind"] != "accepted":
         fail("nonempty: accepted baseline branch absent")
+    if prior["generation_id"] != 0 or prior["clock_sample"] != {
+        "boot_identity": "00000000-0000-4000-8000-000000000001",
+        "schedule_origin_boot_ns": 500000000,
+        "utc_wall_ns": 1900000000,
+    }:
+        fail("prior-baseline: generation or clock sample mismatch")
+    if prior["accepted_baseline_cut"] != {"kind": "none"}:
+        fail("prior-baseline: accepted baseline creates a circular plan")
+    if prior["prior_current_snapshot"] != {"kind": "none"}:
+        fail("prior-baseline: prior snapshot must be absent")
+    if prior["resource_history_cut"]["rows"]:
+        fail("prior-baseline: resource history must precede the generation-0 Snapshot")
+    if len(prior["promise_cut"]["rows"]) != 1:
+        fail("prior-baseline: active Promise cut is absent")
+    if prior["current_repository_revision"] != prior["promise_cut"]["repository_revision"]:
+        fail("prior-baseline: Promise cut is not at the repository cut")
+    expected_cutoff = (
+        prior["clock_sample"]["schedule_origin_boot_ns"]
+        + prior["dispatch_schedule"]["generation_cutoff_offset_ns"]
+    )
+    if prior["absolute_generation_cutoff_boot_ns"] != expected_cutoff:
+        fail("prior-baseline: absolute cutoff does not derive from its clock sample")
     plan_projection = nonempty["accepted_baseline_cut"]["projection"]
     verify_projection(plan_projection, "nonempty plan projection")
     snapshot, snapshot_bytes = read_canonical("collection-plan-v1/nonempty.snapshot.preimage.json")
-    expected_plan = (ROOT / "collection-plan-v1/nonempty.collection-plan-fingerprint").read_text().strip()
+    expected_plan = (ROOT / "collection-plan-v1/prior-baseline.collection-plan-fingerprint").read_text().strip()
     if snapshot["collection_plan_fingerprint"] != expected_plan:
-        fail("nonempty: SnapshotV1 does not name the frozen CollectionPlanFingerprint")
+        fail("nonempty: SnapshotV1 does not name the prior generation-0 plan")
+    current_plan = (ROOT / "collection-plan-v1/nonempty.collection-plan-fingerprint").read_text().strip()
+    if expected_plan == current_plan:
+        fail("nonempty: prior and current plan fingerprints are not distinct")
+    if snapshot["generation_id"] != prior["generation_id"]:
+        fail("nonempty: SnapshotV1 generation differs from its CollectionPlanV1")
+    if snapshot["clock_sample"] != prior["clock_sample"]:
+        fail("nonempty: SnapshotV1 clock differs from its CollectionPlanV1")
+    if snapshot["policy_fingerprint"] != prior["policy_fingerprint"]:
+        fail("nonempty: SnapshotV1 policy differs from its CollectionPlanV1")
+    if snapshot["scope_manifest_fingerprint"] != prior["scope_manifest_fingerprint"]:
+        fail("nonempty: SnapshotV1 scope differs from its CollectionPlanV1")
+    for report in snapshot["reports"]:
+        if report["generation_id"] != prior["generation_id"]:
+            fail("nonempty: CollectorReportV1 generation differs from its plan")
+        if report["scope_id"] != prior["dispatch_schedule"]["lpt_scope_order"][0]:
+            fail("nonempty: CollectorReportV1 scope differs from its plan")
+        if report["obligation"] != {"kind": "required", "reason": "active-promise"}:
+            fail("nonempty: CollectorReportV1 obligation differs from its plan")
     fingerprint = snapshot["snapshot_fingerprint"]
     preimage = dict(snapshot)
     del preimage["snapshot_fingerprint"]
-    if domain_hash("srvls-snapshot-v1", canonical(preimage)) != fingerprint:
+    if domain_hash("srvls-snapshot-v1", canonical_json_bytes(preimage)) != fingerprint:
         fail("nonempty: SnapshotFingerprint mismatch")
     if (ROOT / "collection-plan-v1/nonempty.snapshot-fingerprint").read_text().strip() != fingerprint:
         fail("nonempty: SnapshotFingerprint companion mismatch")
@@ -323,8 +384,19 @@ def verify_provider_scope_inputs() -> None:
         assignment = case["assignment_preimage"]
         if assignment["provider_scope_input"]["bytes"] != case["display"]:
             fail(f"{name}: assignment does not embed exact ProviderScopeInput")
-        if domain_hash("srvls-scope-assignment-v1", canonical(assignment)) != case["scope_assignment_fingerprint"]:
+        if domain_hash("srvls-scope-assignment-v1", canonical_json_bytes(assignment)) != case["scope_assignment_fingerprint"]:
             fail(f"{name}: ScopeAssignmentFingerprint mismatch")
+        if name in {"pm2", "process"}:
+            entries = [environment_entry(item) for item in case["environment"]]
+            by_name = sorted(
+                entries,
+                key=lambda item: item[4 : 4 + int.from_bytes(item[:4], "big")],
+            )
+            by_complete_entry = sorted(entries)
+            if by_name == by_complete_entry:
+                fail(f"{name}: environment fixture does not distinguish ordering rules")
+            if [item["name"] for item in case["environment"]] != ["EMPTY", "RAW"]:
+                fail(f"{name}: environment name-order adversary drifted")
 
 
 FRAME_KEYS = {
@@ -354,6 +426,27 @@ def verify_ipc() -> None:
             candidate = value["diagnostic_candidates"][0]
             if list(candidate) != ["schema", "producer", "scope_id", "code", "parameter_schema", "subject", "source_encounter", "parameters", "duplicate_occurrence"]:
                 fail(f"{item['payload']}: DiagnosticCandidateV1 key order mismatch")
+            if candidate["producer"] != "worker":
+                fail(f"{item['payload']}: worker result emitted a non-worker candidate")
+            if candidate["code"] != "provider-note" or candidate["parameter_schema"] != "provider-note-v1":
+                fail(f"{item['payload']}: provider-note registry binding mismatch")
+            if candidate["scope_id"] != report["scope_id"]:
+                fail(f"{item['payload']}: candidate scope differs from report scope")
+            encoded_scope = candidate["scope_id"]
+            decoded_scope = bytearray()
+            index_position = 0
+            while index_position < len(encoded_scope):
+                if encoded_scope[index_position] == "%":
+                    decoded_scope.append(int(encoded_scope[index_position + 1:index_position + 3], 16))
+                    index_position += 3
+                else:
+                    decoded_scope.extend(encoded_scope[index_position].encode("ascii"))
+                    index_position += 1
+            expected_subject = percent(b"\x01\x01" + u32(len(decoded_scope)) + bytes(decoded_scope))
+            if candidate["subject"] != expected_subject:
+                fail(f"{item['payload']}: DiagnosticSubjectV1 differs from scope bytes")
+            if candidate["parameters"] != {"message": {"type": "text", "value": "fixture"}}:
+                fail(f"{item['payload']}: provider-note-v1 parameters mismatch")
             capture = value["capture_accounting"]
             if list(capture) != ["stdout", "stderr"]:
                 fail(f"{item['payload']}: CaptureAccountingV1 key order mismatch")
@@ -382,6 +475,7 @@ def verify_ipc() -> None:
 
 
 def main() -> int:
+    validate_negative_vectors()
     verify_manifest()
     verify_policy_and_plans()
     verify_observation_ids()
@@ -394,6 +488,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (AssertionError, KeyError, ValueError, OSError, json.JSONDecodeError) as error:
+    except (AssertionError, KeyError, ValueError, OSError) as error:
         print(f"contract oracles: FAIL: {error}", file=sys.stderr)
         raise SystemExit(1)

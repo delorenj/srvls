@@ -169,6 +169,44 @@ REQUIRED_COVERAGE_KEYS = {
     "hostile_identifiers",
 }
 
+EXPECTED_APPROVED_DEVIATIONS = {
+    "flags.help-is-table": {
+        "selected_profile": "help",
+        "collection_started": False,
+        "stdout_bytes": "Usage%3A%20srvls%20%5BOPTIONS%5D%20%5BCOMMAND%5D%0A%0AOptions%3A%0A%20%20--json%20%20%20Emit%20legacy%20JSON%20inventory%0A%20%20--prom%20%20%20Emit%20Prometheus%20metrics%0A%20%20--md%20%20%20%20%20Emit%20Markdown%20inventory%0A%20%20--table%20%20Emit%20table%20inventory%0A%20%20--tui%20%20%20%20Open%20the%20terminal%20UI%0A%20%20--fzf%20%20%20%20Deprecated%20alias%20for%20--tui%0A%20%20-h%2C%20--help%20%20Print%20help%0A",
+        "stderr_bytes": "",
+        "exit_status": 0,
+    },
+    "flags.help-plus-json": {
+        "selected_profile": "help",
+        "collection_started": False,
+        "stdout_bytes": "Usage%3A%20srvls%20%5BOPTIONS%5D%20%5BCOMMAND%5D%0A%0AOptions%3A%0A%20%20--json%20%20%20Emit%20legacy%20JSON%20inventory%0A%20%20--prom%20%20%20Emit%20Prometheus%20metrics%0A%20%20--md%20%20%20%20%20Emit%20Markdown%20inventory%0A%20%20--table%20%20Emit%20table%20inventory%0A%20%20--tui%20%20%20%20Open%20the%20terminal%20UI%0A%20%20--fzf%20%20%20%20Deprecated%20alias%20for%20--tui%0A%20%20-h%2C%20--help%20%20Print%20help%0A",
+        "stderr_bytes": "",
+        "exit_status": 0,
+    },
+    "flags.unknown-is-table": {
+        "selected_profile": "argument-error",
+        "collection_started": False,
+        "stdout_bytes": "",
+        "stderr_bytes": "error%3A%20unexpected%20argument%20%27--definitely-unknown%27%0A",
+        "exit_status": 2,
+    },
+    "flags.fzf-lines-wins": {
+        "selected_profile": "argument-error",
+        "collection_started": False,
+        "stdout_bytes": "",
+        "stderr_bytes": "error%3A%20retired%20option%20%27--fzf-lines%27%3B%20use%20%27--fzf%27%20or%20%27--json%27%0A",
+        "exit_status": 2,
+        "replacement_argv": ["srvls --fzf", "srvls --json"],
+    },
+}
+
+EXPECTED_AFFECTED_CONSUMERS = {
+    "human CLI users",
+    "legacy fzf preview and action bindings",
+    "script consumers",
+}
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -593,6 +631,71 @@ def _verify_hash_manifest() -> None:
         raise RuntimeError(f"unhashed required files: {sorted(required - seen)}")
 
 
+def _validate_compatibility_disposition(
+    manifest: dict[str, Any], all_case_keys: set[tuple[str, str]]
+) -> None:
+    disposition = manifest.get("compatibility_disposition", {})
+    if disposition.get("schema") != "srvls-compatibility-disposition-v1":
+        raise RuntimeError("compatibility disposition schema is missing or wrong")
+    if disposition.get("default") != "inherited":
+        raise RuntimeError("compatibility disposition default must be inherited")
+
+    deviations = disposition.get("approved_deviations")
+    if not isinstance(deviations, list):
+        raise RuntimeError("approved deviations must be a list")
+    case_keys = [(row.get("matrix_id"), row.get("case_id")) for row in deviations]
+    if len(case_keys) != len(set(case_keys)):
+        raise RuntimeError("a compatibility case has multiple dispositions")
+    expected_keys = {("cli", case_id) for case_id in EXPECTED_APPROVED_DEVIATIONS}
+    if set(case_keys) != expected_keys:
+        difference = sorted(set(case_keys) ^ expected_keys)
+        raise RuntimeError(f"approved-deviation case set mismatch: {difference}")
+    if not set(case_keys).issubset(all_case_keys):
+        raise RuntimeError("an approved deviation names an unknown frozen case")
+
+    required_row_keys = {
+        "matrix_id",
+        "case_id",
+        "ledger_entry",
+        "old_behavior_version",
+        "new_behavior_version",
+        "migration_window",
+        "replacement_assertion",
+        "consumer_dispositions",
+    }
+    for row in deviations:
+        case_id = row["case_id"]
+        if set(row) != required_row_keys:
+            raise RuntimeError(f"{case_id}: deviation fields are not exhaustive")
+        if row["ledger_entry"] != "COMPAT-0002":
+            raise RuntimeError(f"{case_id}: wrong compatibility-ledger entry")
+        if row["matrix_id"] != "cli":
+            raise RuntimeError(f"{case_id}: wrong compatibility matrix")
+        if row["old_behavior_version"] != "Python baseline v1":
+            raise RuntimeError(f"{case_id}: wrong old behavior version")
+        if row["new_behavior_version"] != "Rust CLI v1":
+            raise RuntimeError(f"{case_id}: wrong new behavior version")
+        if row["migration_window"] != (
+            "The Python baseline v1 golden remains immutable historical evidence; "
+            "Rust CLI v1 and later apply this replacement assertion."
+        ):
+            raise RuntimeError(f"{case_id}: migration window is not frozen")
+        if row["replacement_assertion"] != EXPECTED_APPROVED_DEVIATIONS[case_id]:
+            raise RuntimeError(f"{case_id}: replacement assertion differs")
+        consumers = row["consumer_dispositions"]
+        if set(consumers) != EXPECTED_AFFECTED_CONSUMERS:
+            raise RuntimeError(f"{case_id}: consumer disposition set differs")
+        if not all(isinstance(value, str) and value for value in consumers.values()):
+            raise RuntimeError(f"{case_id}: empty consumer disposition")
+
+    inherited = all_case_keys - set(case_keys)
+    if len(all_case_keys) != 94 or len(inherited) != 90:
+        raise RuntimeError(
+            f"compatibility partition must be 90 inherited plus 4 deviations, "
+            f"found {len(inherited)} plus {len(case_keys)}"
+        )
+
+
 def validate() -> None:
     manifest = _load_manifest()
     source = manifest["source"]
@@ -614,11 +717,39 @@ def validate() -> None:
         raise RuntimeError("manifest AD-9 coverage-key set is incomplete or expanded")
     if manifest.get("unsupported_legacy_provider", {}).get("provider") != "direct-process":
         raise RuntimeError("direct-process legacy exclusion is not explicit")
-    if len(manifest.get("deployed_consumers", [])) != 3:
-        raise RuntimeError("named deployed-consumer inventory is incomplete")
+    expected_consumers = [
+        {
+            "name": "srvls-metrics.service",
+            "surface": "--prom",
+            "oracle": "output.prometheus",
+            "definition_authority": "host-managed-user-systemd",
+            "release_oracle": (
+                "release-transaction-v1/brownfield-consumer-pairs.json#metrics"
+            ),
+        },
+        {
+            "name": "srvls-snapshot.service",
+            "surface": "--md",
+            "oracle": "output.markdown",
+            "definition_authority": "host-managed-user-systemd",
+            "release_oracle": (
+                "release-transaction-v1/brownfield-consumer-pairs.json#snapshot"
+            ),
+        },
+        {
+            "name": "legacy fzf preview and action bindings",
+            "surface": "--fzf, inspect, stop, restart, disable",
+            "oracle": (
+                "flags.fzf-present-bindings plus inspection and action matrices"
+            ),
+        },
+    ]
+    if manifest.get("deployed_consumers") != expected_consumers:
+        raise RuntimeError("named deployed-consumer inventory/authority drift")
 
     fixture_paths: set[str] = set()
     golden_paths: set[str] = set()
+    all_case_keys: set[tuple[str, str]] = set()
     rendered_case_count = 0
     for case in manifest["matrices"]:
         fixture_relative = case["fixture"]
@@ -638,6 +769,10 @@ def validate() -> None:
         if set(actual_case_ids) != EXPECTED_CASE_IDS[case["id"]]:
             difference = sorted(set(actual_case_ids) ^ EXPECTED_CASE_IDS[case["id"]])
             raise RuntimeError(f"case coverage mismatch for {case['id']}: {difference}")
+        matrix_case_keys = {(case["id"], case_id) for case_id in actual_case_ids}
+        if all_case_keys.intersection(matrix_case_keys):
+            raise RuntimeError(f"case identity repeated within matrix: {case['id']}")
+        all_case_keys.update(matrix_case_keys)
         rendered_case_count += len(actual_case_ids)
         print(f"  replay: {case['id']}: ok")
 
@@ -659,9 +794,10 @@ def validate() -> None:
         )
     if rendered_case_count != 94:
         raise RuntimeError(f"expected 94 frozen cases, found {rendered_case_count}")
+    _validate_compatibility_disposition(manifest, all_case_keys)
     print("  source pin: ok")
     print("  immutable hashes: ok")
-    print("  AD-9 coverage: 94 cases: ok")
+    print("  AD-9 coverage: 90 inherited + 4 approved deviations: ok")
     print("PASS: frozen srvls compatibility oracle")
 
 

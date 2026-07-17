@@ -5,7 +5,7 @@ purpose: build-substrate
 altitude: feature
 paradigm: 'hexagonal architecture with a unidirectional Elm-style TUI shell'
 scope: 'One-host Runtime Promise lifecycle, discovery, reconciliation, morning Brief, lifecycle control, and reversible Rust delivery'
-status: draft
+status: final
 created: '2026-07-14'
 updated: '2026-07-17'
 binds:
@@ -40,6 +40,9 @@ sources:
   - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/reviews/review-technology-acceptance-2026-07-16.md
   - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/reviews/review-two-unit-divergence-acceptance-2026-07-16.md
   - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/reviews/review-rubric-acceptance-2026-07-16.md
+  - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/reviews/review-pass3-final-rubric-traceability-2026-07-17.md
+  - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/reviews/review-pass3-final-two-unit-divergence-2026-07-17.md
+  - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/reviews/review-pass3-final-linux-release-recovery-2026-07-17.md
 companions: []
 ---
 
@@ -57,7 +60,21 @@ Canonical precedence is the final PRD, then its addendum, then the final UX
 `DESIGN.md` and `EXPERIENCE.md`, then this spine. Live Python behavior and tests
 govern only the explicitly inherited compatibility surfaces. A lower source may
 constrain implementation but may not rename, blend, or defer a higher-source
-contract.
+contract. The pre-canonical decomposition is preserved byte-exact only at
+`_bmad-output/retired-artifacts/epics-pre-canonical-prd-2026-07-15.md`, outside
+every BMAD implementation-workflow discovery root. The discovered
+`_bmad-output/planning-artifacts/epics.md` is a non-story tombstone. The
+aggregate architecture gate rejects a missing or changed archive, an epic or
+story heading in the tombstone, or any other epic-named Markdown artifact under
+the planning root. Sprint planning has only two machine-readable discovery
+patterns: whole documents matching `*epic*.md` directly under the planning root,
+then, only if none exists, shards matching `*epic*/*.md`; whole documents win.
+`user-stories.md`, story-only names, the retired-artifact root, and every fuzzy
+alias are excluded. Historical content is not an implementation authority and
+may not be assigned or used to accept a unit.
+Canonical epics and stories must be regenerated from the final 154 canonical
+requirements, nine supplemental metrics, and AD-1 through AD-25 after this spine
+is final.
 
 ```mermaid
 flowchart LR
@@ -285,7 +302,17 @@ flowchart LR
   format wins. V1 has no spinner or animation mode. Untrusted C0, C1, DEL,
   escape, invalid byte, and bidirectional control content is visibly escaped or
   replaced before display. UX `DESIGN.md` and `EXPERIENCE.md` own layout,
-  component, responsive, focus, and accessibility behavior.
+  component, responsive, focus, and accessibility behavior. UX-IA-11 search is
+  locale-independent and deterministic: query and candidate text first use NFC,
+  then Unicode Default Case Folding from Unicode 16.0.0 `CaseFolding.txt` using
+  the common and full mappings (`C` and `F`), then NFC again. Matching is a
+  Unicode-scalar substring search over those folded values. There is no
+  compatibility decomposition, accent removal, transliteration, locale
+  tailoring, or environment-selected table; ASCII `A` through `Z` therefore
+  fold to `a` through `z`, while diacritics remain significant. Empty query
+  matches every candidate. The implementation freezes the Unicode table and
+  golden cases for ASCII, composed/decomposed accents, German sharp s, Greek
+  sigma, Turkish dotted/dotless I, and non-Latin unchanged text.
 
 ### AD-9 — Compatibility and new contracts have separate owners
 
@@ -301,7 +328,28 @@ flowchart LR
   `tests/compat/{capture-baseline.sh,fixtures,golden,compatibility-ledger.md}`
   corpus captured once with declared volatile substitutions, the opt-in live
   Host smoke suite, and named deployed-consumer checks. Tests never recapture
-  live truth as an assertion source. The frozen corpus includes flag-combination
+  live truth as an assertion source. The goldens always preserve the frozen
+  Python source bytes, including behavior that AD-7 deliberately retires. The
+  manifest classifies every case exactly once as `inherited` or
+  `approved-deviation`. An inherited case is a byte-for-byte Rust compatibility
+  assertion. An approved deviation names one compatibility-ledger entry, the
+  replacement assertion, version impact, migration window, and disposition for
+  every affected consumer; the Rust gate applies that replacement rather than
+  the historical output. An unclassified case, a deviation without a ledger
+  entry, or use of a replacement assertion to rewrite the frozen golden fails.
+  `COMPAT-0002` is byte-total rather than predicate-based. Both help cases
+  require the exact `HELP_V1` stdout block frozen in the ledger and manifest,
+  empty stderr, exit status zero, profile `help`, and no collection. Unknown
+  argv requires empty stdout, exact stderr
+  `error: unexpected argument '--definitely-unknown'\n`, status 2, profile
+  `argument-error`, and no collection. Retired `--fzf-lines` requires empty
+  stdout, exact stderr
+  `error: retired option '--fzf-lines'; use '--fzf' or '--json'\n`, status 2,
+  that same profile/no-collection pair, and replacement argv exactly
+  `srvls --fzf`, then `srvls --json`. The manifest stores complete
+  uppercase-percent bytes; substring, regex, prefix, channel-only, or
+  status-only acceptance is forbidden.
+  The frozen corpus includes flag-combination
   precedence, help and unknown argv, bad action arity, successful-empty unknown
   inspection, stdout refusal placement, child stderr merging, missing Docker,
   absent PM2 and fzf, malformed and wrong-shaped structured data, hostile
@@ -467,16 +515,33 @@ flowchart LR
 - **Binds:** all modules
 - **Prevents:** environment-sensitive CI and silent domain, storage, output, or
   terminal regressions
-- **Rule:** the frozen Python compatibility corpus and golden outputs cover
+- **Rule:** this is a pre-implementation architecture repository. Its current
+  checked-in executable evidence is exactly the frozen Python compatibility
+  corpus, the policy/plan/identity/provider-scope and two IPC contract families
+  inventoried by `tests/fixtures/contracts/manifest.sha256`, the independently
+  closed AD-23 release subcorpus, and the legacy Host smoke suite.
+  `bash tests/validate_architecture_contracts.sh` (also
+  `mise run test:architecture-contracts`) is the aggregate command and must run
+  those current lanes together. No Rust
+  implementation suite or regenerated canonical story set exists yet, and this
+  AD does not claim otherwise. Every matrix below that is not named in that
+  exact current inventory is a mandatory implementation-acceptance deliverable:
+  it must be checked in and wired into the aggregate gate before the owning
+  story can be accepted. In those requirements, “fixture”, “suite”, “case”, and
+  “cover” mean **shall create and gate**, not evidence already present.
+
+  The frozen Python compatibility corpus and golden outputs currently cover
   every Provider success, malformed, unavailable, denied, timeout, ordering,
-  escaping, output, inspection, and action-argv case. Deterministic tests also
-  cover Promise lifecycle and idempotency, boot and clock discontinuity,
+  escaping, output, inspection, and action-argv case. Deterministic
+  implementation tests shall also cover Promise lifecycle and idempotency,
+  boot and clock discontinuity,
   migrations and crash recovery, configuration precedence and invalid values,
   every reconciliation axis and classification, Safe-to-stop rules, retention,
   all AD-20 limits, human-linear journeys, all canonical UX states and budgets,
   terminal lifecycle, and action races and signals. Application tests use fake
   ports; grouping and reconciliation use table or property cases; TUI uses
-  ratatui `TestBackend`. Cross-unit contract fixtures freeze the AD-21 read cut,
+  ratatui `TestBackend`. Cross-unit implementation fixtures shall freeze the
+  AD-21 read cut,
   atomic plan admission, concurrent baseline acceptance, nonterminal-operation
   admission, retention, three-sample hot-history races, immutable baseline
   comparison rows, zero post-admission baseline lookups, and byte-identical
@@ -522,7 +587,7 @@ flowchart LR
   changing any reservation or absolute deadline. Runtime, configuration, and
   persisted CollectionPlan compare the same canonical schedule bytes rather than
   comparing event-dependent traces.
-  Property suites own
+  Required implementation property suites shall own
   byte-complete AD-24 policy JSON, ScopeId/ScopeManifest grammars, non-UTF-8 path
   normalization, arbitrary valid diagnostic subjects and parameters,
   worker/coordinator candidate mixtures and duplicates, post-evidence reference
@@ -530,7 +595,8 @@ flowchart LR
   in-group Provider child/grandchild self-suppression, escaped-group emission,
   conflict, and retained-diagnostic tables.
 
-  Canonical contract goldens are fixed assertion inputs and are never generated
+  The currently checked-in canonical contract goldens are fixed assertion inputs
+  and are never generated
   by the encoder under test. Under `tests/fixtures/contracts`,
   `policy-snapshot-v1/default.preimage.json` is the complete
   AD-20/ARCH-LIM-24 default
@@ -591,7 +657,7 @@ flowchart LR
   environment-name/value, and root frames, sorting, duplicates, and trailing
   rejection; no fixture is captured from a Rust encoder.
 
-  IPC fixtures cover
+  The implementation IPC acceptance matrix shall cover
   every AD-25 peer check, Hello/Ready credentials and field echo, silent child,
   exit 77 before Ready, malformed and replayed Ready, a batch with one failed
   member, and an after-PID group/identity-setup failure with pending cleanup and
@@ -633,17 +699,21 @@ flowchart LR
   ordinal. One-nanosecond-before uses a real tagged ID; equality and after use
   identical tagged-absent bytes and prove zero request/capability/socket/child/
   root/reap allocation.
-  Storage fixtures cover fresh and existing database
+  The implementation storage acceptance matrix shall cover fresh and existing
+  database
   pragma readbacks, timeout equality, generation CAS, AD-22 plan and launch
-  handoffs, every AD-23 pending effect and crash edge, torn or bad-checksum
-  manifests, ordinary stateful entry after a crashed upgrade, every
+  handoffs, and a closed AD-23 reachable-transition corpus whose complete
+  envelopes include every pending/terminal transition on the forward,
+  FirstInstall recovery, replacement-owner replay, and explicit-rollback
+  scenarios. They also cover torn or bad-checksum manifests, ordinary stateful
+  entry after a crashed upgrade, every
   ReleaseValidationBypassV1 forged, replayed, stale-generation, old-version,
   attempted-write, and forwarding refusal; pending validation crashes both
   before a result and after a result but before complete; recovery under a new
   PID/birth, old-PID reuse, forged owner publication, and a second recovery-owner
   crash; the complete public release-event
   and UX-state mapping, sidecar restore, and the storage-unavailable shutdown
-  exception. Admission-descriptor fixtures acquire shared and exclusive
+  exception. Admission and mutation-fence fixtures acquire shared and exclusive
   traditional POSIX record locks on the exact `[0,1)` range, verify
   `FD_CLOEXEC`, and exercise FD3, FD4, Provider, `systemctl`, and timer-control
   spawns. A separate audit process uses `F_GETLK` to prove the live owner's PID
@@ -656,7 +726,8 @@ flowchart LR
   are rejected primitives; owner-side reopen, `dup`, stdio access, or close of
   the lock inode is a failing invariant.
 
-  Release fixtures cover the AD-12 `StableToolchainEvidenceV1`
+  The implementation release and CI acceptance matrix shall cover the AD-12
+  `StableToolchainEvidenceV1`
   match and a freshly fetched 1.97.1 manifest against a stale cached 1.97.0
   compiler that must fail before compile; exact-artifact ABI proof; every
   managed absolute `ExecStart` rewrite; and AD-23 forward and rollback
@@ -691,12 +762,70 @@ flowchart LR
   `forward-failed-recovered`; an explicit rollback from the published sentinel
   proves byte-identical `rollback-unavailable` and zero transaction, event,
   KnownGood, admission, filesystem, database, unit, or Host mutation.
-  Fixtures retain every crash edge from validation
-  through durable commit decision, KnownGood publication, ready admission,
-  and terminal commit, and explicit post-validation rollback from
-  KnownGoodReleaseV1. The existing
-  Python smoke suite and named timer checks
-  remain live opt-in integration lanes and CI requires no Host service.
+  The JSONL transition oracle retains every manifest replacement from creation
+  through durable decision, KnownGood publication, ready admission, and
+  terminal commit, plus complete FirstInstall recovery, installed-prior
+  recovery, replacement-owner replay, and explicit rollback branches. The
+  seven files are `forward.transitions.jsonl`,
+  `owner-takeover.transitions.jsonl`,
+  `first-install-recovery.transitions.jsonl`,
+  `explicit-rollback.transitions.jsonl`, `upgrade.transitions.jsonl`,
+  `upgrade-owner-takeover.transitions.jsonl`, and
+  `upgrade-recovery.transitions.jsonl`; each line is one complete canonical
+  envelope and the validator recomputes every predecessor and payload checksum.
+  Replacement-owner acquisition time is strictly later than every actual boot-
+  clock observation persisted by prior steps; validation start is later than
+  that owner publication, and checked start plus timeout is the sole deadline.
+  Standalone fixed bytes cover both ReleaseAdmissionV1 statuses, both
+  FirstInstall and installed KnownGoodReleaseV1 variants, and FD4 request/result
+  pairs for FirstInstall forward validation, installed-prior forward upgrade,
+  installed-prior recovery, and explicit rollback, plus the forward rejected
+  branch. Every request binds one exact pending envelope, active recovery owner,
+  persisted validation attempt, directional candidate/state authorities,
+  request evidence UUID, and identical absolute deadline; none is a
+  free-standing lookalike. They also freeze the official
+  Rust 1.97.1 manifest/component/compiler identity and a two-pair brownfield
+  authority derived from the deployed metrics and Snapshot user units. The seven
+  complete transaction histories intentionally use one synthetic `metrics`
+  pair to isolate predecessor, crash, recovery-owner, FirstInstall, and rollback
+  direction semantics; a separate positive FirstInstall validator mutation
+  proves two complete service/timer pairs without hard-coded pair identity.
+  They are not claimed as deployed-command execution evidence. The brownfield
+  authority separately binds exact normalized
+  source fragment bytes, manager properties, candidate-path rewrites, and
+  source-to-candidate/rollback-to-source hashes for both sorted pairs.
+  `source_basis.files[].host_fragment_sha256` is recomputed, not trusted:
+  decode the matching source service/timer `fragment_content`, reverse only the
+  declared `/home/delorenj=>/home/test` substitution, and hash those exact Host
+  bytes. Missing, reordered, same-looking, or independently supplied basis
+  hashes fail even when all contract hashes are resealed. Each
+  candidate contract is derived by replacing exactly the two canonical encoded
+  deployed-executable occurrences in the complete source service fragment and
+  ExecStart command with the canonical install path, then recomputing only the
+  fragment size/hash and contract hash. Every other fragment, command, shell
+  operator, timer, property, enablement, and scalar must remain byte-identical;
+  a fully rehashed additional `|| true` or any other edit fails.
+  Both checked-in contract validators import the same normative AD-24 codec and
+  execute negative vectors for short escapes, floats/non-finite numbers,
+  normalization, surrogate/Unicode escape aliases, schema key order, BOM/
+  whitespace/terminators, and noncanonical uppercase-percent paths. The release
+  validator additionally validates every nested owner, step, event, admission,
+  validation attempt, D-Bus match, timer causality, evidence atom, terminal
+  direction, and chronological relationship before accepting a checksum-valid
+  envelope. The future release implementation gate shall execute those two
+  pairs together through
+  every forward and rollback effect and crash boundary before its release story
+  can pass. The
+  `action-executor-handoff.trace.json` fixture freezes the exact handoff
+  acknowledgement and negative/positive results, while its live Linux proof
+  kills the submitter on both sides of acknowledgement and verifies the marker,
+  generation, and exclusive-lock postconditions. The
+  `systemd-job-recovery.trace.json` fixture freezes the pending-job drain and
+  restart barrier.
+  The existing Python smoke suite remains a live Host integration lane. The
+  checked-in aggregate architecture-contract gate requires no user-systemd
+  service, while the two named deployed-consumer lanes remain explicit opt-in
+  Host checks until release CI owns isolated service-manager fixtures.
 
 ### AD-12 — One locked binary upgrades with its state
 
@@ -939,12 +1068,16 @@ flowchart LR
   typed cancellation. `OperationCoordinator`, not `Update` or an adapter, owns
   FR-40 and the one terminal revision CAS; `Update` renders only durable state.
   Terminal restoration and termination attempts obey AD-20 bounds. If SQLite or
-  kernel I/O cannot complete, restoration still occurs, the last durable
-  `launch-authorized | executing | verifying` phase remains for AD-16 recovery,
-  and no false terminal outcome is invented. A repeated signal forces the
-  bounded termination-attempt path without rewriting durable truth. SIGKILL,
-  fatal synchronous signals, and Linux uninterruptible I/O are documented
-  platform exceptions to process-exit and reap bounds.
+  kernel I/O cannot complete, restoration still occurs and no false terminal
+  outcome is invented, but an orderly process exit is forbidden while the last
+  durable phase is `launch-authorized | executing | verifying`. The coordinator
+  remains alive in a disclosed recovery-required state, repeats bounded
+  finalization attempts without re-executing the Provider mutation, and exits
+  only after exactly one terminal outcome is durable. Repeated Ctrl-C, SIGINT,
+  or SIGTERM records another cancellation request but does not weaken that
+  durability barrier. SIGKILL and fatal synchronous signals remain the only
+  UX-IP-10 process-loss exceptions; Linux uninterruptible I/O may prevent exit
+  or reap indefinitely but never authorizes a nonterminal orderly exit.
 
 ### AD-15 — Privilege is narrow and never hidden in raw mode
 
@@ -1160,7 +1293,7 @@ flowchart LR
 | ARCH-LIM-19 | `state.byte_ceiling` | 512 MiB | 64 MiB–8 GiB; AD-16 `st_blocks * 512` accounting; prune eligible truth, then enter disclosed capacity-exhausted mode rather than delete pins |
 | ARCH-LIM-20 | `action.max_concurrency` | 4 operations | 1–16; independent of collection; saturation refuses before launch |
 | ARCH-LIM-21 | `action.revalidation_deadline` | 5 s | 1–15 s; expiry before launch is refused |
-| ARCH-LIM-22 | `action.finalization_deadline` | 5 s | 1–30 s; bounded durable-write attempts before restoration; unavailable or uninterruptible storage leaves the last truthful nonterminal phase for recovery |
+| ARCH-LIM-22 | `action.finalization_deadline` | 5 s | 1–30 s per durable-write attempt; after restoration, unavailable or uninterruptible storage leaves the process alive in the last truthful nonterminal phase and retries without re-executing mutation until one terminal outcome is durable or an exceptional SIGKILL/fatal signal ends the process |
 | ARCH-LIM-23 | derived `action.total_decision_bound` | systemd 143 s; Docker 88 s; PM2 73 s; process 53 s; Launch Mechanism 163 s | revalidation + selected execution + verification + graceful + forced observation + finalization attempt; read-only decision budget, never a universal process-exit, durable-write, or reap bound |
 | ARCH-LIM-24 | `release.validation_timeout` | 120 s | 10–600 s; one persisted `CLOCK_BOOTTIME` cut covers loaded-unit readback, timer causal proof, terminal service evidence, and the matching FD4 candidate validation for one recovery-attempt/effect attempt |
 
@@ -1328,15 +1461,35 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   exclusive lease. `flock`, `lockf`, and every `F_OFD_*` command are forbidden.
   A nonblocking conflict accepts either `EACCES` or `EAGAIN`; blocking
   acquisition retries only `EINTR` while its typed cancellation remains live.
-  An independent-process `F_GETLK` audit over the same `[0,1)` range must report
-  the owner PID and expected conflicting lock type; `F_UNLCK`, another PID, an
-  OFD owner marker, or a different range fails before admission is trusted.
-  The release adapter is the sole code allowed to open this inode. While the
+  Successful return from the exact `F_SETLK | F_SETLKW` call on the verified
+  descriptor is the production acquisition proof. No production auditor opens
+  the inode: `F_GETLK` cannot identify one distinguished owner among concurrent
+  shared readers and therefore is never a shared-admission PID test. The release
+  adapter is the sole product code allowed to open this inode. While the
   lease is held, the owner process may not reopen, `dup`, close, pass to stdio,
   or permit any library access to any descriptor for that inode, because
   closing any such descriptor releases all of that process's record locks on
   the file. Threads share the one lease and never use it for thread exclusion.
   The lock is advisory and every srvls stateful entry participates.
+
+  A shared lease also fences the process that actually mutates Host truth. The
+  submitting CLI persists `launch-authorized` with its admission generation,
+  then starts the reserved same-binary ActionExecutor without an inherited
+  lease. While the submitter still holds its shared lock, the executor opens
+  the verified inode itself, acquires its own shared process-associated lock,
+  rereads byte-equal ready admission/generation and the nonterminal Operation
+  authorization, and returns a handoff acknowledgement bound to OperationId,
+  generation, lock device/inode, PID/birth, and executable identity. Only after
+  that exact ActionExecutorHandoffV1 is persisted and read back may the
+  submitter release its lease. If the submitter
+  dies first, a late executor must acquire anew and refuse before mutation when
+  release has changed admission or generation; if handoff completed, the
+  executor's independent shared lock excludes release until mutation and exact
+  readback are durable. Systemd, Docker, PM2, direct-process, and launch effects
+  run in that lock-owning executor through in-process D-Bus, Unix-socket RPC, or
+  kernel APIs; a fork/exec child never performs a mutation. Read-only capture,
+  checksum, smoke, and validation children may exist, but parent EOF or identity
+  loss makes their result unusable.
 
   Traditional record locks are not inherited across `fork` and are released
   automatically when the owning process terminates. A stopped child therefore
@@ -1345,8 +1498,21 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   descriptor exposure, not the lease-liveness proof. The binding adversarial
   fixture acquires shared and exclusive variants, forks a child, stops it before
   its first file action, kills the owner, and requires a separate contender to
-  acquire `F_WRLCK` on `[0,1)` while the child remains stopped. It also proves
-  `F_GETLK` names the live parent before death and returns `F_UNLCK` after death.
+  acquire `F_WRLCK` on `[0,1)` while the child remains stopped. In this isolated
+  single-holder fixture only, the controller opens its own short-lived audit
+  descriptor before the probe: a write-lock query returns the live parent's
+  `F_RDLCK` for the shared case, a read-lock query returns its `F_WRLCK` for the
+  exclusive case, and the same query returns `F_UNLCK` after owner death. The
+  controller then closes its descriptor after unlock and cleanup. The checked-in
+  validator performs the real `fork`, pre-action `SIGSTOP`, owner `SIGKILL`,
+  stopped-child liveness and inherited-descriptor checks, and contender
+  acquisition on Linux; a declarative trace alone is not evidence. A second
+  live handoff proof stops an action executor before lease acquisition, kills
+  its parent, lets release publish a new admission generation, then resumes the
+  executor and requires generation revalidation to refuse before a marker
+  mutation. Its positive control overlaps parent and executor shared leases,
+  proves release remains excluded after the parent dies, completes the marker
+  effect and readback, and only then admits the exclusive contender.
   `admission-v1.json` atomically persists schema version, install generation,
   `ready | recovering`, and optional UpgradeTransactionId. Before opening
   SQLite, every Promise, collection, Brief, baseline, plan, action, TUI, and
@@ -1363,8 +1529,8 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   lease is held. Only descriptors 0, 1, and 2 plus exactly the explicitly mapped
   transient FD3 worker endpoint or FD4 validator endpoint for its corresponding
   same-binary exec may cross exec. The admission descriptor is never on the
-  whitelist. Worker, validator, Provider, `systemctl`, timer-control, smoke,
-  checksum, and every other child path closes that descriptor and every other
+  whitelist. Worker, validator, Provider, smoke, checksum, and every other
+  read-only child path closes that descriptor and every other
   non-whitelisted descriptor as its first child spawn file action; `O_CLOEXEC`
   remains a second atomic backstop. Parent spawn plans record the admission
   descriptor identity and whitelist, verify the close action was installed, and
@@ -1373,6 +1539,9 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   child copy when it runs. This hygiene prevents disclosure, but lease release
   depends only on the process-associated lock owner's termination or explicit
   unlock and is therefore already true while a pre-action child is stopped.
+  `systemctl`, timer-control, Docker/PM2 command children, and every other
+  mutating fork/exec path are forbidden; mutation belongs to the independently
+  lease-owning ActionExecutor or the exclusive release owner.
 
   `UpgradeTransactionV1` retains its immutable original owner and an ordered,
   gap-free list of `ReleaseRecoveryAttemptV1` records. Attempt zero names the
@@ -1394,6 +1563,24 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   `resumed` event retains the pending step's mapped phase. A crash before
   replacement leaves the prior attempt authoritative; a crash after it lets the
   next owner append another attempt by the same rule.
+
+  The exclusive release owner performs file, admission, SQLite, unit-file, and
+  systemd mutations in-process; it never delegates a mutating effect to a child.
+  A pending systemd job stores one exact PendingSystemdJobV1 before the D-Bus
+  call. After owner loss, the replacement owner first observes the old client
+  unique-name disappearance, opens a fresh user-bus connection, installs and
+  acknowledges the NameOwnerChanged match, binds the current manager unique
+  owner, installs the exact owner/job/property matches, successfully calls
+  `Manager.Subscribe()` on that connection, rechecks the unchanged owner, and
+  completes a clean receive/drain round trip. Only then does it drain every
+  `ListJobs` row for the recorded units through JobRemoved and repeat the round
+  trip plus empty-list readback before classifying or retrying the effect. The
+  vanished owner's subscription is never inherited. Any match or Subscribe
+  failure, disconnect, owner change, new matching job, or unstable loaded
+  readback restarts or fails that barrier as its closed reason requires.
+  Synchronous kernel/file calls are classified only by exact persisted
+  post-state. Consequently neither a pre-action stopped child nor a queued
+  systemd job can mutate after a recovery owner has begun a later effect.
 
   Every forward, pre-decision restored-pair, and explicit-rollback validation
   effect first persists one `ReleaseValidationAttemptV1` inside the pending
@@ -1454,6 +1641,14 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   forwarding returns `upgrade-recovery-required` before SQLite or Host effects;
   old candidates that do not implement the exact protocol fail closed.
 
+  Release authorities use one global `ReleasePresenceV1<T>` grammar:
+  `{"kind":"absent"}` or exact key order `kind`, `value` with kind `present`
+  and one complete value of the declared type. Every release-schema phrase
+  `tagged absent/present`, `tagged absent/path`, `tagged absent/hash`, or
+  `tagged absent/UUID` means this grammar with the corresponding value type;
+  no release option uses omission, `null`, a bare scalar, or the Worker schema's
+  separately scoped PresenceV1 alias.
+
   `UpgradeTransactionV1` is byte-total. It is one CanonicalJsonV1 object with
   exact key order `schema_version`, `payload`, `checksum`; schema is
   `srvls-upgrade-transaction-v1`. `payload` is one
@@ -1461,7 +1656,8 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   `manifest_revision`, `predecessor_checksum`, `intent`, `original_owner`,
   `recovery_attempts`, `active_recovery_attempt_id`,
   `old_install_generation`, `target_install_generation`, `prior_release`,
-  `paths`, `artifacts`, `state_backup`, `consumers`, `known_good_candidate`, `commit_decision`,
+  `rollback_target`, `paths`, `artifacts`, `state_backup`, `consumers`,
+  `known_good_candidate`, `commit_decision`,
   `current_step`, `step_records`, `release_events`, `terminal_result`.
   Transaction and attempt IDs are UUIDs; revision and generations are unsigned;
   intent is exactly `install | upgrade | rollback`; predecessor checksum is
@@ -1469,22 +1665,64 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   kind `present` and a SHA-256. `state_backup` is exactly
   `{"kind":"absent"}` before a verified backup or key order `kind`, `value`
   with kind `present` and a complete StateBackupManifestV1.
+  CanonicalJsonV1 itself admits only the signed-`i64` through unsigned-`u64`
+  integer union; every release numeric is explicitly `u64` unless this registry
+  narrows it to `u8`. Booleans are never integers. Overflow, negative unsigned
+  values, float/exponent aliases, and numeric strings fail before semantic use.
+  Intent, generation direction, and prior authority form this closed matrix:
+
+  | Intent | Old and target generation | Required prior authority | Rollback target |
+  | --- | --- | --- | --- |
+  | `install` | old is reserved `0`; target is exactly `1` | `first-install-absent` with `prior_install_generation=0` | absent |
+  | `upgrade` | old is nonzero; target is exactly `old + 1` without overflow | `installed` whose generation, binary, state schema, and consumer contracts bind old | absent |
+  | `rollback` | old is exactly `target + 1`; target is nonzero | `installed` binding the displaced old/current pair | present installed bundle binding the retained target pair |
+
+  No installed-prior transaction may be relabeled `install`, no FirstInstall
+  sentinel may be relabeled `upgrade`, and no transaction-embedded
+  `rollback-unavailable` is valid; that result exists only before transaction
+  creation.
   `prior_release` is the preflight-frozen recovery authority with key order
   `kind`, `value`, kind `installed | first-install-absent`, and the matching
-  complete InstalledPriorReleaseV1 or FirstInstallAbsentV1. It is immutable for
-  the transaction and is available before any forward effect.
+  complete InstalledPriorReleaseV1 or FirstInstallAbsentV1. It is available
+  before any forward effect and is immutable except for one closed
+  FirstInstall state transition: `restore-planned` may become
+  `restore-recorded` only in the same replacement that completes
+  `create-backup`, and only when the complete manifest retains the plan's exact
+  transaction ID, backup path, source schema, and target schema. No destructive
+  state effect is legal while the plan remains unrecorded.
+  `rollback_target` is absent for install/upgrade and is present with the exact
+  InstalledPriorReleaseV1 from the currently published KnownGoodReleaseV1 for
+  rollback; a FirstInstallAbsentV1 target returns rollback-unavailable before a
+  transaction exists. Candidate binary, schemas, consumers, tarball hash, and
+  toolchain evidence must byte-equal that retained target on rollback.
   `known_good_candidate` is exactly
   `{"kind":"absent"}` or key order `kind`, `value` with kind `present` and a
   complete KnownGoodCandidateV1. Recovery attempts sort by gap-free sequence
   from zero, active ID names their final row, consumers sort by unsigned pair
   ID, step records by gap-free sequence, and events by gap-free sequence.
+  `current_step` is exactly `ReleasePresenceV1<ReleaseStepCursorV1>`; the cursor
+  key order is `sequence`, `step`, `effect_attempt` and byte-equals the final
+  record's three values. It is absent if and only if `step_records` is empty.
+  This remains unambiguous when owner recovery appends a later attempt of the
+  same step token. The initial checked-in manifest freezes the absent form; a
+  bare step string is never canonical.
 
   `checksum` is lowercase SHA-256 over literal ASCII domain
   `srvls-upgrade-transaction-v1`, one zero byte, and the complete canonical
   bytes of the `payload` object alone. The outer schema and checksum key are not
   in that preimage. `predecessor_checksum` is the checksum value from the exact
   prior rename-complete envelope, never its file digest or a reconstructed
-  payload. The checked-in crash-cut goldens freeze complete payload bytes, this
+  payload. Revision zero is transaction creation. Every later atomic manifest
+  replacement increments revision by exactly one, points predecessor to the
+  immediately preceding checksum, and appends exactly one ReleaseEventV1;
+  owner publication plus interruption is one such `resumed` transition. A
+  non-skipped effect first appends one pending ReleaseStepRecordV1 and a
+  `started | resumed` event; its next replacement finalizes only that last
+  record and appends exactly one `succeeded | failed` event. A skipped effect
+  appends its final record and one `skipped` event. Thus the event count equals
+  `manifest_revision`, not the step-record count. The checked-in
+  reachable JSONL chains start at revision zero, contain every intervening
+  revision, and independently verify this relation. The crash-cut goldens freeze complete payload bytes, this
   preimage, checksum, and full-file SHA-256 independently of any product encoder.
 
   The release schema registry is exhaustive; every object below uses the named
@@ -1494,30 +1732,38 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   | --- | --- |
   | `ReleaseOwnerIdentityV1` | `boot_identity`, `pid`, `process_start_ticks`, `executable_device`, `executable_inode`; boot identity is UUID, all others unsigned. |
   | `ReleaseRecoveryAttemptV1` | `schema_version`, `attempt_id`, `sequence`, `owner`, `admission_lock_device`, `admission_lock_inode`, `predecessor_manifest_checksum`, `acquisition_boot_ns`; schema `srvls-release-recovery-attempt-v1`, owner is the complete owner identity, predecessor is tagged absent/present SHA-256. Sequence zero is the immutable original owner; replacements increment by one. |
-  | `ReleasePathsV1` | `canonical_link_path`, `prior_versioned_binary_path`, `candidate_versioned_binary_path`, `database_path`, `transaction_manifest_path`, `known_good_path`; prior binary is tagged absent/path and every other path is an uppercase-percent AD-24 normalized absolute raw path. |
-  | `ReleaseBinaryArtifactV1` | `kind`, `path`, `sha256`, `size_bytes`; kind is `absent` only with path/hash/size tagged absent, or `present` with path, hash, and unsigned size tagged values. |
-  | `ReleaseArtifactsV1` | `prior_binary`, `candidate_binary`, `prior_database_schema`, `target_database_schema`, `release_tarball_sha256`, `stable_toolchain_evidence_sha256`; candidate is present, prior may be absent, schemas are unsigned, and both trailing values are SHA-256. |
-  | `StateFileV1` | `role`, `path`, `disposition`, `size_bytes`, `sha256`; role is one of `database`, `wal`, or `shm`; disposition is one of `absent`, `copied`, or `checkpointed`; size/hash are tagged absent exactly when disposition is absent. Rows occur once each in database/WAL/SHM order. |
-  | `StateBackupManifestV1` | `schema_version`, `method`, `source_database_path`, `backup_database_path`, `source_schema`, `target_schema`, `source_files`, `backup_files`, `integrity_result`, `no_live_restore_connections`, `file_fsync`, `directory_fsync`, `manifest_hash`; schema `srvls-state-backup-manifest-v1`, method is `sqlite-backup-api` or `checkpointed-equivalent`, integrity is `ok`, and booleans are explicit. `manifest_hash` uses domain `srvls-state-backup-manifest-v1`, zero byte, and this object through `directory_fsync`, excluding only `manifest_hash`. |
-  | `DropInIdentityV1` | `path`, `sha256`; rows sort by unsigned path bytes without duplicates. |
-  | `UnitFragmentIdentityV1` | `fragment_path`, `fragment_sha256`, `source_path`, `drop_ins`; source is tagged absent/path and drop-ins are complete sorted identities. |
+  | `ReleasePathsV1` | `canonical_link_path`, `prior_versioned_binary_path`, `candidate_versioned_binary_path`, `database_path`, `transaction_manifest_path`, `known_good_path`; prior binary is tagged absent/path and every other path is an uppercase-percent AD-24 normalized absolute raw path. The canonical link, database, manifest, and KnownGood paths are the policy-expanded Host locations; versioned binaries are beneath the policy-expanded version root and end in `/srvls`. Candidate and prior paths are distinct; candidate path byte-equals the candidate artifact path; prior path presence and bytes equal the prior artifact and prior installed bundle. No path aliases another role. |
+  | `ReleaseBinaryArtifactV1` | `kind`, `path`, `sha256`, `size_bytes`; kind is `absent` only with path/hash/size tagged absent, or `present` with path, hash, and nonzero `u64` size tagged values. |
+  | `ReleaseArtifactsV1` | `prior_binary`, `candidate_binary`, `prior_database_schema`, `target_database_schema`, `release_tarball_sha256`, `stable_toolchain_evidence_sha256`; candidate is present and path-bound above; prior is absent exactly for FirstInstall and otherwise byte-equals the installed prior; schemas are `u64`, prior schema equals the prior backup target schema, and both trailing values are SHA-256. Rollback candidate, schemas, tarball, and toolchain bytes equal the retained target bundle. |
+  | `StableToolchainEvidenceV1` | `schema_version`, `manifest_url`, `manifest_date`, `manifest_rust_release`, `manifest_git_commit_hash`, `rustc_component_xz_url`, `rustc_component_xz_sha256`, `rustc_version_verbose`, `parsed`, `checksum`; schema `srvls-stable-toolchain-evidence-v1`; URLs are the freshly fetched official stable manifest and its exact Host rustc component, verbose output is complete uppercase-percent raw bytes, parsed key order is `release`, `commit_hash`, `commit_date`, `host`, `llvm_version`, and manifest/compiler release plus full commit must match. Checksum uses domain `srvls-stable-toolchain-evidence-v1`, zero byte, and the object through `parsed`. |
+  | `StateFileV1` | `role`, `path`, `disposition`, `size_bytes`, `sha256`; role is one of `database`, `wal`, or `shm`; disposition is one of `absent`, `copied`, or `checkpointed`; size/hash are tagged absent exactly when disposition is absent and otherwise present with nonzero `u64` size and SHA-256. Rows occur once each in database/WAL/SHM order. |
+  | `StateBackupPlanV1` | `schema_version`, `transaction_id`, `backup_database_path`, `source_schema`, `target_schema`; schema `srvls-state-backup-plan-v1`, transaction is the containing UUID, path is exactly the no-follow `upgrade/backups/<transaction-uuid>/state.sqlite3` destination, and source/target `u64` schemas equal ReleaseArtifactsV1. It is frozen at revision zero and is not proof that the backup exists. |
+  | `StateBackupManifestV1` | `schema_version`, `method`, `source_database_path`, `backup_database_path`, `source_schema`, `target_schema`, `source_files`, `backup_files`, `integrity_result`, `no_live_restore_connections`, `file_fsync`, `directory_fsync`, `manifest_hash`; schema `srvls-state-backup-manifest-v1`, method is `sqlite-backup-api` or `checkpointed-equivalent`, integrity is `ok`, and all three booleans are exactly true. Source path byte-equals `ReleasePathsV1.database_path`; backup path is exactly the no-follow `upgrade/backups/<containing-transaction-uuid>/state.sqlite3` destination. Both arrays contain exactly database, WAL, SHM once in that order; source paths are source, source plus `-wal`, source plus `-shm`; backup paths use the analogous unique backup prefix. Source/target schemas equal ReleaseArtifactsV1. The directory and files are created `O_EXCL` and never replaced. `manifest_hash` uses domain `srvls-state-backup-manifest-v1`, zero byte, and this object through `directory_fsync`, excluding only `manifest_hash`. |
+  | `DropInIdentityV1` | `path`, `content`, `size_bytes`, `sha256`; path is normalized absolute raw bytes, content is the uppercase-percent encoding of the complete raw file bytes, size is the decoded byte length, and SHA-256 is recomputed over those decoded bytes. Rows sort by unsigned path bytes without duplicates. A missing content or size field, noncanonical content encoding, or size/hash mismatch is invalid. |
+  | `UnitFragmentIdentityV1` | `fragment_path`, `fragment_content`, `fragment_size_bytes`, `fragment_sha256`, `source_path`, `drop_ins`; fragment content is the uppercase-percent encoding of the complete raw file bytes, size is the decoded byte length, and SHA-256 is recomputed over those decoded bytes. Source is tagged absent/path and drop-ins are complete sorted identities. A hash-only fragment identity is invalid. |
   | `ExecStartCommandV1` | `binary_path`, `argv`, `ignore_failure`; path and each argv are complete raw bytes, argv retains semantic order and may be empty, boolean explicit. |
   | `ServiceUnitContractV1` | `unit_name`, `fragment`, `exec_start`, `remain_after_exit`; unit is NFC text, fragment complete, command list semantic-order and nonempty, remain false. |
   | `TimerMonotonicEntryV1` | `base`, `offset_usec`; base NFC text, offset unsigned; rows sort by complete canonical bytes with duplicates retained. |
   | `TimerCalendarEntryV1` | `base`, `expression`; both NFC text; rows sort by complete canonical bytes with duplicates retained. |
   | `TimerUnitContractV1` | `unit_name`, `fragment`, `target_unit`, `timers_monotonic`, `timers_calendar`, `on_clock_change`, `on_timezone_change`, `accuracy_usec`, `randomized_delay_usec`, `fixed_random_delay`, `persistent`, `wake_system`, `remain_after_elapse`, `defer_reactivation`; durations unsigned and every boolean explicit. |
-  | `UnitEnablementExpectationV1` | `unit_name`, `mechanism`, `expected_state`, `expected_stdout`, `expected_exit_status`; mechanism `dbus-unit-file-state` requires state and tags stdout/status absent; `systemctl-one-unit` requires all three. Exactly service then timer rows appear. |
+  | `UnitFileMutationV1` | `operation`, `runtime`, `force`; operation is `none`, `enable`, `disable`, `mask`, or `unmask`. `none`, `disable`, and `unmask` require force false; the other combinations map exactly to the same-named Manager unit-file method for one unit. |
+  | `UnitFileReadbackV1` | D-Bus form key order `kind`, `unit_file_state`, kind `dbus-unit-file-state`; state is one of `enabled`, `enabled-runtime`, `linked`, `linked-runtime`, `alias`, `static`, `disabled`, `indirect`, `generated`, `transient`, `masked`, `masked-runtime`, `bad`, or `not-found`. One-unit systemctl form has key order `kind`, `stdout_bytes`, `exit_status`, kind `systemctl-one-unit`; stdout is uppercase-percent exact raw bytes including its newline and status is unsigned `u8`. |
+  | `UnitEnablementExpectationV1` | `unit_name`, `mutation`, `readback`; mutation/readback are complete values above. Exactly service then timer rows appear; the corpus exercises both readback variants. |
   | `ManagedConsumerUnitContractV1` | `schema_version`, `pair_id`, `service`, `timer`, `enablement`, `contract_hash`; schema `srvls-managed-consumer-unit-contract-v1`; pair ID is stable ASCII; complete service/timer values and exactly two enablement rows. Hash domain is `srvls-managed-consumer-unit-contract-v1`, zero byte, and the object through `enablement`, excluding only `contract_hash`. |
+  | `BrownfieldConsumerPairsV1` | `schema_version`, `source_basis`, `source_install_generation`, `candidate_install_generation`, `pairs`, `forward_pair_order`, `rollback_pair_order`, `forward_evidence`, `rollback_evidence`, `checksum`; schema `srvls-brownfield-consumer-pairs-v1`; source basis freezes the dated normalized live-unit fragment hashes, generations are consecutive, pairs are exactly `metrics`, then `snapshot`, and each carries byte-distinct complete source/candidate contracts. Forward evidence binds source to candidate; rollback pre binds candidate while post, reload, and validation bind source for every pair. Checksum uses domain `srvls-brownfield-consumer-pairs-v1`, zero byte, and the object through `rollback_evidence`. |
   | `ReleaseValidationAttemptV1` | `schema_version`, `recovery_attempt_id`, `recovery_attempt_sequence`, `effect_attempt`, `start_boot_ns`, `timeout_ns`, `absolute_deadline_boot_ns`; schema `srvls-release-validation-attempt-v1`, remaining numeric values unsigned and checked start plus timeout equals deadline. |
   | `DbusMatchRuleV1` | `sequence`, `sender`, `path`, `interface`, `member`, `arg0`, `ack_boot_ns`; sequence unsigned, sender/path/interface/member NFC text, arg0 tagged absent/text, acknowledgement unsigned. Rules are exactly NameOwnerChanged, JobNew, JobRemoved, timer PropertiesChanged, service PropertiesChanged in sequence `0..4`. |
   | `ManagerSubscriptionHandshakeV1` | `schema_version`, `bus_scope`, `client_unique_name`, `manager_well_known_name`, `manager_unique_owner`, `match_rules`, `subscribe_reply_owner`, `owner_recheck`, `drain_barrier_boot_ns`, `status`; schema `srvls-manager-subscription-handshake-v1`, scope `user`, well-known name `org.freedesktop.systemd1`, both reply owner and recheck equal the bound unique owner, and status `ready`. |
   | `TimerBaselineV1` | `last_trigger_usec_monotonic`, `invocation_id`, `start_usec_monotonic`, `captured_boot_ns`; values unsigned except InvocationID, exactly 16 raw bytes represented as uppercase-percent. |
   | `TimerTerminalSampleV1` | `invocation_id`, `start_usec_monotonic`, `result`, `exec_main_code`, `exec_main_status`, `observed_boot_ns`; result `success`, code `CLD_EXITED`, remaining numeric values unsigned. |
   | `TimerInvocationAcceptanceV1` | `schema_version`, `validation_attempt`, `handshake`, `timer_unit`, `service_unit`, `baseline`, `trigger_mode`, `causality_proof`, `terminal_sample`; schema `srvls-timer-invocation-acceptance-v1`, trigger mode is `force` or `await`, with complete nested values. `TimerCausalityProofV1` is the exact existing schema below and must name the same units, owner boot, baseline, invocation, and strict-before attempt. |
-  | `InstalledPriorReleaseV1` | `kind`, `binary`, `state_backup_manifest_hash`, `consumer_contracts`, `install_generation`, `integrity_hashes`; kind `installed`, binary present, consumer array sorted, generation unsigned, integrity hashes unsigned-name sorted objects `name`, `sha256`, nonempty. |
-  | `KnownGoodCandidateV1` | `schema_version`, `prior_release`, `candidate_checksum`; schema `srvls-known-good-candidate-v1`; prior release is byte-identical to payload `prior_release`; checksum domain `srvls-known-good-candidate-v1`, zero byte, and the object through `prior_release`. |
-  | `CommitDecisionV1` | exactly `{"kind":"undecided"}` or key order `kind`, `candidate_checksum`, `target_install_generation`, `expected_known_good_checksum` with kind `decided`. |
-  | `KnownGoodReleaseV1` | `schema_version`, `payload`, `checksum`; schema `srvls-known-good-release-v1`; payload key order `source_transaction_id`, `published_install_generation`, `candidate`; checksum domain `srvls-known-good-release-v1`, zero byte, and complete payload bytes. |
+  | `InstalledPriorReleaseV1` | `kind`, `binary`, `state_backup`, `consumer_contracts`, `release_tarball_sha256`, `stable_toolchain_evidence_sha256`, `install_generation`, `bundle_hash`; kind `installed`, binary present with nonzero size, state backup complete, consumers pair-ID sorted/nonempty/unique, trailing hashes exact, generation nonzero `u64`. When used as transaction prior, generation/path/artifact/schema byte-bind old; when used as rollback target, those values and consumers byte-bind target. `bundle_hash` uses domain `srvls-installed-prior-release-v1`, zero byte, and this object through generation, excluding only `bundle_hash`. |
+  | `ReleaseStepCursorV1` | `sequence`, `step`, `effect_attempt`; sequence/effect unsigned and all three values equal the final step record. |
+  | `ActionExecutorHandoffV1` | `schema_version`, `operation_id`, `install_generation`, `lock_device`, `lock_inode`, `executor_pid`, `executor_process_start_ticks`, `executable_device`, `executable_inode`, `status`; schema `srvls-action-executor-handoff-v1`, OperationId is UUID, numeric identities are unsigned, and status is `acknowledged`. |
+  | `PendingSystemdJobV1` | `schema_version`, `unit_name`, `method`, `intended_target_state`, `recovery_attempt_id`, `effect_attempt`; schema `srvls-pending-systemd-job-v1`, method is one exact Manager unit method, target state is its closed intended readback, recovery ID is UUID, and effect attempt is unsigned. |
+  | `KnownGoodCandidateV1` | `schema_version`, `prior_release`, `candidate_checksum`; schema `srvls-known-good-candidate-v1`; prior release is byte-identical to payload `prior_release`, with no unknown/defaulted member; checksum domain `srvls-known-good-candidate-v1`, zero byte, and the object through `prior_release`. |
+  | `CommitDecisionV1` | exactly `{"kind":"undecided"}` or key order `kind`, `candidate_checksum`, `target_install_generation`, `expected_known_good_checksum` with kind `decided`; decided candidate checksum byte-equals the staged candidate, generation equals target, and expected checksum is recomputed from the exact KnownGood payload below. No decided form is valid while the candidate is absent. |
+  | `KnownGoodReleaseV1` | `schema_version`, `payload`, `checksum`; schema `srvls-known-good-release-v1`; payload key order `source_transaction_id`, `published_install_generation`, `candidate`; source transaction and candidate byte-equal the deciding transaction, published generation equals its target and is adjacent to the retained prior (`1` for FirstInstall), and checksum domain is `srvls-known-good-release-v1`, zero byte, and complete payload bytes. Publication evidence path/source/checksum and every decision atom bind these exact values. |
   | `ReleaseTerminalResultV1` | tagged union described below; it is never omitted from a manifest and is `pending` before terminal truth. |
 
   The adjacent persisted and FD4 authorities are closed as well.
@@ -1543,8 +1789,23 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   `candidate_install_generation`, `candidate_binary_sha256`, `result`.
   `result` is exactly key order `kind`, `database_schema`, `integrity_result`,
   `read_only_proof_sha256` with kind `validated`, or key order `kind`, `code`
-  with kind `rejected` and one ReleaseReasonV1. No request/result field or
-  inactive union member is optional.
+  with kind `rejected` and one failure-capable ReleaseReasonV1 (all closed
+  reasons except `none`, `no-prior-release`, and
+  `resumed-after-owner-loss`). No request/result field or inactive union member
+  is optional. Request ID byte-equals the sole persisted FD4 evidence atom on
+  the pending validation step; the complete request/result echo and manifest
+  checksum must bind exactly one reachable envelope. Direction selects
+  candidate authority only by this matrix:
+
+  | Pending validation role | Old generation | Candidate generation | Binary/schema authority |
+  | --- | --- | --- | --- |
+  | Forward install or upgrade `validate-candidate` | payload old | payload target (`old + 1`) | candidate artifact and target schema |
+  | Installed-prior failure recovery `validate-restored-pair` | payload old | payload old | prior artifact and prior schema restored from `prior_release` |
+  | Explicit rollback `validate-restored-pair` | payload old | payload target (`old - 1`) | retained rollback-target candidate artifact and target schema |
+
+  A same, swapped, forward-only, or independently self-consistent generation,
+  artifact, schema, request UUID, revision, checksum, backup hash, owner,
+  effect attempt, or deadline is rejected before database access.
 
   `ManagerSubscriptionHandshakeV1.match_rules` is literal, not an
   implementation-generated set. Rule zero has sender
@@ -1576,12 +1837,27 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   increments effect attempt for that step; it never overwrites the prior
   failed/interrupted attempt history.
 
+  Evidence ordering is byte-total. The sort key is
+  `(kind_tag:u8, primary_identity_bytes, complete_canonical_atom_bytes)` with
+  tags `path=0x01`, `state=0x02`, `backup=0x03`, `admission=0x04`,
+  `consumer=0x05`, `timer=0x06`, `fd4=0x07`, `smoke=0x08`,
+  `known-good=0x09`, `decision=0x0A`, `absence=0x0B`, and
+  `transaction=0x0C`. Primary identity is, respectively, decoded normalized
+  path bytes; decoded database-path bytes; 32 manifest-hash bytes;
+  `install_generation:u64be` followed by complete transaction presence bytes;
+  NFC pair-ID bytes; NFC pair-ID bytes; request UUID bytes; 32 artifact-hash
+  bytes; decoded path bytes; 32 candidate-checksum bytes; the single byte
+  `0x00`; and `manifest_revision:u64be`. Complete canonical atom bytes break an
+  otherwise equal primary key; an identical complete atom is a forbidden
+  duplicate. No enum declaration order, map order, or locale comparator is an
+  alternate.
+
   `ReleaseEvidenceAtomV1` is exactly one of these CanonicalJsonV1 objects; the
   listed order includes the leading `kind` key:
 
   | Kind | Remaining exact keys and values |
   | --- | --- |
-  | `path` | `path`, `state`, `sha256`, `symlink_target`; state is `absent`, `regular`, or `symlink`, and hash/target are exact tagged absent/hash/path values. |
+  | `path` | `path`, `state`, `sha256`, `symlink_target`; `path` is AD-24 normalized absolute raw bytes and state is the closed `absent`, `regular`, `symlink`, or `directory` vocabulary. `absent` and `directory` require both tagged values absent; `regular` requires a present lowercase SHA-256 and absent target; `symlink` requires absent hash and a present nonempty uppercase-percent exact raw `readlink` byte string, which may be relative. No other option matrix is valid. |
   | `state` | `database_path`, `schema`, `integrity_result`, `database_sha256`, `wal`, `shm`; schema unsigned, integrity is `ok`, `unavailable`, or `failed`, hash tagged absent/present, WAL/SHM complete `StateFileV1`. |
   | `backup` | `manifest_hash`; exact StateBackupManifestV1 hash. |
   | `admission` | `status`, `install_generation`, `transaction_id`; status is `ready` or `recovering`, generation unsigned, transaction tagged absent/UUID. |
@@ -1594,20 +1870,63 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   | `absence` | `canonical_link_absent`, `versioned_binary_absent`, `state_disposition`, `consumer_units`; booleans explicit, state disposition the complete FirstInstallAbsentV1 member, and consumer rows exact key order `unit_name`, `paths_absent`, `unit_file_state` with state `no-such-unit-file`. |
   | `transaction` | `manifest_revision`, `result`; revision unsigned and result the complete ReleaseTerminalResultV1. |
 
-  The exact `ReleaseStepV1` vocabulary and required post-evidence kinds are:
+  The reachable `ReleaseStepV1` state machines are exact token lists, not phase
+  suggestions:
 
-  | Ordered path | Stable step tokens and required post evidence |
+  | Path | Exact ordered tokens after any already-persisted forward prefix |
   | --- | --- |
-  | Forward | `stage-binary:path`; `verify-checksum:path`; `isolated-smoke:smoke`; `persist-recovering-admission:admission`; `create-backup:backup`; `migrate-and-verify-state:state`; `activate-binary:path`; `rewrite-consumers:consumer`; `daemon-reload:consumer`; `readback-consumers:consumer`; `prove-timer-invocation:timer`; `validate-candidate:fd4`; `stage-known-good-candidate:decision`; `commit-decided:decision`; `publish-known-good:known-good`; `persist-ready-admission:admission`; `commit-transaction:transaction`. |
-  | Recovery or explicit rollback | `restore-binary:path`; `restore-state:state`; `restore-consumers:consumer`; `rollback-daemon-reload:consumer`; `validate-restored-pair:timer,fd4`; `remove-first-install-consumers:path`; `first-install-daemon-reload:consumer`; `validate-first-install-absence:absence`; `rollback-ready-admission:admission`; `complete-rolled-back:transaction`. |
+  | Successful install/upgrade | `stage-binary`, `verify-checksum`, `isolated-smoke`, `persist-recovering-admission`, `create-backup`, `migrate-and-verify-state`, `activate-binary`, `rewrite-consumers`, `daemon-reload`, `readback-consumers`, `prove-timer-invocation`, `validate-candidate`, `stage-known-good-candidate`, `commit-decided`, `publish-known-good`, `persist-ready-admission`, `commit-transaction` |
+  | FirstInstall failure recovery | exactly one failed forward step; then skipped `stage-binary`, `verify-checksum`, `isolated-smoke`, `validate-candidate`; then `restore-binary`, `restore-state`, `remove-first-install-consumers`, `first-install-daemon-reload`, `validate-first-install-absence`, `rollback-ready-admission`, `complete-rolled-back` |
+  | Installed-prior failure recovery | exactly one failed forward step; then `restore-binary`, `restore-state`, `restore-consumers`, `rollback-daemon-reload`, `validate-restored-pair`, `rollback-ready-admission`, `complete-rolled-back` |
+  | Explicit rollback | `persist-recovering-admission`, `create-backup`, `restore-binary`, `restore-state`, `restore-consumers`, `rollback-daemon-reload`, `validate-restored-pair`, `stage-known-good-candidate`, `commit-decided`, `publish-known-good`, `rollback-ready-admission`, `complete-rolled-back` |
 
-  A step may carry additional atoms only when named by its row's prerequisites:
-  path before checksum/activation/restore, backup before state migration/restore,
-  consumer before daemon reload/readback/timer, timer before FD4 validation,
-  decision before KnownGood publication, and KnownGood plus admission before a
-  terminal transaction. This fixed relation, not public phase, selects
-  idempotent readback. Step, evidence kind, direction, state, or reason outside
-  this registry requires V2 and is rejected by V1.
+  A successful replacement-owner replay continues the successful token list;
+  direction changes once from `forward` to `recovery` at its first newly owned
+  step and never changes back. A failure changes to the applicable restore list.
+  Explicit rollback uses only `explicit-rollback`. At most one forward step is
+  failed; only the four named FirstInstall no-prior effects are skipped. A
+  pending step is final in its envelope. A terminal `committed`,
+  `forward-failed-recovered`, or `rolled-back` exists only after the respective
+  complete final token above and binds its direction and generation; its
+  transaction evidence is byte-equal to that terminal. The recovered terminal's
+  `failing_step` byte-equals the sole failed forward record.
+
+  Evidence is likewise an exact pre-to-post relation. Each displayed comma list
+  is a set of kinds and also a cardinality rule: singleton kinds occur once;
+  consumer/timer identities occur once per transaction pair; paths are unique.
+  Stage/checksum/activation carry one candidate path, installed restore carries
+  one canonical-link path, FirstInstall binary restore carries canonical link
+  plus versioned binary, and FirstInstall consumer removal carries every frozen
+  owned identity exactly once.
+  Pending and failed records retain the displayed pre set and have empty post;
+  complete records have both sets; a skipped record has empty pre/post and sole
+  reason `no-prior-release`.
+
+  | Direction and token group | Exact pre -> complete post kinds |
+  | --- | --- |
+  | Forward or replacement-owner recovery: `stage-binary`, `verify-checksum`, `activate-binary` | `path -> path` |
+  | Forward or replacement-owner recovery: `isolated-smoke` | `smoke -> smoke` |
+  | Forward or replacement-owner recovery: `persist-recovering-admission` | `admission -> admission` |
+  | Forward or replacement-owner recovery: `create-backup` | `backup -> backup` |
+  | Forward or replacement-owner recovery: `migrate-and-verify-state` | `state -> state` |
+  | Forward or replacement-owner recovery: `rewrite-consumers`, `daemon-reload`, `readback-consumers` | `consumer -> consumer` |
+  | Forward or replacement-owner recovery: `prove-timer-invocation` | `timer -> timer` |
+  | Forward or replacement-owner recovery: `validate-candidate` | `fd4 -> fd4` |
+  | Forward: `stage-known-good-candidate`, `commit-decided` | `decision -> decision` |
+  | Forward: `publish-known-good` | `known-good -> known-good` |
+  | Forward: `persist-ready-admission` | `admission -> admission` |
+  | Replacement-owner recovery: the preceding four commit effects | `empty -> decision`, `empty -> decision`, `empty -> known-good`, `empty -> admission`, respectively |
+  | Forward or replacement-owner recovery: `commit-transaction` | `empty -> transaction` |
+  | Installed recovery or explicit rollback: `restore-binary`, `restore-state`, `restore-consumers`, `rollback-daemon-reload` | respectively `path -> path`, `state -> state`, `consumer -> consumer`, `consumer -> consumer` |
+  | Installed recovery or explicit rollback: `validate-restored-pair` | `consumer,timer,fd4 -> consumer,timer,fd4` |
+  | FirstInstall recovery: `remove-first-install-consumers` | `path -> path` |
+  | FirstInstall recovery: `first-install-daemon-reload`, `validate-first-install-absence` | respectively `empty -> consumer`, `empty -> absence` |
+  | Recovery: `rollback-ready-admission`, `complete-rolled-back` | respectively `empty -> admission`, `empty -> transaction` |
+  | Explicit rollback: `persist-recovering-admission`, `create-backup`, `stage-known-good-candidate`, `commit-decided`, `publish-known-good` | respectively `empty -> admission`, `empty -> backup`, `empty -> decision`, `empty -> decision`, `empty -> known-good` |
+
+  Step, evidence kind/count/identity, direction, state, order, terminal link, or
+  reason outside these tables requires V2 and is rejected by V1. Public phase
+  never selects idempotent behavior.
 
   `ReleaseReasonV1` is the closed stable vocabulary `none`,
   `no-prior-release`, `resumed-after-owner-loss`, `forward-effect-failed`,
@@ -1628,7 +1947,12 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   commit`; status is `started | succeeded | failed | resumed | skipped`; reason
   is one ReleaseReasonV1. Events sort by sequence from zero, name an existing
   recovery attempt and step record, and may not describe a manifest revision
-  later than their containing payload.
+  later than their containing payload. Ordered pairing is exact: each skipped
+  step consumes one `skipped` event; each pending step consumes one
+  `started | resumed` event; each complete or failed step consumes that start
+  event followed immediately by `succeeded | failed`. The event sequence plus
+  one equals its manifest revision, so repeated step tokens remain unambiguous
+  without an implementation-defined lookup.
 
   `ReleaseTerminalResultV1` is exactly one tagged object: `{"kind":"pending"}`;
   `{"kind":"committed","target_install_generation":<u64>}`;
@@ -1667,6 +1991,21 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   fsynced; only after the effect's required readback succeeds does another
   replacement record `complete` and post-effect evidence. A persisted failure
   records the same step and bounded reason without claiming completion.
+  Explicit rollback consumer evidence is directional: `restore-consumers`
+  pre-effect evidence binds the displaced source/current generation contract,
+  while its post-effect evidence binds the retained rollback-target contract.
+  `rollback-daemon-reload` and `validate-restored-pair` pre/post consumer
+  evidence bind that restored target contract; validation additionally binds
+  the target pair's timer and FD4 proofs. Same, swapped, or unknown directional
+  contract hashes fail closed.
+  Installed forward upgrade is directional too: `rewrite-consumers` pre binds
+  the installed old/source contracts and post binds target; daemon reload,
+  readback, timer, and candidate validation bind target. If that forward path
+  fails, `restore-consumers` pre binds the partially applied target and post
+  binds old/source; recovery reload and restored-pair validation continue to
+  bind old/source. FirstInstall has no fabricated source contract and instead
+  uses its exact owned-path absence authority. These are the only directional
+  interpretations of the same evidence tags.
   Recovery treats `pending` as may-have-executed: checksum, smoke, and readback
   rerun read-only; candidate validation reruns only after the current
   ReleaseRecoveryAttemptV1 is durably published and uses a fresh attempt-bound
@@ -1680,16 +2019,27 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   `StateBackupManifestV1` requires the SQLite backup API or an explicitly
   equivalent checkpointed method, no live restore connections, database/WAL/SHM
   disposition, content hashes, schema and integrity verification, and file plus
-  parent-directory fsync.
+  parent-directory fsync. Its transaction-unique backup directory and files are
+  immutable. When the manifest becomes part of a published KnownGood bundle,
+  the prior versioned binary, complete consumer bytes, manifest, and every
+  listed backup file remain pinned and hash-verified before restore. A later
+  commit must publish and read back its replacement KnownGood before the old
+  bundle becomes prune-eligible; failed or pending publication retains the old
+  bundle.
 
   `ManagedConsumerUnitContractV1` is prepared from the transaction's intended
   staged bytes and enablement policy before the first consumer effect; expected
   values are never learned from post-reload state. Each ordered service/timer
   pair stores the exact service and timer names and the complete intended
-  fragment and drop-in bytes needed to restore either generation. For each
-  unit, `UnitFragmentIdentityV1` stores the normalized absolute `FragmentPath`,
-  its SHA-256, tagged `SourcePath`, and the ordered normalized `DropInPaths`
-  with their SHA-256 values. The service contract stores the exact configured
+  fragment and drop-in bytes needed to create the target generation or restore
+  the prior generation. For each unit, `UnitFragmentIdentityV1` stores the
+  normalized absolute `FragmentPath`, uppercase-percent complete raw fragment
+  content, decoded byte length, SHA-256 of exactly those decoded bytes, tagged
+  `SourcePath`, and ordered normalized `DropInPaths`; every DropInIdentityV1
+  likewise stores its complete raw content, decoded byte length, and SHA-256.
+  Content encoding is canonical under AD-24: unreserved bytes remain literal,
+  every other byte uses uppercase percent-hex, and alternate encodings are
+  rejected. The service contract stores the exact configured
   portion of loaded `ExecStart` as an ordered list of binary path, complete
   argv, and ignore-failure flag, discarding only the D-Bus tuple's runtime
   timestamps, PID, code, and status; it also requires
@@ -1703,14 +2053,25 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   `RemainAfterElapse`, and `DeferReactivation`. Every duration is an exact
   unsigned microsecond value and every boolean is explicit.
 
-  Each unit contract also declares exactly one enablement readback mechanism
-  and expected result: either exact D-Bus `UnitFileState`, or a separate
-  one-unit `systemctl --user is-enabled` invocation with exact stdout token and
-  exit status. An implementation may not query multiple units and accept the
-  command's any-enabled success, nor switch mechanisms after a mismatch.
-  After `systemctl --user daemon-reload`, one post-effect readback requires
-  `NeedDaemonReload=false`, byte-equal fragment identity and hashes, and exact
-  normalized service, timer, and enablement values before trigger validation.
+  Each unit contract also declares one exact UnitFileMutationV1 and one
+  UnitFileReadbackV1. The mutation maps to its named single-unit D-Bus Manager
+  method and fixed runtime/force flags; `none` performs no call. Readback is
+  either the closed D-Bus UnitFileState token or a separate one-unit
+  `systemctl --user is-enabled <unit>` result with exact raw stdout bytes and
+  `u8` exit status. An implementation may not query multiple units and accept
+  any-enabled success, normalize the raw stdout, invent a state token, or
+  switch mechanisms after a mismatch. The corpus uses D-Bus for the service and
+  the one-unit systemctl form for its timer.
+  Before any create or restore write, the coordinator decodes the contract's
+  content, independently checks its declared length and SHA-256, and refuses a
+  hash-only or mismatched contract. It writes exactly those bytes through the
+  checked no-follow, same-directory temporary-file, file-fsync, atomic-rename,
+  and parent-directory-fsync protocol; neither loaded manager state nor a
+  current-generation file may supply missing bytes. After
+  `systemctl --user daemon-reload`, one post-effect readback requires
+  `NeedDaemonReload=false`, byte-equal fragment/drop-in content, sizes and
+  hashes, and exact normalized service, timer, and enablement values before
+  trigger validation.
   ActiveState never substitutes for enablement. A wrong fragment, ExecStart,
   timer target, schedule, accuracy, randomized delay, persistence, wake or
   reactivation value, or a disabled-but-active unit fails this postcondition.
@@ -1804,33 +2165,56 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
 
   Successful candidate and consumer validation first stages one
   `KnownGoodCandidateV1` inside UpgradeTransactionV1; it is not the published
-  rollback record. The candidate contains the exact prior binary and hash or an
-  explicit first-install-absent sentinel, matching state backup and schema,
-  prior `ManagedConsumerUnitContractV1` records, prior install generation, and
-  every integrity hash. `FirstInstallAbsentV1` is permitted only when preflight
+  rollback record. Its `prior_release` byte-equals the transaction authority:
+  either the complete installed bundle with binary, immutable state backup,
+  exact consumer content/size/hash contracts, tarball/toolchain hashes,
+  generation, and bundle hash, or the complete first-install-absent sentinel.
+  `FirstInstallAbsentV1` is permitted only when preflight
   proved both canonical managed link and prior managed version binary absent
   and no foreign file or consumer was displaced. Its exact key order is `kind`,
   `canonical_link_path`, `versioned_binary_path`, `state_disposition`,
   `consumer_disposition`, `prior_install_generation`; kind is
   `first-install-absent`, paths are AD-24 normalized absolute raw paths,
-  `state_disposition` is exactly `{"kind":"absent"}` or key order `kind`,
-  `backup_manifest_hash`, `schema` with kind `restore-recorded`,
+  `state_disposition` is exactly `{"kind":"absent"}`, key order `kind`,
+  `plan`, `schema` with kind `restore-planned` and a complete StateBackupPlanV1
+  whose source schema equals `schema`, or key order `kind`, `backup_manifest`,
+  `schema` with kind `restore-recorded` and a complete StateBackupManifestV1
+  whose source schema equals `schema`. The plan is the revision-zero authority;
+  only completed backup readback may replace it with the byte-matching manifest,
   and prior install generation is the reserved unsigned value zero.
 
   `consumer_disposition` is one exact tagged union. The recorded branch has key
   order `kind`, `contracts`, with kind `restore-recorded` and a nonempty array of
   complete prior `ManagedConsumerUnitContractV1` values in pair-ID order. The
   absent branch has key order `kind`, `units`, with kind `absent` and a nonempty
-  array of `AbsentManagedConsumerUnitV1` in unsigned unit-name order. Each
-  absence object has exact key order `schema_version`, `unit_kind`, `unit_name`,
-  `fragment_path`, `drop_in_paths`, `enablement_target_paths`; schema is
-  `srvls-absent-managed-consumer-unit-v1`; kind is `service | timer`; every path
-  is an AD-24 normalized absolute raw path. Drop-in and enablement-target arrays
-  are unsigned-path sorted, duplicate-free, and may be empty; every managed
+  array of `AbsentManagedConsumerUnitV1` in pair-ID/service-before-timer order. Each
+  absence object has exact key order `schema_version`, `pair_id`, `unit_kind`,
+  `unit_name`, `fragment`, `drop_ins`, `enablement_links`,
+  `drop_in_directories`; schema is
+  `srvls-absent-managed-consumer-unit-v1`, pair ID is stable ASCII, and kind is
+  `service | timer`. Units sort by unsigned pair ID then service before timer,
+  with exactly one of each kind for every target consumer contract.
+  `OwnedRegularFileRemovalV1` has exact key order `path`, `expected_sha256`;
+  `OwnedSymlinkRemovalV1` has exact key order `path`, `expected_target`, whose
+  target is uppercase-percent exact raw `readlink` bytes and may be relative;
+  `DropInDirectoryDispositionV1` has exact key order `path`, `prior_state`, with
+  state `absent | directory`. Fragment is one regular-file removal identity;
+  drop-ins and enablement links are arrays of their named complete identities;
+  `drop_in_directories` is the fixed v1 wire name for every parent directory the
+  transaction may create: the direct parent of each drop-in and each
+  enablement link, including `.d`, `.wants`, and `.requires` parents. Across
+  the complete units array each distinct parent appears exactly once. If two
+  units share it, ownership belongs to the earliest `(pair_id, unit_kind)` row
+  having a child there; pruning waits until every recorded child from every
+  pair is absent. The base
+  fragment parent must preexist and is never created by the transaction. Every
+  path is AD-24 normalized absolute raw bytes. All three arrays are unsigned by
+  decoded path, duplicate-free, and may be empty; every managed
   pair must contain exactly one service and its exact timer, and all possible
-  managed fragment, drop-in, wants/requires symlink targets selected by the
-  target contract must be present. Preflight proves `lstat=ENOENT` for every
-  recorded path, empty loaded FragmentPath/DropInPaths, and `GetUnitFileState`
+  managed fragment, drop-in, wants/requires link identity, and parent-directory
+  disposition selected by the target contract must be present. Preflight proves
+  `lstat=ENOENT` for every removal path, records each parent as absent or an
+  existing directory, requires empty loaded FragmentPath/DropInPaths, and gets
   `NoSuchUnitFile` before the first consumer effect. An empty contracts or units
   array is never an implicit absence representation.
 
@@ -1861,32 +2245,50 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   an absent binary: it removes only the transaction-owned link and versioned
   binary after exact target/hash readback, applies the declared absent or
   restore-recorded database/WAL/SHM disposition, then executes exactly the
-  tagged consumer branch. `restore-recorded` restores its complete prior
-  fragments and enablement. `absent` persists a pending removal record before
-  unlinking each transaction-owned fragment, drop-in, and enablement target in
-  the recorded unit/path order; an exact expected hash or symlink target is
+  tagged consumer branch. `restore-recorded` restores each prior fragment and
+  drop-in exclusively from its frozen contract content after recomputing size
+  and SHA-256, then restores enablement. `absent` persists a pending removal
+  record before
+  unlinking each transaction-owned fragment, drop-in, and enablement link in
+  the recorded unit/path order; the recorded expected hash or symlink target is
   required before removal, while a missing path is idempotent and any foreign
-  replacement fails recovery without deletion. It prunes an empty
-  transaction-created drop-in directory only after every recorded child is
-  absent, then persists complete. It persists and completes a separate
-  daemon-reload step, then an absence-readback step requiring every recorded
-  path `lstat=ENOENT`, empty loaded FragmentPath/DropInPaths, and
-  `GetUnitFileState` `NoSuchUnitFile` for each service and timer. A crash at any
+  replacement fails recovery without deletion. It prunes an empty recorded
+  parent directory only after every recorded child is absent and only when its
+  frozen prior state is `absent`; a prior `directory` is never removed. It then
+  persists complete. It persists and completes a separate
+  daemon-reload step, then an absence-readback step requiring `lstat=ENOENT`
+  for every recorded fragment, drop-in, enablement link, and parent whose
+  frozen prior state is `absent`; every parent whose frozen prior state is
+  `directory` must instead remain an exact nonsymlink directory at its recorded
+  path. Loaded FragmentPath/DropInPaths must be empty and `GetUnitFileState`
+  must return `NoSuchUnitFile` for each service and timer. A crash at any
   pending cut repeats exact readback and the same idempotent effect; no empty
   list, current target contract, or manager cache is allowed to stand in for
   the frozen prior-absence records. Recovery finally verifies link and managed
   binary absence plus exact state, sidecar, unit, timer, and enablement
   postconditions.
   Stage, checksum, smoke, and FD4 candidate-validation steps complete as
-  `skipped` with sole reason `no-prior-release`; the absence validator itself is
-  a required recovery effect. Each removal, restore, reload, and absence
+  `skipped` in exactly that order with sole reason `no-prior-release`, empty
+  validation/effect evidence, and one durable `skipped` event/revision each;
+  the absence validator itself is a required recovery effect. No successful
+  forward checksum, smoke, timer, or FD4 record may stand in for those recovery
+  records. Each removal, restore, reload, and absence
   readback retains ordinary pending/complete crash recovery. Only after all
   readbacks may admission become `ready` at reserved generation zero and the
   transaction return `forward-failed-recovered`.
 
   `srvls release rollback` never repoints directly. For an installed retained
   pair it creates a new UpgradeTransactionV1 and runs the same admission,
-  validation, decision, publication, event, and commit protocol. If the current
+  validation, decision, publication, event, and commit protocol. Its exact
+  ordered path is persist recovering admission, create an immutable backup of
+  the current source pair, restore binary, restore state, restore consumers,
+  rollback daemon-reload, validate the retained target pair, stage the
+  KnownGood candidate for the displaced source pair, persist commit decision,
+  publish that candidate, persist ready target admission, and complete the
+  rolled-back terminal record. The payload `consumers`, candidate binary,
+  schemas, tarball hash, and toolchain hash byte-equal `rollback_target`; the
+  KnownGood candidate instead contains byte-equal `prior_release`, preserving
+  a future rollback to the displaced source. If the current
   KnownGoodReleaseV1 instead contains FirstInstallAbsentV1, rollback acquires
   only the ordinary shared ready-admission read, returns the stable machine
   result `rollback-unavailable` with reason `no-prior-release`, and performs no
@@ -2204,8 +2606,12 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   performed. PM2_HOME and every Linux path field are absolute raw bytes with no
   NUL: collapse repeated slash and `.` components, reject `..`, preserve case
   and non-UTF-8 bytes, retain `/` for root, and remove every other trailing
-  slash. Unknown tags, wrong field count or length, noncanonical paths or
-  strings, and trailing bytes are invalid. Scope display percent-encodes the
+  slash when constructing the canonical value. Persisted and wire paths must
+  already byte-equal that result: validators reject repeated slash, `.` or
+  `..` components, NUL, relative spelling, and non-root trailing slash rather
+  than silently normalizing authority bytes. Unknown tags, wrong field count or
+  length, noncanonical paths or strings, and trailing bytes are invalid. Scope
+  display percent-encodes the
   complete canonical binary sequence, leaving only RFC 3986 unreserved bytes
   literal and using uppercase hex. `ScopeManifestV1` is obligation-bearing and
   byte-total: it encodes `version:0x01 || count:u32be`, then each entry sorted by
@@ -2232,8 +2638,9 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   | 9 | configured optional | `optional` | `configured-optional` |
   | 10 | built-in optional scope | `optional` | `default-supported` |
 
-  Exactly one row must match. A supported scope has one built-in required or
-  optional disposition, so falling through row 10 is invalid. No synonym,
+  At least one predicate must match; the first matching row is the sole winner
+  and every later true predicate is ignored. A supported scope has one built-in
+  required or optional disposition, so falling through row 10 is invalid. No synonym,
   caller prose, Promise ID, Provider error, or implementation enum spelling is
   a valid reason. Duplicate ScopeIds, an unknown tag, reason outside this
   vocabulary, wrong winning reason, empty reason, wrong length, unsorted entry,
@@ -2275,7 +2682,7 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
 
   Pair-descriptor ownership is exact and is part of FD3 authentication. The
   table counts pair endpoints only; AD-23 ChildDescriptorWhitelistV1 separately
-  requires the worker's first pre-exec action to close the admission lease and
+  requires the worker's first pre-exec action to close its inherited admission descriptor and
   the worker-entry audit to prove zero admission-lock descriptors before Hello:
 
   | Lifecycle cut | Coordinator descriptors | Worker descriptors | Required closure and proof |
@@ -2520,8 +2927,8 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   value_kind:u8 || length:u32be || value`. Value kinds are `0x01` complete raw
   bytes, `0x02` NFC UTF-8, `0x03` `u64be`, `0x04` one byte `0x00 | 0x01`,
   `0x05` complete ScopeIdV1 bytes, `0x06` FramedSequenceV1 in semantic order,
-  and `0x07` FramedSequenceV1 in unsigned complete-element-byte order with
-  duplicates forbidden.
+  and `0x07` EnvironmentSetV1: a FramedSequenceV1 sorted unsigned by the
+  EnvironmentEntryV1 ASCII name bytes only, with duplicate names forbidden.
 
   `FramedSequenceV1` is exactly `count:u32be || (element_length:u32be ||
   complete_element_bytes)*`. Count zero is the only empty encoding; an empty
@@ -2537,7 +2944,7 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   | --- | --- | --- |
   | `0x0001` | `0x02` | nonempty NFC token; one of `command`, `host-read` |
   | `0x0002` | `0x06` | ordered FramedSequenceV1 of CommandSpecV1; at most 65,535 commands |
-  | `0x0003` | `0x07` | set FramedSequenceV1 of EnvironmentEntryV1; at most 4,096 entries |
+  | `0x0003` | `0x07` | EnvironmentSetV1 of EnvironmentEntryV1 in name-byte order; at most 4,096 entries |
   | `0x0004` | `0x06` | ordered FramedSequenceV1 of normalized absolute raw-path bytes; at most 4,096 roots |
   | `0x0005` | `0x02` | nonempty NFC token; one of `invoking-principal`, `sudo-n` |
 
@@ -2582,6 +2989,16 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   | `DiagnosticCandidateRefV1` | `scope_id`, `producer`, `local_ordinal`; ScopeId and producer must equal the referenced candidate and ordinal is unsigned `u32` represented as a JSON integer |
   | `DiagnosticIdV1` | `generation_id`, `scope_id`, `ordinal`; generation is unsigned and ordinal is unsigned `u32` represented as a JSON integer |
   | `DiagnosticReferenceV1` | candidate form key order `kind`, `value` with kind `candidate` and DiagnosticCandidateRefV1, or final form with kind `diagnostic-id` and DiagnosticIdV1; WorkerResult permits only candidate and SnapshotV1 permits only diagnostic-id |
+
+  The worker diagnostic registry is closed. The exercised v1 entry is
+  `(code="provider-note", parameter_schema="provider-note-v1")`: producer is
+  exactly `worker`; ScopeId equals the containing report; subject is the exact
+  DiagnosticSubjectV1 scope variant for that ScopeId; parameters have sole key
+  `message` whose value is a nonempty NFC tagged text; source encounter and
+  duplicate occurrence are unsigned. Every WorkerResult candidate has producer
+  `worker`; coordinator candidates are synthesized after transport and never
+  cross FD3. A code/schema pair or producer/subject/parameter shape outside its
+  declared registry entry is schema-invalid rather than an extensible string.
 
   `CollectorReportV1` has exact key order `schema`, `generation_id`,
   `scope_id`, `obligation`, `observations`, `duration_ns`,
@@ -2667,7 +3084,8 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   request ID, capability, CollectionPlanFingerprint,
   DispatchScheduleFingerprint, current repository revision, GenerationId,
   ScopeIdV1, ScopeAssignmentFingerprint, reservation echo, and one result tagged
-  object, followed by DiagnosticCandidateV1 array and capture accounting. The
+  object, followed by a DiagnosticCandidateV1 array whose every producer is
+  exactly `worker`, and capture accounting. The
   reservation echo has exact Request values and key order `worker_id`,
   `schedule_origin_boot_ns`, `reservation_epoch_offset_ns`,
   `reservation_budget_ns`, `full_budget_makespan_ns`,
@@ -2827,6 +3245,14 @@ tests/
   fixtures/                  # domain, state, config, Provider, and UX cases
   snapshots/                 # TUI, linear, and output snapshots
 ```
+
+This structural seed is a required implementation layout, not a statement that
+the Rust crate already exists. Before `Cargo.toml` is present, the aggregate
+architecture-contract gate runs the frozen compatibility, contract,
+release/recovery, and brownfield smoke authorities. From the first commit that
+adds `Cargo.toml`, the same gate fails unless `tests/architecture_boundaries.rs`
+exists and `cargo test --locked --all-targets` passes. Release CI must invoke
+that aggregate gate; a story-local test command cannot substitute for it.
 
 ```mermaid
 flowchart TD
