@@ -1,0 +1,1057 @@
+{
+  "schema": "srvls-story-acceptance-registry-v1",
+  "sourceArtifact": "_bmad-output/planning-artifacts/epics.md",
+  "rowCount": 150,
+  "rows": [
+    {
+      "rowId": "AC-1.1-P01",
+      "storyId": "1.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** Rust 1.88 and symbolic stable with the fixed bootstrap fixture, **When** format, lint, `--locked` tests, hexagonal imports, Elm model/message/update/view/effect ownership, and Strategy/Adapter/Command seams run before Provider code, **Then** both lanes pass and every forbidden dependency/effect edge is rejected, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "a7775b7212b6a860aba19b3372783c0201d3178b6a1138ecc56b3770df31a5a1"
+    },
+    {
+      "rowId": "AC-1.1-N01",
+      "storyId": "1.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.1-N01's approved input bytes and boundary state, **When** a Provider module imports presentation or writes Host state directly, **Then** AC-1.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "084cdd976f8002687aad0a9dcdd8e1dbc0eb1e88d63b002a0a77cae0c3cad795"
+    },
+    {
+      "rowId": "AC-1.2-P01",
+      "storyId": "1.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/compat/manifest.json and tests/compat/SHA256SUMS, **When** AC-1.2-P01 executes its approved input bytes, **Then** every inherited surface has a source behavior, fixed fixture, independent oracle, live consumer, lane, and version, while any new field is additive only in a new version and leaves inherited bytes unchanged, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "e7ba5c251bd775d37e301fdbdb5219d0aeaba459ae31b5f922451873f5ca99f6"
+    },
+    {
+      "rowId": "AC-1.2-N01",
+      "storyId": "1.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.2-N01's approved input bytes and boundary state, **When** an inherited surface or consumer has no fixed row, **Then** AC-1.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "6b7ba6048475fdab11621542e92a38085a1ace4b25f2d3e9d142ee22215174fe"
+    },
+    {
+      "rowId": "AC-1.3-P01",
+      "storyId": "1.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/compat/validate.sh, **When** AC-1.3-P01 executes its approved input bytes, **Then** the frozen corpus and live smoke compare exact bytes except for a specifically typed deviation row, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "6d5bb1ff9996728cbdd714b950a5a6f4b7915a972c1870aa9f49108b41c52ff2"
+    },
+    {
+      "rowId": "AC-1.3-N01",
+      "storyId": "1.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.3-N01's approved input bytes and boundary state, **When** a generic semantic normalizer, self-captured golden, or unlisted difference is attempted, **Then** AC-1.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "a3415cf7b5d98eb380fa445f44c8cc5bac1baa1481b363c5b388d893219ea679"
+    },
+    {
+      "rowId": "AC-1.4-P01",
+      "storyId": "1.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/validate.py, **When** AC-1.4-P01 executes its approved input bytes, **Then** CanonicalJsonV1 remains newline-free, presenters add one terminator, and independent encoders agree on every fixed byte, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "94535d462b4abffa2436fe0be8b81e8c889bc1f74e9fcad3129eb020f279b804"
+    },
+    {
+      "rowId": "AC-1.4-N01",
+      "storyId": "1.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.4-N01's approved input bytes and boundary state, **When** an unknown key, wrong order, mutable identity field, self-generated expected byte, or trailing newline appears, **Then** AC-1.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "de27b384ee6ed2162ef31c890adc208f1a11c103d1788ef25e626a0636430f37"
+    },
+    {
+      "rowId": "AC-1.5-P01",
+      "storyId": "1.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/config-and-limits-v1, **When** AC-1.5-P01 executes its approved input bytes, **Then** built-in, system, user, explicit, environment, and CLI values resolve in fixed order with complete provenance and exact derived cuts, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "f8b83cfa98911b43f84933ca1a3c601cb77c131d0943fb78d84261ae5664da7b"
+    },
+    {
+      "rowId": "AC-1.5-N01",
+      "storyId": "1.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.5-N01's approved input bytes and boundary state, **When** an unknown, duplicate, malformed, out-of-range, hidden lower-precedence, or clamped value is supplied, **Then** AC-1.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "12efc00fc7795c07ef9bf17fc60fbfc690f5d6d324277da71b696ca23eaf187a"
+    },
+    {
+      "rowId": "AC-1.6-P01",
+      "storyId": "1.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/sqlite-init-v1, **When** AC-1.6-P01 executes its approved input bytes, **Then** fresh and existing databases accept only the exact WAL, synchronous, foreign-key, busy-timeout, schema, and permission contract, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "73e6b39fea2eb867c009cd17f383229f9fb9449f6cf51d21aa1024a696a067cb"
+    },
+    {
+      "rowId": "AC-1.6-N01",
+      "storyId": "1.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.6-N01's approved input bytes and boundary state, **When** a pragma type/value, mode, integrity, migration, or invariant mismatches, **Then** AC-1.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "6cda13383c5aaf76a0b8c3283a325a9271cdda6d7bb0968407ec422a98f5fd94"
+    },
+    {
+      "rowId": "AC-1.7-P01",
+      "storyId": "1.7",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/repository-cas-v1, **When** AC-1.7-P01 executes its approved input bytes, **Then** a typed test aggregate commits atomically and only an expected-revision CAS may advance its test current pointer, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "f326503c31b97f532baeab3ec3eb3ca27dcaa485530548b55d7b518f845df733"
+    },
+    {
+      "rowId": "AC-1.7-N01",
+      "storyId": "1.7",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.7-N01's approved input bytes and boundary state, **When** a stale writer, late Collector, or concurrent replacement attempts a newer-truth overwrite, **Then** AC-1.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "8c9c3e26369ff112ced880d260101a6f7763ace518397112702589c86adbd4e9"
+    },
+    {
+      "rowId": "AC-1.8-P01",
+      "storyId": "1.8",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/retention-capacity-v1, **When** AC-1.8-P01 executes its approved input bytes, **Then** eligible unpinned rows prune oldest-first and pinned excess refuses only the canonical new-write classes while admitted finalization continues, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "0cc05eb86cc709d9ac94fee5498026efe1e77805aecb4910bdd6059873798c91"
+    },
+    {
+      "rowId": "AC-1.8-N01",
+      "storyId": "1.8",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.8-N01's approved input bytes and boundary state, **When** a pin is selected, an archive/vacuum/reset path appears, or alternate degraded admission is chosen, **Then** AC-1.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "28b33d7b741d30b9f887d62028c444efd802c7cd2d768da323cb0388a5829d06"
+    },
+    {
+      "rowId": "AC-1.9-P01",
+      "storyId": "1.9",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/command-runner-v1, **When** AC-1.9-P01 executes its approved input bytes, **Then** stdout/stderr drain independently, terminal result freezes at the decision cut, and later reap evidence cannot rewrite it, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "d589306d7a11727f1724eb03e764df32b4a60fe0cc64f4a87479b59d8061bd38"
+    },
+    {
+      "rowId": "AC-1.9-N01",
+      "storyId": "1.9",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-1.9-N01's approved input bytes and boundary state, **When** shell interpolation, mutating Provider use, unbounded capture, sequential drain, or reap-before-result is attempted, **Then** AC-1.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "34343862ed89d9c0d3cc320c47cf4016e74c29a6e77b10e94b5f4d94356d4627"
+    },
+    {
+      "rowId": "AC-1.10-P01",
+      "storyId": "1.10",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/validate_architecture_contracts.sh, **When** AC-1.10-P01 executes its approved input bytes, **Then** every registry row owned by Epic 1 is discovered and missing, duplicate, stale, or self-generated evidence fails closed, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "f06a3011b2f39148eac5dd09ace34e05da49ed72cffa27498de8049fc89a53d1"
+    },
+    {
+      "rowId": "AC-1.10-N01",
+      "storyId": "1.10",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** the active user override, **When** canonical `epics.md` is missing, has an incoherent draft/final authority triplet, is assigned while non-final, or the retired archive matches sprint-planning discovery, **Then** the validator exits 1 naming that exact invariant; coherent review-time draft discovery and promoted-final discovery both pass with archive quarantine, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "df59ca9a47c81e6fdaa870352f5d49c042a7ce5ec8a8999f36ff0b55cded5a25"
+    },
+    {
+      "rowId": "AC-2.1-P01",
+      "storyId": "2.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/principal-authorization-v1, **When** AC-2.1-P01 executes its approved input bytes, **Then** declare, revise, renew, and close bind actor and owner to verified local credentials with deterministic unauthorized outcomes, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "4ee8ee3b43098d5f610e4e8ee2f7888c4d71d08d2067dc8a60b422236e19b8d3"
+    },
+    {
+      "rowId": "AC-2.1-N01",
+      "storyId": "2.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** peer uid 1000 owns the Promise, **When** peer uid 1001 attempts revise, renew, or close, **Then** each returns `unauthorized_owner`/exit 4 with no event or row change, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "96660c0bd452a1886ce68f662334e96c61a9d93e623aa2c6f4057d009e86fee5"
+    },
+    {
+      "rowId": "AC-2.2-P01",
+      "storyId": "2.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** revision 3 and changed owner-approved fields, **When** expected revision 3 is revised twice with one idempotency key, **Then** revision 4 and exactly one revision event are returned both times; expected revision 2 returns `revision_conflict`/exit 4 with no write, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "4394c4237f09ceeeb555a0fc713d5025d0bc5b1d6b30bebdb778d552a25c86d6"
+    },
+    {
+      "rowId": "AC-2.2-N01",
+      "storyId": "2.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-2.2-N01's approved input bytes and boundary state, **When** a required field, locator, owner, mechanism, count, or opaque-reference type is invalid, **Then** AC-2.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "20864a606e164262b153613da5d42a161890742553958619dbf727360592a5cb"
+    },
+    {
+      "rowId": "AC-2.3-P01",
+      "storyId": "2.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/promise-lease-v1, **When** AC-2.3-P01 executes its approved input bytes, **Then** omitted lifetime creates the exact finite Lease and valid persistent intent records its durable authority, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "fe35c3a4678d73a379e6cdfbfbfb314a45802162fe97f4d14aab7c29a7b349dc"
+    },
+    {
+      "rowId": "AC-2.3-N01",
+      "storyId": "2.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** either persistence prerequisite is missing or wall rollback would extend ownership, **When** declaration is attempted, **Then** it returns `lease_prerequisite_missing`/exit 2/no write or preserves the original monotonic expiry respectively, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "ee6c55ff93a53a294db2caee3580d8bba98e04cf7b86c9348d166fe03cf428d3"
+    },
+    {
+      "rowId": "AC-2.4-P01",
+      "storyId": "2.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/promise-heartbeat-v1, **When** AC-2.4-P01 executes its approved input bytes, **Then** same actor and idempotency key returns the original renewal without duplicate event and never extends beyond the Lease rule, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "b5efa95f90e7a39fbb18d2d91452f2bb35f04671eeee0812f28ffc73894031c5"
+    },
+    {
+      "rowId": "AC-2.4-N01",
+      "storyId": "2.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-2.4-N01's approved input bytes and boundary state, **When** Heartbeat arrives after Lease, after close, under another owner, or across invalid boot evidence, **Then** AC-2.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "5dccc59aeaaae29e2202b2f54e03508f5c40de8b081c0ad19a79966f68235bbb"
+    },
+    {
+      "rowId": "AC-2.5-P01",
+      "storyId": "2.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/promise-close-v1, **When** AC-2.5-P01 executes its approved input bytes, **Then** retry returns the same close result and history preserves one reason, actor, sequence, and prior revision, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "0da131bb962ee5c693e5daedf6b59a7689bc42456f16900eeac779d92cc033b0"
+    },
+    {
+      "rowId": "AC-2.5-N01",
+      "storyId": "2.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-2.5-N01's approved input bytes and boundary state, **When** a second reason, unknown Promise, unauthorized actor, or Provider mutation is requested, **Then** AC-2.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "3473782fa82ce1ae9eac26ecab0762de68b6437c56c1bcf20587d97d2c0bd63a"
+    },
+    {
+      "rowId": "AC-2.6-P01",
+      "storyId": "2.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the Contract C-22 Agent journey fixtures, **When** declare/revise/renew/close/query run through success, retry, expiry, revocation, and next-refresh cuts, **Then** metadata is minimized and every expiry, renewal, inactive/abandoned projection, audit, result, and exit is exact, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "c9d8a88dd61075c207cb33d297fd028467bc48196b1f9ebc88ea434d5470511e"
+    },
+    {
+      "rowId": "AC-2.6-N01",
+      "storyId": "2.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-2.6-N01's approved input bytes and boundary state, **When** unknown argv, stdin payload, ANSI/progress on stdout, or an undocumented interactive gate is introduced, **Then** AC-2.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "25f25cabed68a839d1c6d39aeb773e707081f2e0b6b4ceb1eb7bfcdad87042f0"
+    },
+    {
+      "rowId": "AC-3.1-P01",
+      "storyId": "3.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/collection-plan-v1, **When** AC-3.1-P01 executes its approved input bytes, **Then** the plan fingerprint and all cuts are immutable before spawn and no later truth lookup changes obligation or input, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "ea9c54f62a66a91e6ec9f84daf615bd3d2dfb2f91c0dfd71db7857691922182d"
+    },
+    {
+      "rowId": "AC-3.1-N01",
+      "storyId": "3.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.1-N01's approved input bytes and boundary state, **When** any cut, wall clock, policy, Promise, baseline, operation, history, or current pointer is read after admission, **Then** AC-3.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "3698ef65b4435a8307c98e3c01722f1e906bca084adab0ce3d516be1e54278df"
+    },
+    {
+      "rowId": "AC-3.2-P01",
+      "storyId": "3.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/dispatch-schedule-v1, **When** AC-3.2-P01 executes its approved input bytes, **Then** epochs, worker IDs, LPT positions, process gate, makespan, margin, and cutoff match all three exact vectors, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "639f48f417f3361cab90fda43e0ed820c56d6da83a906cd77e798635edf37840"
+    },
+    {
+      "rowId": "AC-3.2-N01",
+      "storyId": "3.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.2-N01's approved input bytes and boundary state, **When** a completion timing changes a frozen reservation or equality at a cut allocates work, **Then** AC-3.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "52e6656f8a50028e5e934586b9f4e17065765efa041e4ea9653df40586e482d7"
+    },
+    {
+      "rowId": "AC-3.3-P01",
+      "storyId": "3.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/ipc-v1, **When** AC-3.3-P01 executes its approved input bytes, **Then** all four frames and exact key orders interoperate and each injected failure selects one total diagnostic without post-cut rewrite, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "6eade959c96439bcef76227c5b44d41ea8d9bfcd90baa890a368c7844126ddb3"
+    },
+    {
+      "rowId": "AC-3.3-N01",
+      "storyId": "3.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** duplicate FD, replay, credential, size, reservation, exit, signal, and reap vectors, **When** FD3 normalization runs, **Then** exactly one AD-25 precedence reason is emitted in a `timed-out` or `invalid-output` CollectorReport and late evidence cannot rewrite it, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "4d77013aaea2db564cb25c54202372ab865269d3a4255234fbf2d65164e48d7d"
+    },
+    {
+      "rowId": "AC-3.4-P01",
+      "storyId": "3.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/provider-cron-v1, **When** AC-3.4-P01 executes its approved input bytes, **Then** complete and failed scopes normalize deterministic cron ObservationIdV1 values and never expose a mutation capability, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "73e1d07049057224e7a62dea9419e41d2baf7fb5f0bf69daaf631ecbe1578ccb"
+    },
+    {
+      "rowId": "AC-3.4-N01",
+      "storyId": "3.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** permission, hostile-path, duplicate-row, malformed-schedule, and partial-source fixtures, **When** cron collection runs, **Then** usable evidence is preserved and the scope returns `denied`, `invalid-output`, or `partial` under Contract C-16 with exact provenance, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "ee99c5bf5186907ac1fa478ef754d5524b18a8be77e50fa199c2b1e180d302fb"
+    },
+    {
+      "rowId": "AC-3.5-P01",
+      "storyId": "3.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/provider-systemd-v1, **When** AC-3.5-P01 executes its approved input bytes, **Then** D-Bus/read-only evidence yields stable unit/timer Observations and scoped failure outcomes, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "daa7dbaa2ca5d4e428365e8623cd4f114854dafcf5a27d596915fd30a55c6c98"
+    },
+    {
+      "rowId": "AC-3.5-N01",
+      "storyId": "3.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** manager-change, missing-property, denied, and timer-conflict fixtures, **When** systemd collection runs, **Then** each remains a scoped `unavailable`, `partial`, `denied`, or `invalid-output` result with distinct diagnostic and preserved successes, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "d6c06506ea57219506c869360cfe705949eeb9833a3e81be2403ebf27d0063ab"
+    },
+    {
+      "rowId": "AC-3.6-P01",
+      "storyId": "3.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/provider-docker-v1, **When** AC-3.6-P01 executes its approved input bytes, **Then** restart of the same full container identity preserves ObservationId while runtime evidence changes, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "2f0d61d6776d1d65f211ff68bb2420159ec37e01fe965d1628d0cf6b907bd391"
+    },
+    {
+      "rowId": "AC-3.6-N01",
+      "storyId": "3.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.6-N01's approved input bytes and boundary state, **When** a mutable timestamp, short ID, name, image, PID, or Compose label enters identity, **Then** AC-3.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "569dc23e5f38018b3e3bfe5f21dc835e937d1f0751f87b3412f6fdd8b382bec2"
+    },
+    {
+      "rowId": "AC-3.7-P01",
+      "storyId": "3.7",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/provider-pm2-v1, **When** AC-3.7-P01 executes its approved input bytes, **Then** PM2 restarts preserve or change identity only according to the exact birth tuple and retain bounded state/restart evidence, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "21b7648c72bbc32f359a43e22a9a629948e7d3de717d30907c06bf271c49a0b9"
+    },
+    {
+      "rowId": "AC-3.7-N01",
+      "storyId": "3.7",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.7-N01's approved input bytes and boundary state, **When** OS PID, mutable uptime, display order, or namespace alone becomes identity, **Then** AC-3.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "abaec762f828784f625efca3d7f78b0c8f450af24fc1538f2f0e162b895f8ffc"
+    },
+    {
+      "rowId": "AC-3.8-P01",
+      "storyId": "3.8",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/provider-process-v1, **When** AC-3.8-P01 executes its approved input bytes, **Then** frozen SelfProcessSetV1 and ownership hints suppress exact duplicates while unrelated or escaped processes remain observable, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "bf861c2c97298e17910295910b552a7ed30abc65109e79e6822c08acfd3b5b1d"
+    },
+    {
+      "rowId": "AC-3.8-N01",
+      "storyId": "3.8",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** weak-attribution, PID-reuse, and unresolved-child fixtures, **When** process reduction reaches its cut, **Then** weak evidence never suppresses, PID reuse yields distinct identity, and unresolved internal cleanup synthesizes `worker-timeout` without exposing or reading the child, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "246efc50b8b20aafeace30cd83f97296b8dd4bf410c32dbb2a4b678ad7da96cf"
+    },
+    {
+      "rowId": "AC-3.9-P01",
+      "storyId": "3.9",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/collection-candidate-v1, **When** AC-3.9-P01 executes its approved input bytes, **Then** late/superseded reports cannot alter frozen candidate bytes and candidate creation performs no Snapshot CAS, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "55f71a5f556d4fe7233ae0b3a80053d79365909f0cf30da4d68fd05db1d0a58e"
+    },
+    {
+      "rowId": "AC-3.9-N01",
+      "storyId": "3.9",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.9-N01's approved input bytes and boundary state, **When** a Collector, worker reap, reducer retry, or display layer rewrites candidate truth, **Then** AC-3.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "ef9da66e9b811d337b8503915cf06012869926591337e291b603ebe284b04460"
+    },
+    {
+      "rowId": "AC-3.10-P01",
+      "storyId": "3.10",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/collection-obligation-v1, **When** obligation policy is compiled, **Then** invoking-user cron, /etc cron, system/user systemd, and visible direct processes are required; root cron is optional-promotable; Docker and PM2 are optional until detection or active Promise; other-user systemd and PM2 are not-applicable/out-of-scope; and only supported optional scopes may be promoted to required, **And** every complete, partial, unavailable, denied, timed-out, or invalid-output result retains duration, diagnostic, applicable reason, usable evidence, and withheld conclusions.\n   **And** identical input produces the identical aggregate reason and exit.",
+      "criterionSha256": "f7e8fdae172a7863453e79c3fc848fdcf3e8b28033da754f72f2cb31bf0968fe"
+    },
+    {
+      "rowId": "AC-3.10-N01",
+      "storyId": "3.10",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.10-N01's approved input bytes and boundary state, **When** incomplete evidence is treated as empty, absent, healthy, or safe, **Then** AC-3.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "1db10b4e5a16a1e7ef88166c65da573aa8969e107dda04fe3b66d14dbc40c708"
+    },
+    {
+      "rowId": "AC-3.11-P01",
+      "storyId": "3.11",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** Contract C-22 cron, systemd, Docker, PM2, and direct-process fixtures, **When** complete/denied/unavailable/hostile/invalid/cross-provider cases reduce, **Then** every identity, attribution, provenance, bound, diagnostic, isolation, and withheld conclusion is exact, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "c2116cc80a1ec8fc9b9c7490fb23aa1a6faa078bd79bca420591bd16b4ef3878"
+    },
+    {
+      "rowId": "AC-3.11-N01",
+      "storyId": "3.11",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-3.11-N01's approved input bytes and boundary state, **When** raw control bytes, unrestricted logs, secrets, row identity, or another Observation's failure leaks, **Then** AC-3.11-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "413c9954b200fef20578330b1fe8a2ef0a607f3077a42c87b13cb2b776699c68"
+    },
+    {
+      "rowId": "AC-4.1-P01",
+      "storyId": "4.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-correlation-v1, **When** AC-4.1-P01 executes its approved input bytes, **Then** exact Provider identity or locator anchors and ordered secondary evidence produce deterministic edges without summing or UI influence, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "5dc60de5b664eae8f06d57c4b09958b4e33a46727beffb2921a1b194d51d1b19"
+    },
+    {
+      "rowId": "AC-4.1-N01",
+      "storyId": "4.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.1-N01's approved input bytes and boundary state, **When** provider/anchor conflict, equal maxima, weak name-only evidence, or later state lookup occurs, **Then** AC-4.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "de881383737d0de85b85c608e1ed35eddb6a051dbac55a3c114b483436b7c3f1"
+    },
+    {
+      "rowId": "AC-4.2-P01",
+      "storyId": "4.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-outcomes-v1, **When** AC-4.2-P01 executes its approved input bytes, **Then** healthy requires intended exact count and sufficient evidence; broken requires sufficient absence; otherwise unresolved remains explicit, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "f7f62639332d4fe4436f81f873659371aa1ceaa56ec622a17569d4cccc739707"
+    },
+    {
+      "rowId": "AC-4.2-N01",
+      "storyId": "4.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.2-N01's approved input bytes and boundary state, **When** Collector failure, near match, expired Lease, or conflicting identity is presented as healthy/broken certainty, **Then** AC-4.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "d58ebd1d2a0171320e0dc0e8ab372b4c4ccdc871f240513aae2fb8b9d8d0826a"
+    },
+    {
+      "rowId": "AC-4.3-P01",
+      "storyId": "4.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-orphan-duplicate-v1, **When** AC-4.3-P01 executes its approved input bytes, **Then** all duplicate members retain identity and labels while excess count is intended-count arithmetic only, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "6809e82306df447798d60afb0af2a19f94d7d1edf9bf1374a6c1cd2bfc8b972c"
+    },
+    {
+      "rowId": "AC-4.3-N01",
+      "storyId": "4.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.3-N01's approved input bytes and boundary state, **When** a member is named excess, selected for deletion, or claimed Agent-created without evidence, **Then** AC-4.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "b733c4e1b0e3dcff452349b44c0984a2abae3b79aa8eb3116e3ba43df9805677"
+    },
+    {
+      "rowId": "AC-4.4-P01",
+      "storyId": "4.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-stale-hot-v1, **When** AC-4.4-P01 executes its approved input bytes, **Then** stale requires supported positive no-use evidence and hot requires enough retained timestamped samples, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "ef694634615a7054787d9203c95f6a57ac8cc46c42e620ffcab3dccd2f53eed9"
+    },
+    {
+      "rowId": "AC-4.4-N01",
+      "storyId": "4.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.4-N01's approved input bytes and boundary state, **When** missing samples, one spike, age alone, or UI color produces a label, **Then** AC-4.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "2b14b2009eeac197f955ccc878a248927a462e95edb5e20edeab8f48c44cf871"
+    },
+    {
+      "rowId": "AC-4.5-P01",
+      "storyId": "4.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/reconciliation-unmanaged-abandoned-v1, **When** AC-4.5-P01 executes its approved input bytes, **Then** each label names its exact positive and missing evidence and coexists with other findings, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "6bee273d05ee40d4a2f34807f329b0e15163e0b0eb38fddec5440d1ccb510b2b"
+    },
+    {
+      "rowId": "AC-4.5-N01",
+      "storyId": "4.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.5-N01's approved input bytes and boundary state, **When** expiry, closure, orphan, or unmanaged state triggers mutation or deletes evidence, **Then** AC-4.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "b4834fd295e9cc7b6d54ae76731183acf67da5f085219dbe1ebd3eb98b726b53"
+    },
+    {
+      "rowId": "AC-4.6-P01",
+      "storyId": "4.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/safe-to-stop-v1, **When** AC-4.6-P01 executes its approved input bytes, **Then** the same frozen truth yields identical assessment/reasons and changed refresh truth recomputes it, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "c2eac2209410ed60a41216df5caa462b53619af3f47db875e6397d387005e32a"
+    },
+    {
+      "rowId": "AC-4.6-N01",
+      "storyId": "4.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.6-N01's approved input bytes and boundary state, **When** a label, group, opaque reference, expired Lease, or prior assessment authorizes mutation, **Then** AC-4.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "b0810feee4abe44ce920c1df0c1d20a0ff28125a1d2ff5a1a4de5180bf32e5c9"
+    },
+    {
+      "rowId": "AC-4.7-P01",
+      "storyId": "4.7",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/snapshot-materialization-v1, **When** AC-4.7-P01 executes its approved input bytes, **Then** latest requested generation commits reports, diagnostics, Observations, resources, findings, Brief material, revisions, and current together, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "4c2a8d71508a06c336bf6ad51350228bfe2d1eec70dacd6fdb819488b80b8e8d"
+    },
+    {
+      "rowId": "AC-4.7-N01",
+      "storyId": "4.7",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.7-N01's approved input bytes and boundary state, **When** a superseded candidate, partial transaction, other layer, or late report attempts current, **Then** AC-4.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "01b95c1b1b3c8b150ac703045cc8f697be177f6cbdda1b9a189634ac2a2548ee"
+    },
+    {
+      "rowId": "AC-4.8-P01",
+      "storyId": "4.8",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** an eligible complete current Snapshot and the fixed baseline-acceptance fixtures, **When** the deterministic baseline command addresses that exact Snapshot, **Then** successful confirmation changes only baseline/audit and the Brief immediately recomputes new/resolved/changed/persisting with baseline/current timestamps and configured timezone, **And** refresh, exit, scheduled candidates, and actions never advance the baseline.",
+      "criterionSha256": "0755b301bc85de6029c355863113d1019cf2570992b062ea6257ebbab60714cd"
+    },
+    {
+      "rowId": "AC-4.8-N01",
+      "storyId": "4.8",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.8-N01's approved input bytes and boundary state, **When** an incomplete or incompatible Snapshot lacks every missing scope, a nonempty reason, principal, timestamp, and the exact typed word override, or when first-run/incompatible truth attempts to invent a change set, **Then** acceptance fails with baseline unchanged and no Host mutation, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "0a40f483109db9e06bf201bcf27c1befc6c869b91efcb8ec1a926d9a0bdf2737"
+    },
+    {
+      "rowId": "AC-4.9-P01",
+      "storyId": "4.9",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/brief-eight-questions-v1, **When** AC-4.9-P01 executes its approved input bytes, **Then** all BQ-1 through BQ-8 rows answer the exact question and withhold clean claims when required evidence is incomplete, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "3a75005f2220d11cb278615eb894f757876924f752631a1dda7fed90c1336d2d"
+    },
+    {
+      "rowId": "AC-4.9-N01",
+      "storyId": "4.9",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.9-N01's approved input bytes and boundary state, **When** a row is missing, renamed, double-counted, or answered from display/group state, **Then** AC-4.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "ec2c8685e4a8e78ae3a31757d01c9305b7cd18015ef3e2efba2cbb552262c857"
+    },
+    {
+      "rowId": "AC-4.10-P01",
+      "storyId": "4.10",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** Contract C-22 reconciliation fixtures, **When** every correlation, coexistence, orphan, duplicate, stale, hot, broken, abandoned, Stack, and Brief case runs, **Then** its confidence, conflicts, comparison evidence, policy, history, safety separation, grouping, and drill-down IDs are exact, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "4858e7a9dccd999eef8048ca923c6965598828a28d089b61e073b7473aee9377"
+    },
+    {
+      "rowId": "AC-4.10-N01",
+      "storyId": "4.10",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-4.10-N01's approved input bytes and boundary state, **When** a benchmark-dependent branch, group action, or hidden ambiguity is introduced, **Then** AC-4.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "fdfab3bbd7802568e8d49d552f5f96bd09872ac7e3e0e86b66a7771d4f299a1e"
+    },
+    {
+      "rowId": "AC-5.1-P01",
+      "storyId": "5.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/presentation-routing-v1, **When** AC-5.1-P01 executes its approved input bytes, **Then** bare, explicit format, TUI, deprecated fzf, help, internal worker, and namespace argv select one exact profile with clean stdout, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "ca6322e2be07d69654e530ab4f209ac7f23f7d1c8a4ca5605b74142ea1ce3eb8"
+    },
+    {
+      "rowId": "AC-5.1-N01",
+      "storyId": "5.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.1-N01's approved input bytes and boundary state, **When** invalid config, explicit TUI failure, redirect, TERM=dumb, panic, or signal could fall through or corrupt terminal, **Then** AC-5.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "974e3f0dc7d4b3ae3c786f417f5b8aa87798d0cec704bd7d2c24a4e9dc0beccf"
+    },
+    {
+      "rowId": "AC-5.2-P01",
+      "storyId": "5.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/tui-responsive-v1, **When** AC-5.2-P01 executes its approved input bytes, **Then** 120x30, 80x24, 60x20, below-minimum, and live-resize fixtures match exact component/layout rules, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "48d5abf29cd021364297c1909509d9358b40b045493b74e315fa8961652fef05"
+    },
+    {
+      "rowId": "AC-5.2-N01",
+      "storyId": "5.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.2-N01's approved input bytes and boundary state, **When** resize loses model/focus, hides modal semantics, or turns color/icon/geometry into meaning, **Then** AC-5.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "d0b2fe4360ac884d89dd2342960db12ef54e7cc5d31d510ffcd90071840cb6b9"
+    },
+    {
+      "rowId": "AC-5.3-P01",
+      "storyId": "5.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** AC-5.3-P01 executes its approved input bytes, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** `b` opens Accepted Baseline only for the selected Snapshot with Cancel initially focused, Esc performs no write, confirmation delegates that exact Snapshot to Story 4.8, and the recomputed Project view preserves identity focus, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "b3a07d36b0030060a22bfaf20c43f49c6e1d43d4e30b5c176c9770b8ca2a36ec"
+    },
+    {
+      "rowId": "AC-5.3-N01",
+      "storyId": "5.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.3-N01's approved input bytes and boundary state, **When** simple fold, NFKC, locale, lossy bytes, row-index focus, or action retargeting occurs, **Then** AC-5.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "737236f2add9934000a382bdba854121dbf9f18715eb009692869b5110f59ede"
+    },
+    {
+      "rowId": "AC-5.4-P01",
+      "storyId": "5.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/tui-detail-v1, **When** AC-5.4-P01 executes its approved input bytes, **Then** Enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggregate and missing evidence is a visible row, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "d6f99b24b475bc91b8242b3724887de7b9878d03d5fce7abff7723d0db20771c"
+    },
+    {
+      "rowId": "AC-5.4-N01",
+      "storyId": "5.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.4-N01's approved input bytes and boundary state, **When** friendly name, group, opaque reference, or raw content becomes identity/truth, **Then** AC-5.4-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "7c253cf511140f25d43ea9ee0abfb23d4943d76cbee4c0ccc44d344347a20e9a"
+    },
+    {
+      "rowId": "AC-5.5-P01",
+      "storyId": "5.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/external-boundary-v1, **When** opaque references are rendered, **Then** Plane remains authoritative for intended work, Git for code changes, and Telemetry for events/measurements; each reference is labeled display-only and never affects Runtime identity, health, reconciliation, safety, or mutation authority, **And** repeated runs over identical input produce identical typed results and evidence.",
+      "criterionSha256": "31c01e520c9a6a2334e16f7f46b001de9fe15ef613fa4c8955459176da7405e0"
+    },
+    {
+      "rowId": "AC-5.5-N01",
+      "storyId": "5.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.5-N01's approved input bytes and boundary state, **When** srvls fetches, mutates, interprets health from, reconciles with, or authorizes from any reference, **Then** AC-5.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "12eb492078fcb72655b29b9d8fb7851ed722ed3bd02807f249f616da31b782eb"
+    },
+    {
+      "rowId": "AC-5.6-P01",
+      "storyId": "5.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/tui-refresh-states-v1, **When** AC-5.6-P01 executes its approved input bytes, **Then** loading, refreshing, stale, partial-failure, unavailable-Provider, empty, and bounded-detail fixtures render exact recovery guidance, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "28daf58a50c0d8e6ca8e7dd86b073bae89d2f2e4d025f4fff1ab90bd7baabb11"
+    },
+    {
+      "rowId": "AC-5.6-N01",
+      "storyId": "5.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.6-N01's approved input bytes and boundary state, **When** refresh blocks navigation, clears current truth, advances baseline, or presents incomplete as empty, **Then** AC-5.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "78199c632e37aba16e3fbb2af9b50f28cac81dd4bea2b89c742000e1bf7c8a9f"
+    },
+    {
+      "rowId": "AC-5.7-P01",
+      "storyId": "5.7",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/tui-accessibility-v1, **When** AC-5.7-P01 executes its approved input bytes, **Then** keyboard/screen-reader, TERM=dumb, NO_COLOR, non-UTF-8, control-byte, and motion-free fixtures preserve all meaning, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "15e18f6a06d936a44179becdbbade615adb26fac73fc4a3717ee690443417f79"
+    },
+    {
+      "rowId": "AC-5.7-N01",
+      "storyId": "5.7",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.7-N01's approved input bytes and boundary state, **When** color, glyph, animation, cursor motion, large geometry, or trusted Host text is required, **Then** AC-5.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "e8fdf8105eedcfb8ef473bbd3172216fed33e444387f2983db4c13d8e564fb7f"
+    },
+    {
+      "rowId": "AC-5.8-P01",
+      "storyId": "5.8",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** valid layered config plus one invalid field fixture, **When** AC-5.8-P01 runs `config explain` and startup validation, **Then** success and error records include field, redacted value, source, type, range, precedence, default, correction, and restart-required guidance before TUI/collection/SQLite/mutation, while question-mark/Esc restores prior focus, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "38dac2be44b7facd4b8bbc426acc3dd9fefc084fa9fdab075d09cfebba1a8945"
+    },
+    {
+      "rowId": "AC-5.8-N01",
+      "storyId": "5.8",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-5.8-N01's approved input bytes and boundary state, **When** help omits a key/safety/linear/exit rule or config silently clamps/hides a lower source, **Then** AC-5.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "66e79ec1d31d72a10ad148bdd138624e003449418c8c426404f70cb3d04f7898"
+    },
+    {
+      "rowId": "AC-5.9-P01",
+      "storyId": "5.9",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** every read-only component, finding-marker, voice, hostile-text, geometry, and Contract C-24 DVS-01..DVS-12 golden, **When** AC-5.9-P01 renders each isolated state for 30 iterations, **Then** every mapped component/voice/DESIGN row matches approved bytes and UX-BUD-1/2/3/7 p95 passes without running an end-to-end route, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "fd00af0bec593a73bf88a725a183d8f54fe6cfb490fef308d788a73aeba6153b"
+    },
+    {
+      "rowId": "AC-5.9-N01",
+      "storyId": "5.9",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** AC-5.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "6fdf9ed2fd538b314fd63ba71e630541856f87a664be5da9eefdaafa390c5dd9"
+    },
+    {
+      "rowId": "AC-5.10-P01",
+      "storyId": "5.10",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** a partial morning Snapshot, Accepted Baseline, unmatched Promise and Observation, and Stack/Ungrouped evidence, **When** the Operator follows Brief \u2192 filter \u2192 refresh \u2192 inspect \u2192 baseline \u2192 return \u2192 exit in TUI and `brief --linear`, **Then** committed truth remains navigable, every withheld reason and drill-down identity is visible, baseline changes only on confirmation, and no Host mutation occurs, **And** AC-5.10-P01 pins exact state/line bytes and exits.",
+      "criterionSha256": "0af29f8be5b213a89153a89b3a1b6c70a1ddcd842148ec430f99b6fdccc7085b"
+    },
+    {
+      "rowId": "AC-5.10-N01",
+      "storyId": "5.10",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** resize, hostile text, filtered-empty, Provider timeout, incompatible baseline, and redirected-output cuts, **When** the same journey runs, **Then** focus/identity persist, recovery guidance is explicit, redirected output stays non-TUI, and the terminal restores, **And** AC-5.10-N01 pins each result and forbids `--fzf-lines`.",
+      "criterionSha256": "5be00210d0fb405541d1dfe77e711b4917889a7abcccd2123d35389aac6295df"
+    },
+    {
+      "rowId": "AC-6.1-P01",
+      "storyId": "6.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-kind-v1, **When** AC-6.1-P01 executes its approved input bytes, **Then** all Provider-by-kind cells and lowercase encodings match the complete matrix, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "736af0e07a032d8c50f4c0385034056c8f84c35a0bfe53b555f421031cc7445b"
+    },
+    {
+      "rowId": "AC-6.1-N01",
+      "storyId": "6.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.1-N01's approved input bytes and boundary state, **When** signal, alias, unknown, wrong case, provider-local enum, or unsupported cell is accepted, **Then** AC-6.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "62a4c84049ade3cc7061cffd0d21558025e3d93e3ff7cafddf4416552ce33514"
+    },
+    {
+      "rowId": "AC-6.2-P01",
+      "storyId": "6.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-menu-v1, **When** AC-6.2-P01 executes its approved input bytes, **Then** supported/unsafe/unknown/stale/pending cells render exactly and accelerators enter the same plan path, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "32aeb7406cf2d68e8dfc4ea9f086aafaee183506f03ce97d8e076be0d5777321"
+    },
+    {
+      "rowId": "AC-6.2-N01",
+      "storyId": "6.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.2-N01's approved input bytes and boundary state, **When** row, name, group, cron, incomplete identity, or unsupported action widens a target, **Then** AC-6.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "02a053eff75cc5d9eac775f14eae9aadd00537b22028eb9fabcd69f50f033454"
+    },
+    {
+      "rowId": "AC-6.3-P01",
+      "storyId": "6.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-plan-confirmation-v1, **When** AC-6.3-P01 executes its approved input bytes, **Then** Start, Restart, Stop, Disable, Delete and every safety state select the exact availability/token/focus rule, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "f6e5ed96097cc88a5ed55e4e2806e8f7a7ea196777f7bf0869bb5f963f8aa08b"
+    },
+    {
+      "rowId": "AC-6.3-N01",
+      "storyId": "6.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.3-N01's approved input bytes and boundary state, **When** OperationId is allocated, Cancel is not focused, Esc submits, or confirmation can be bypassed, **Then** AC-6.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "6f93370188c0878d4890dc48b7920ff010841b2ed50987b686d1e0521ea5a57a"
+    },
+    {
+      "rowId": "AC-6.4-P01",
+      "storyId": "6.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** Contract C-05 confirmation has completed, **When** immediate revalidation preserves exact identity/capability/generation/policy/BootIdentity, **Then** safe submits, acknowledged unknown submits, unsafe refuses, and Promise-origin Start treats stop safety as not-applicable; all stale/reused/missing/ambiguous/expired drift refuses with no launch, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "812818196b20c6dc34c9d28b6f5a3d633e507f1a70527b045672cfb5ef0f763c"
+    },
+    {
+      "rowId": "AC-6.4-N01",
+      "storyId": "6.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** display-only, cached, post-deadline, or identity-drift evidence, **When** revalidation runs, **Then** pre-launch drift returns `refused`/`stale-identity` with no mutation and unsafe remains unavailable, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "71b4cf33ee143a4e170880aca9f6c12f15708fe3581bc1bcd3530af8f1dbb175"
+    },
+    {
+      "rowId": "AC-6.5-P01",
+      "storyId": "6.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-pool-v1, **When** AC-6.5-P01 executes its approved input bytes, **Then** available slots reserve deterministically and saturation returns pre-launch refusal without creating a running task, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "d79a23b519d5c8e4142fa964fee55885cf57f85ca730226c76f809bb7a33bdac"
+    },
+    {
+      "rowId": "AC-6.5-N01",
+      "storyId": "6.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.5-N01's approved input bytes and boundary state, **When** collection slots, late admission, hidden queue, starvation, or Provider launch consumes capacity, **Then** AC-6.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "dd648d64f5f1559ba0405c2ff643ca36393e025340bb915d9b6e2f984001f069"
+    },
+    {
+      "rowId": "AC-6.6-P01",
+      "storyId": "6.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-admission-v1, **When** AC-6.6-P01 executes its approved input bytes, **Then** retry returns the same operation and phase/evidence transitions are gap-free and architecture-native, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "f49826fc769745f0fa4fd2f9c05d75da59a8b58e9ee41b35c095723e80522509"
+    },
+    {
+      "rowId": "AC-6.6-N01",
+      "storyId": "6.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** duplicate-target, expired-plan, and phase-order fixtures, **When** admission runs, **Then** duplicate returns `refused`/`duplicate-operation`, expiry returns `refused`/`plan-expired` requiring a new plan, and no launch precedes `launch-authorized`, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "cb2d732324189a73b8744358b0b3d76daa399e639a5b0416e241c90087e1942f"
+    },
+    {
+      "rowId": "AC-6.7-P01",
+      "storyId": "6.7",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** Contract C-18 fixtures for every collector and executor, **When** each adapter runs, **Then** it uses its absolute allowlist or in-process API, cwd `/`, minimal environment, `sudo -n` only, redacted argv/diagnostics, and distinct `denied` versus execution-error results while recording LaunchReceiptV1, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "e23c1e00aa60afc0371a827eef63d757426e105c4d9a9602f8af4d49f28f65a5"
+    },
+    {
+      "rowId": "AC-6.7-N01",
+      "storyId": "6.7",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** inherited PATH/locale/shell/credential, interactive sudo, wrong cwd, non-allowlisted executable, or unredacted-secret fixtures, **When** an adapter runs, **Then** it produces the architecture-native missing-executable, unsupported-capability, daemon-unavailable, permission-denied, timeout, invalid-output, or nonzero-status result without mutation, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "73e3a9b4ce00a229cb15767f4ff5c3f522edc781b62d67fd978d07cc3062ce4d"
+    },
+    {
+      "rowId": "AC-6.8-P01",
+      "storyId": "6.8",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-status-surface-v1, **When** AC-6.8-P01 executes its approved input bytes, **Then** 100-ms submit acknowledgement and periodic phase updates retain exact operation/target and durable repository truth, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "db97acc2dcce561c2791a0b0c8b9279ef8227e92be6d03d3031f58b8e625ab02"
+    },
+    {
+      "rowId": "AC-6.8-N01",
+      "storyId": "6.8",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.8-N01's approved input bytes and boundary state, **When** focus move, refresh, resize, repeated key, or concurrent operation misattributes or hides status, **Then** AC-6.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "1b36f88649326f48ef7452264358a3d9106e5ff43494e7adb9d9e7babbeaa89b"
+    },
+    {
+      "rowId": "AC-6.9-P01",
+      "storyId": "6.9",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-outcome-v1, **When** AC-6.9-P01 executes its approved input bytes, **Then** every verification predicate and race resolves to exactly one ordered outcome with evidence, reason, and next safe step, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "de9ba91f61dc1488acfc450a0ad1a319dc7afb3ea623e3ab2a70a24d08e089fc"
+    },
+    {
+      "rowId": "AC-6.9-N01",
+      "storyId": "6.9",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** command-exit-only, diagnostic-alias, and post-launch replacement fixtures, **When** verification runs, **Then** exit alone never verifies and replacement returns `executed-unverified` with stale-identity evidence under the five-outcome precedence, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "9de8c6812fdeb5cd6098cf0bc9a9ce9a096e178329d42df44d05d5c879a8a4e0"
+    },
+    {
+      "rowId": "AC-6.10-P01",
+      "storyId": "6.10",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-shutdown-recovery-v1, **When** AC-6.10-P01 executes its approved input bytes, **Then** pre-launch exit refuses; executing/verifying uncertainty resolves conservatively; storage failure keeps the owner alive until terminal truth persists, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "5d895c09732e85a777845f2eb166d02681365f887db429a5dba5116444b39d39"
+    },
+    {
+      "rowId": "AC-6.10-N01",
+      "storyId": "6.10",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.10-N01's approved input bytes and boundary state, **When** q/Esc detaches, repeated signal changes truth, orderly exit leaves a nonterminal operation, or mutation replays, **Then** AC-6.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "2ee1fcd596f023a352d39f4cfc146a6e97499ddbcba84b0801f9e448eb65fafc"
+    },
+    {
+      "rowId": "AC-6.11-P01",
+      "storyId": "6.11",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/action-linear-machine-v1, **When** AC-6.11-P01 executes its approved input bytes, **Then** TUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, outcome, evidence, and reasons, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "936eb4d83472d48b02add9a9be4fedb8c374a872a91811e76534de033f5de3ce"
+    },
+    {
+      "rowId": "AC-6.11-N01",
+      "storyId": "6.11",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.11-N01's approved input bytes and boundary state, **When** a surface renames a kind/outcome, accepts raw stdin, emits ANSI/progress, or bypasses confirmation, **Then** AC-6.11-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "8d3fda9c9323b21882cf87fe06fe72ca05615202a37434a490ff651d79806ab1"
+    },
+    {
+      "rowId": "AC-6.12-P01",
+      "storyId": "6.12",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** isolated TUI/TERM=dumb/NO_COLOR/modal/active-operation fixtures, **When** AC-6.12-P01 renders confirmation, help, pending disposition, and accessibility states, **Then** no privilege prompt occurs, active status remains visible, and exact 100 ms submit/100 ms key/1,000 ms progress limits pass without executing the complete action journey, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "7eb63b898fa63d2178204caa0e390290c0bcd2cc5950174aca2caafcf6b93a4a"
+    },
+    {
+      "rowId": "AC-6.12-N01",
+      "storyId": "6.12",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-6.12-N01's approved input bytes and boundary state, **When** any UX-BUD-4/5/6, UX-IP, UX-ST action row, accessibility case, or AD-11 action row is omitted, **Then** AC-6.12-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "52536ab4f84e1e6fdcc00be9281fc76bc7e6f17b23cc5271166e9f96ac7da8fe"
+    },
+    {
+      "rowId": "AC-6.13-P01",
+      "storyId": "6.13",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** exact safe and acknowledged-unknown targets plus an Agent declaration, **When** the linear Agent path declares \u2192 leases \u2192 starts \u2192 heartbeats \u2192 reconciles healthy and the TUI and line-oriented action paths perform select \u2192 Action Menu \u2192 plan \u2192 confirm \u2192 revalidate \u2192 submit \u2192 execute \u2192 verify \u2192 inspect outcome, **Then** one Promise identity, ActionKindV1, target identity tuple, PlanId, OperationId, four durable phases, evidence chain, and five-outcome vocabulary remain byte-equivalent across surfaces, close removes the live promise, and lease expiry with a surviving observation yields Abandoned rather than healthy, **And** AC-6.13-P01 pins every transition/result/exit.",
+      "criterionSha256": "e72d9854bc92fc8bebc3e9ac619d434d988b2360b6e2dd0d2d3d4f2c4e2913d3"
+    },
+    {
+      "rowId": "AC-6.13-N01",
+      "storyId": "6.13",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** stale identity, duplicate submission, expired plan, unsafe target, refresh/navigation, signal, storage-finalization, replacement cuts, or an unresolved unknown, **When** the UJ-3/UJ-5 investigation or action journey runs, **Then** evidence navigation returns to the same Project identity with explicit safe resolution alternatives, unknown-safety defers without mutation, the exact architecture-native refusal/outcome wins, no privilege prompt or detached mutation occurs, and status remains retrievable, **And** AC-6.13-N01 pins precedence and no-write/no-replay proofs.",
+      "criterionSha256": "f15d36faa221b48c2e05fff2733db3c21ebaef399d1dd2d4e429fe711d3d6718"
+    },
+    {
+      "rowId": "AC-7.1-P01",
+      "storyId": "7.1",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/stable-toolchain-evidence.json, **When** AC-7.1-P01 executes its approved input bytes, **Then** the admitted final artifact alone binds compiler/component/manifest/source/Cargo.lock/checksum/ABI/smoke evidence, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "228b485c4bbdcfcca6fd1af58b88602614d93574dda1b8e340e0b45d4fe86fbc"
+    },
+    {
+      "rowId": "AC-7.1-N01",
+      "storyId": "7.1",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.1-N01's approved input bytes and boundary state, **When** cached 1.97.0, stale manifest, another artifact, generic ldd, or compile-before-evidence is selected, **Then** AC-7.1-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "1ef78e86da3008c2f745cac80ad61a62c1f00d21c83912a10544063f91ac3645"
+    },
+    {
+      "rowId": "AC-7.2-P01",
+      "storyId": "7.2",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/admission-record-lock.trace.json, **When** AC-7.2-P01 executes its approved input bytes, **Then** traditional [0,1) record-lock fixtures prove conflict, EINTR, owner loss, CLOEXEC, shared drain, and handoff, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "4e0b071ed48bfe4d2cdc018a3f0be26deacfb212c5244a90c1f3ec126a92ff27"
+    },
+    {
+      "rowId": "AC-7.2-N01",
+      "storyId": "7.2",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.2-N01's approved input bytes and boundary state, **When** flock/lockf/OFD, reopen/dup/stdio/inheritance/close, state sampling before drain, or detach occurs, **Then** AC-7.2-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "dfc8a789443d79502cc75832910743fc44a2a614f6f1b704cd8bf608d465ca9a"
+    },
+    {
+      "rowId": "AC-7.3-P01",
+      "storyId": "7.3",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/implementation/release-command-surface-v1, **When** AC-7.3-P01 executes its approved input bytes, **Then** each exact verb and argument set routes to one application command and deterministic non-TUI record, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "15151360971a53b5189a1bb7205e30bb6e055e536a05237a8448a7d97f15185a"
+    },
+    {
+      "rowId": "AC-7.3-N01",
+      "storyId": "7.3",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** missing, duplicate, or unknown Contract C-19 arguments, **When** any verb is parsed, **Then** it returns `invalid_arguments`/exit 2/no write and rollback confirmation accepts only the exact token `rollback <TransactionId>`, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "7c20d8afe98d0c23182cb1eed2b6163cd886763c343a3851b95192f21bf6c4b4"
+    },
+    {
+      "rowId": "AC-7.4-P01",
+      "storyId": "7.4",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** tests/fixtures/implementation/consumer-discovery-v1, **When** discovery readback completes, **Then** every pair-specific byte/hash/path/enablement is frozen before any preimage, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "9da3910d48ae83dcce8cfbe6b76e1c5bd22ff4a34b9973ead15ab464c4c73a55"
+    },
+    {
+      "rowId": "AC-7.4-N01",
+      "storyId": "7.4",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.4-N01's approved extra-consumer, missing-occurrence, script, and ambiguous-path fixtures, **When** preimage capture is attempted before ordered ManagedConsumerUnitContractV1 and BrownfieldConsumerPairsV1 readback completes, **Then** AC-7.4-N01 exits 1 with its approved expected-byte diff, proves an empty preimage and mutation ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "28fdecb134b8f8af173d0df96439ffd4e80346f8b70fb36b819239618109427c"
+    },
+    {
+      "rowId": "AC-7.5-P01",
+      "storyId": "7.5",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** installed-prior fixtures in tests/fixtures/implementation/upgrade-installed-prior-plan-v1, **When** planning completes, **Then** all preimages/checksums are read back before the first effect, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "aa3cecee219700957a04bc837390c8c86e58d9071f59b9e3484181d450d502d5"
+    },
+    {
+      "rowId": "AC-7.5-N01",
+      "storyId": "7.5",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.5-N01's approved input bytes and boundary state, **When** a preimage is absent/late, type alias appears, capacity is insufficient, or stage differs from admitted artifact, **Then** AC-7.5-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "f19d03c45dbc2011dd07fd58cb46388358a50659f88d1dfb1b4ed40c1ebc24cf"
+    },
+    {
+      "rowId": "AC-7.6-P01",
+      "storyId": "7.6",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** independently bound metrics and snapshot pairs, **When** rewrite completes, **Then** exactly two pair-qualified occurrences per pair differ and every other byte/property is identical, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "2e59bef60063d136e1df2cdbc16dcdce09c42e5582bde0639acb9d6066af854c"
+    },
+    {
+      "rowId": "AC-7.6-N01",
+      "storyId": "7.6",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.6-N01's approved input bytes and boundary state, **When** script/config normalization, bounded deviation, extra replacement, mutating child systemctl, or partial pair appears, **Then** AC-7.6-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "1a516a5ff366818814b45267f420a8ca85c8e7ffbb6b30b358436ecc716bb039"
+    },
+    {
+      "rowId": "AC-7.7-P01",
+      "storyId": "7.7",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/fd4-request.json, **When** AC-7.7-P01 executes its approved input bytes, **Then** forward, installed-prior recovery, and explicit rollback bind exact directional generations/artifact/schema and all four evidence classes to one attempt, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "431b13efda37095ce65b0a03dfe6fff69b4e8900d763ced0321e54ed1ce9db93"
+    },
+    {
+      "rowId": "AC-7.7-N01",
+      "storyId": "7.7",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.7-N01's approved input bytes and boundary state, **When** extra field, replay, wrong peer/owner/order/generation/hash/schema/deadline, manager change, sequence gap, or trailing byte occurs, **Then** AC-7.7-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "2e872c98c7b71cf2950b509a55adee7be6d7abc55ef20362db574f836e062b49"
+    },
+    {
+      "rowId": "AC-7.8-P01",
+      "storyId": "7.8",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** tests/fixtures/implementation/installed-prior-forward-v1, **When** the approved installed-prior rows execute, **Then** each pending/complete effect and event/revision advances in exact AD-23 order to `commit-decided` or starts pre-decision restore, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "d4767e3eb6e115178c0546203a19e8aa18fc3085adcba81b2d184bdbe430fbd2"
+    },
+    {
+      "rowId": "AC-7.8-N01",
+      "storyId": "7.8",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.8-N01's approved input bytes and boundary state, **When** a mutating child, split pair, skipped readback, forward-only evidence reuse, or terminal alias appears, **Then** AC-7.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "7d48a6bd9bf5d12bdfa98ab9fb0aaf57322b0b6ec856c63a50edda219c18df46"
+    },
+    {
+      "rowId": "AC-7.9-P01",
+      "storyId": "7.9",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** installed-prior pre-decision cuts, **When** takeover restores and validates the entire prior pair from readback, **Then** it terminalizes only `forward-failed-recovered` or `upgrade-recovery-required`, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "33fb868f5bc767905251e5ebe079a669652c71a2c4cbcfb02110422d374556ba"
+    },
+    {
+      "rowId": "AC-7.9-N01",
+      "storyId": "7.9",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.9-N01's approved input bytes and boundary state, **When** generic recovery assumes KnownGood publication, rewinds a complete effect, invents restored/failed-needs-manual, or detaches, **Then** AC-7.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "a175e295d6eaf4b680bcb352033c40745e53e028d492209400e2777b844b1469"
+    },
+    {
+      "rowId": "AC-7.10-P01",
+      "storyId": "7.10",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** tests/fixtures/implementation/installed-prior-known-good-v1, **When** the approved installed-prior publication/ready/commit rows execute, **Then** publication happens only after decision and no extra pointer field exists; resumed cuts preserve the sole canonical candidate, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "afc20d851e06dc8e935a9b9b8bacbdc31e37fa541d44e2b4a9a4ae4b7be812a9"
+    },
+    {
+      "rowId": "AC-7.10-N01",
+      "storyId": "7.10",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.10-N01's approved input bytes and boundary state, **When** policy/evidence extension, pre-decision publish, older accidental selection, or ready-before-readback occurs, **Then** AC-7.10-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "0c4b0af0a2a69683383fed91f68cefcd378dbbcf3f100306034c59a25aaa40e6"
+    },
+    {
+      "rowId": "AC-7.11-P01",
+      "storyId": "7.11",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** tests/fixtures/implementation/first-install-plan-v1/revision-zero.json, **When** absence planning completes, **Then** exact absence creates the sentinel and restore plan with no effects, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "3e9385a9041e151b0b0749abed9285fdfc661f571f6f03f8674d6f28d62939fc"
+    },
+    {
+      "rowId": "AC-7.11-N01",
+      "storyId": "7.11",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.11-N01's approved input bytes and boundary state, **When** foreign file/symlink, partial absence, fabricated prior binary, nonzero generation, or deletion occurs, **Then** AC-7.11-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "31a5e07d4b615b592902243b7cbdd545583a08c01f5e8f671fe3c1e954b86337"
+    },
+    {
+      "rowId": "AC-7.12-P01",
+      "storyId": "7.12",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** tests/fixtures/implementation/first-install-success-v1, **When** FirstInstall reaches `commit-decided`, **Then** it publishes KnownGood generation 1, persists/read-backs ready admission, and only then terminalizes `committed`, including every publication/ready/commit crash cut, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "52992adc146f2030ea7b4ffc49fe0754ab0629e63f04b6bbf27e3197eadac419"
+    },
+    {
+      "rowId": "AC-7.12-N01",
+      "storyId": "7.12",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** first-install recovery cuts, **When** forward execution fails, **Then** byte-total declared absence is restored and read back before `forward-failed-recovered`; a remaining sidecar/unit/enablement/path, foreign deletion, absent-binary invocation, or partial restore cannot terminalize, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "72b73feb2f24ada138ec7e8e1dc68e802e3b2cb85e6fc55306502bf4a47a7109"
+    },
+    {
+      "rowId": "AC-7.13-P01",
+      "storyId": "7.13",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** tests/fixtures/implementation/rollback-plan-v1/revision-zero.json and exact `rollback <TransactionId>` confirmation, **When** planning completes, **Then** source/target generations and retained bundle freeze while sentinel retry returns identical no-transaction result, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "d3c251a1ec7b2d43f03a88a0ba17c758ce22b557059cbfe1e34a1fd19f58b302"
+    },
+    {
+      "rowId": "AC-7.13-N01",
+      "storyId": "7.13",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.13-N01's approved input bytes and boundary state, **When** rollback repoints directly, lacks confirmation, creates work for sentinel, or reuses the forward transaction, **Then** AC-7.13-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "b26aa1dc004c8a6ac17bb4f489d4c2239fa412f9df2037ba6b0892f31fc4e9c7"
+    },
+    {
+      "rowId": "AC-7.14-P01",
+      "storyId": "7.14",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** the fixed positive fixtures in tests/fixtures/contracts/release-transaction-v1/explicit-rollback.transitions.jsonl, **When** AC-7.14-P01 executes its approved input bytes, **Then** successful rollback returns rolled-back with exact generations and preserves future reversal direction, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "c6ad169b32b5500595c41bad1803dd22d5346e389abc22b82171be9aa5985e2a"
+    },
+    {
+      "rowId": "AC-7.14-N01",
+      "storyId": "7.14",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.14-N01's approved input bytes and boundary state, **When** forward evidence substitutes for reverse evidence, old target remains KnownGood, pair is partial, or rollback alias appears, **Then** AC-7.14-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "e562883bf1c0f8cd0a0d7967a3f47e2ab4a2613716e65392d15931a3f90504df"
+    },
+    {
+      "rowId": "AC-7.15-P01",
+      "storyId": "7.15",
+      "kind": "positive",
+      "criterionMarkdown": "**Given** installed-prior, FirstInstall, upgrade, rollback, compatibility, and two-pair crash fixtures, **When** the exact final artifact runs every release journey in human/linear/JSON modes, **Then** persistent named phase lines, stdout/stderr separation, no alternate screen, stop-on-failure, KnownGood/rollback recovery copy, installed version/compatibility output, and activation-after-all-checks match approved bytes, **And** repeated runs over\n   identical input produce identical typed results and evidence.",
+      "criterionSha256": "9ba5571f4b23b19e22a5ee5be71e1f50de7f0c6703c1a7bdd51e9a4eeba5a2e2"
+    },
+    {
+      "rowId": "AC-7.15-N01",
+      "storyId": "7.15",
+      "kind": "negative",
+      "criterionMarkdown": "**Given** AC-7.15-N01's approved input bytes and boundary state, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** AC-7.15-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**\n   bash tests/validate_architecture_contracts.sh rejects any missing owning row.",
+      "criterionSha256": "b6d5d6d24f7134422df147b394f02e87606687525a26e998ca94f290ff7a2ddd"
+    }
+  ]
+}

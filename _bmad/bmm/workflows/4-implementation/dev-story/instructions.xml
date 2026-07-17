@@ -188,6 +188,11 @@
   </step>
 
   <step n="4" goal="Mark story in-progress" tag="sprint-status">
+    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+    <check if="the C-23 command exits non-zero">
+      <output>STOP: fixture approval, reviewer separation, commit ancestry, or a declared predecessor is not valid for {{story_id}}.</output>
+      <action>Do not begin implementation and do not change sprint status</action>
+    </check>
     <check if="{{sprint_status}} file exists">
       <action>Load the FULL file: {{sprint_status}}</action>
       <action>Read all development_status entries to find {{story_key}}</action>

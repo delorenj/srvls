@@ -513,6 +513,19 @@ identity, and `verdict: approved`. Production work is forbidden until that
 approval commit is an explicit dependency. The implementation may not recapture
 or update approved rows in the same change.
 
+### Contract C-24: DESIGN Visual Row Inventory
+
+The canonical DESIGN spine is addressable through these immutable golden rows:
+`DVS-01` attention prefix and severity text; `DVS-02` focus/selection anatomy;
+`DVS-03` Promise/Observation/finding marker coexistence; `DVS-04` safe/unsafe/
+unknown text plus ASCII; `DVS-05` full/compact/narrow collapse order; `DVS-06`
+below-minimum recovery; `DVS-07` modal anatomy and Cancel focus; `DVS-08`
+detail/evidence anatomy; `DVS-09` pending/progress/outcome anatomy; `DVS-10`
+NO_COLOR and TERM=dumb palette independence; `DVS-11` hostile-text escaping;
+and `DVS-12` configurable palette with no hard-coded semantic color. Story 5.9
+owns byte-exact goldens for every DVS row and Story 5.10 owns their journey
+composition.
+
 ## Machine-Checkable Coverage Registry
 
 The JSON block is normative. It explicitly distinguishes the 83 non-
@@ -601,7 +614,14 @@ requirement plus every AD-11 row.
       "NFR-15",
       "NFR-16"
     ],
-    "journeys": ["UJ-1", "UJ-2", "UJ-3", "UJ-4", "UJ-5", "UJ-6"],
+    "journeys": [
+      "UJ-1",
+      "UJ-2",
+      "UJ-3",
+      "UJ-4",
+      "UJ-5",
+      "UJ-6"
+    ],
     "uxCore83": [
       "UX-FND-1",
       "UX-FND-2",
@@ -694,7 +714,9 @@ requirement plus every AD-11 row.
       "UX-A11Y-4",
       "UX-A11Y-5"
     ],
-    "screenReader": ["SR-A11Y-1"],
+    "screenReader": [
+      "SR-A11Y-1"
+    ],
     "architecture": [
       "AD-1",
       "AD-2",
@@ -748,7 +770,9 @@ requirement plus every AD-11 row.
       "ARCH-LIM-23",
       "ARCH-LIM-24"
     ],
-    "hostProfile": ["ARCH-HOST-1"],
+    "hostProfile": [
+      "ARCH-HOST-1"
+    ],
     "supplemental": [
       "SM-1",
       "SM-2",
@@ -839,15 +863,46 @@ requirement plus every AD-11 row.
     "Story 7.15"
   ],
   "coverageByStory": {
-    "Story 1.1": ["AD-1", "AD-11", "AD-3", "FR-16"],
-    "Story 1.2": ["FR-16"],
-    "Story 1.3": ["AD-11", "AD-9", "FR-16", "NFR-14", "SM-4", "UX-FND-6"],
-    "Story 1.4": ["AD-11", "AD-13", "AD-24", "FR-16", "UX-FND-3"],
+    "Story 1.1": [
+      "AD-1",
+      "AD-11",
+      "AD-3",
+      "FR-16"
+    ],
+    "Story 1.2": [
+      "FR-16"
+    ],
+    "Story 1.3": [
+      "AD-11",
+      "AD-9",
+      "FR-16",
+      "NFR-14",
+      "SM-4",
+      "UX-FND-6"
+    ],
+    "Story 1.4": [
+      "AD-11",
+      "AD-13",
+      "AD-24",
+      "FR-16",
+      "UX-FND-3"
+    ],
     "Story 1.5": [
+      "FR-16",
+      "NFR-11",
+      "NFR-16",
       "AD-11",
       "AD-19",
       "AD-20",
       "ARCH-LIM-1",
+      "ARCH-LIM-2",
+      "ARCH-LIM-3",
+      "ARCH-LIM-4",
+      "ARCH-LIM-5",
+      "ARCH-LIM-6",
+      "ARCH-LIM-7",
+      "ARCH-LIM-8",
+      "ARCH-LIM-9",
       "ARCH-LIM-10",
       "ARCH-LIM-11",
       "ARCH-LIM-12",
@@ -858,32 +913,68 @@ requirement plus every AD-11 row.
       "ARCH-LIM-17",
       "ARCH-LIM-18",
       "ARCH-LIM-19",
-      "ARCH-LIM-2",
       "ARCH-LIM-20",
       "ARCH-LIM-21",
       "ARCH-LIM-22",
       "ARCH-LIM-23",
-      "ARCH-LIM-24",
-      "ARCH-LIM-3",
-      "ARCH-LIM-4",
-      "ARCH-LIM-5",
-      "ARCH-LIM-6",
-      "ARCH-LIM-7",
-      "ARCH-LIM-8",
-      "ARCH-LIM-9",
-      "FR-16",
-      "NFR-16"
+      "ARCH-LIM-24"
     ],
-    "Story 1.6": ["AD-11", "AD-16", "FR-16"],
-    "Story 1.7": ["AD-11", "AD-2", "FR-16", "NFR-9"],
-    "Story 1.8": ["AD-11", "FR-16", "NFR-11"],
-    "Story 1.9": ["AD-11", "FR-16", "NFR-4"],
-    "Story 1.10": ["AD-11", "FR-16", "NFR-13"],
-    "Story 2.1": ["AD-11", "FR-7"],
-    "Story 2.2": ["AD-11", "FR-1", "FR-2", "FR-7"],
-    "Story 2.3": ["AD-11", "AD-17", "FR-3", "FR-6", "FR-7", "NFR-10"],
-    "Story 2.4": ["AD-11", "FR-4", "FR-7"],
-    "Story 2.5": ["AD-11", "FR-5", "FR-7"],
+    "Story 1.6": [
+      "FR-16",
+      "NFR-2",
+      "AD-11",
+      "AD-16"
+    ],
+    "Story 1.7": [
+      "AD-11",
+      "AD-2",
+      "FR-16",
+      "NFR-9"
+    ],
+    "Story 1.8": [
+      "AD-11",
+      "FR-16",
+      "NFR-11"
+    ],
+    "Story 1.9": [
+      "AD-11",
+      "FR-16",
+      "NFR-4"
+    ],
+    "Story 1.10": [
+      "AD-11",
+      "FR-16",
+      "NFR-13"
+    ],
+    "Story 2.1": [
+      "AD-11",
+      "FR-7"
+    ],
+    "Story 2.2": [
+      "FR-1",
+      "FR-2",
+      "FR-7",
+      "NFR-9",
+      "AD-11"
+    ],
+    "Story 2.3": [
+      "AD-11",
+      "AD-17",
+      "FR-3",
+      "FR-6",
+      "FR-7",
+      "NFR-10"
+    ],
+    "Story 2.4": [
+      "AD-11",
+      "FR-4",
+      "FR-7"
+    ],
+    "Story 2.5": [
+      "AD-11",
+      "FR-5",
+      "FR-7"
+    ],
     "Story 2.6": [
       "FR-1",
       "FR-2",
@@ -894,28 +985,84 @@ requirement plus every AD-11 row.
       "FR-7",
       "NFR-7",
       "NFR-10",
+      "NFR-13",
       "UJ-2",
       "UX-IA-10",
+      "UX-CP-15",
       "UX-IP-9",
       "AD-11",
       "SM-5"
     ],
-    "Story 3.1": ["AD-11", "AD-21", "FR-14"],
-    "Story 3.2": ["AD-10", "AD-11", "AD-21", "FR-14", "NFR-3"],
-    "Story 3.3": ["AD-11", "AD-21", "AD-25", "FR-14"],
-    "Story 3.4": ["AD-11", "AD-15", "AD-21", "FR-14", "FR-8"],
-    "Story 3.5": ["AD-11", "AD-15", "AD-21", "FR-14", "FR-9"],
-    "Story 3.6": ["AD-11", "AD-15", "AD-21", "FR-10", "FR-14"],
-    "Story 3.7": ["AD-11", "AD-15", "AD-21", "FR-11", "FR-14"],
-    "Story 3.8": ["AD-11", "AD-15", "AD-21", "FR-12", "FR-14"],
-    "Story 3.9": ["AD-11", "AD-21", "FR-13", "FR-14"],
+    "Story 3.1": [
+      "FR-14",
+      "NFR-12",
+      "AD-11",
+      "AD-21"
+    ],
+    "Story 3.2": [
+      "AD-10",
+      "AD-11",
+      "AD-21",
+      "FR-14",
+      "NFR-3"
+    ],
+    "Story 3.3": [
+      "AD-11",
+      "AD-21",
+      "AD-25",
+      "FR-14"
+    ],
+    "Story 3.4": [
+      "AD-11",
+      "AD-15",
+      "AD-21",
+      "FR-14",
+      "FR-8"
+    ],
+    "Story 3.5": [
+      "AD-11",
+      "AD-15",
+      "AD-21",
+      "FR-14",
+      "FR-9"
+    ],
+    "Story 3.6": [
+      "AD-11",
+      "AD-15",
+      "AD-21",
+      "FR-10",
+      "FR-14"
+    ],
+    "Story 3.7": [
+      "AD-11",
+      "AD-15",
+      "AD-21",
+      "FR-11",
+      "FR-14"
+    ],
+    "Story 3.8": [
+      "AD-11",
+      "AD-15",
+      "AD-21",
+      "FR-12",
+      "FR-14"
+    ],
+    "Story 3.9": [
+      "AD-11",
+      "AD-21",
+      "FR-13",
+      "FR-14"
+    ],
     "Story 3.10": [
       "FR-14",
       "FR-17",
       "NFR-2",
+      "NFR-7",
+      "UX-FND-2",
       "UX-FND-4",
       "UX-IA-10",
       "UX-CP-2",
+      "UX-CP-15",
       "UX-ST-4",
       "UX-ST-5",
       "AD-11",
@@ -937,21 +1084,32 @@ requirement plus every AD-11 row.
       "NFR-3",
       "NFR-4",
       "NFR-5",
+      "NFR-11",
+      "NFR-13",
+      "UJ-2",
       "UX-IA-4",
       "UX-CP-7",
       "UX-ST-17",
       "AD-21"
     ],
-    "Story 4.1": ["AD-11", "AD-18", "FR-18", "FR-26", "NFR-1"],
-    "Story 4.2": [
+    "Story 4.1": [
+      "FR-18",
+      "FR-26",
+      "NFR-1",
+      "NFR-13",
       "AD-11",
-      "AD-18",
+      "AD-18"
+    ],
+    "Story 4.2": [
       "FR-19",
       "FR-20",
       "FR-26",
-      "SM-2",
+      "UJ-2",
       "UJ-3",
-      "UX-FND-2"
+      "UX-FND-2",
+      "AD-11",
+      "AD-18",
+      "SM-2"
     ],
     "Story 4.3": [
       "AD-11",
@@ -962,10 +1120,39 @@ requirement plus every AD-11 row.
       "SM-C1",
       "UX-CP-14"
     ],
-    "Story 4.4": ["AD-11", "AD-18", "FR-23", "FR-24", "FR-26", "UJ-5"],
-    "Story 4.5": ["AD-11", "AD-18", "FR-25", "FR-26", "SM-C3", "UX-FND-5"],
-    "Story 4.6": ["AD-11", "AD-18", "FR-26"],
-    "Story 4.7": ["AD-11", "AD-18", "AD-5", "FR-26", "FR-27"],
+    "Story 4.4": [
+      "AD-11",
+      "AD-18",
+      "FR-23",
+      "FR-24",
+      "FR-26",
+      "UJ-5"
+    ],
+    "Story 4.5": [
+      "FR-25",
+      "FR-26",
+      "UX-FND-2",
+      "UX-FND-5",
+      "AD-11",
+      "AD-18",
+      "SM-C3"
+    ],
+    "Story 4.6": [
+      "FR-26",
+      "UX-FND-2",
+      "AD-11",
+      "AD-18"
+    ],
+    "Story 4.7": [
+      "FR-26",
+      "FR-27",
+      "NFR-2",
+      "NFR-9",
+      "NFR-12",
+      "AD-5",
+      "AD-11",
+      "AD-18"
+    ],
     "Story 4.8": [
       "AD-11",
       "AD-18",
@@ -1002,6 +1189,7 @@ requirement plus every AD-11 row.
       "NFR-1",
       "UJ-3",
       "UJ-5",
+      "UX-FND-5",
       "UX-IA-2",
       "UX-CP-4",
       "AD-4",
@@ -1012,10 +1200,14 @@ requirement plus every AD-11 row.
       "FR-30",
       "FR-34",
       "NFR-6",
+      "NFR-7",
       "UX-FND-1",
+      "UX-IA-1",
       "UX-IA-10",
+      "UX-CP-15",
       "UX-IP-1",
       "UX-RP-6",
+      "UX-A11Y-5",
       "AD-7",
       "AD-11",
       "AD-14"
@@ -1031,22 +1223,46 @@ requirement plus every AD-11 row.
       "UX-RP-5"
     ],
     "Story 5.3": [
-      "AD-11",
-      "AD-8",
       "FR-31",
       "FR-34",
-      "UX-A11Y-2",
-      "UX-CP-8",
-      "UX-IA-11",
+      "UX-IA-2",
       "UX-IA-5",
+      "UX-IA-7",
+      "UX-IA-11",
+      "UX-CP-8",
+      "UX-CP-12",
+      "UX-ST-7",
+      "UX-ST-19",
       "UX-IP-2",
       "UX-IP-3",
-      "UX-ST-19",
-      "UX-ST-7"
+      "UX-IP-6",
+      "UX-A11Y-2",
+      "AD-8",
+      "AD-11"
     ],
-    "Story 5.4": ["FR-32", "FR-34", "SM-6", "UX-CP-5", "UX-CP-6", "UX-IA-3"],
-    "Story 5.5": ["AD-11", "FR-32", "FR-34"],
-    "Story 5.6": ["FR-34", "UX-ST-1", "UX-ST-2", "UX-ST-3", "UX-ST-6"],
+    "Story 5.4": [
+      "FR-32",
+      "FR-34",
+      "UX-IA-3",
+      "UX-IA-4",
+      "UX-CP-5",
+      "UX-CP-6",
+      "UX-CP-7",
+      "SM-6"
+    ],
+    "Story 5.5": [
+      "AD-11",
+      "FR-32",
+      "FR-34"
+    ],
+    "Story 5.6": [
+      "FR-34",
+      "UX-FND-4",
+      "UX-ST-1",
+      "UX-ST-2",
+      "UX-ST-3",
+      "UX-ST-6"
+    ],
     "Story 5.7": [
       "AD-11",
       "FR-33",
@@ -1084,7 +1300,6 @@ requirement plus every AD-11 row.
       "ARCH-HOST-1"
     ],
     "Story 5.10": [
-      "AD-11",
       "FR-27",
       "FR-28",
       "FR-29",
@@ -1096,9 +1311,21 @@ requirement plus every AD-11 row.
       "NFR-8",
       "NFR-13",
       "NFR-14",
-      "UJ-1"
+      "UJ-1",
+      "UX-IA-1",
+      "UX-IP-11",
+      "UX-A11Y-2",
+      "UX-A11Y-3",
+      "SR-A11Y-1",
+      "AD-11"
     ],
-    "Story 6.1": ["AD-11", "AD-22", "AD-6", "FR-36", "FR-40"],
+    "Story 6.1": [
+      "AD-11",
+      "AD-22",
+      "AD-6",
+      "FR-36",
+      "FR-40"
+    ],
     "Story 6.2": [
       "AD-22",
       "FR-35",
@@ -1122,26 +1349,49 @@ requirement plus every AD-11 row.
       "FR-26",
       "FR-37",
       "FR-40",
+      "UX-FND-4",
       "UX-ST-14",
       "UX-IP-7",
       "AD-11",
       "AD-22"
     ],
-    "Story 6.5": ["AD-11", "AD-22", "FR-40"],
+    "Story 6.5": [
+      "AD-11",
+      "AD-22",
+      "FR-40"
+    ],
     "Story 6.6": [
       "FR-39",
       "FR-40",
+      "NFR-9",
       "NFR-12",
       "UX-FND-3",
       "UX-IP-7",
       "AD-11",
       "AD-22"
     ],
-    "Story 6.7": ["FR-40", "NFR-5", "UX-IP-7", "AD-11", "AD-15", "AD-22"],
-    "Story 6.8": ["AD-22", "FR-40", "UX-CP-11", "UX-IP-7", "UX-ST-8"],
+    "Story 6.7": [
+      "FR-40",
+      "NFR-4",
+      "NFR-5",
+      "NFR-11",
+      "UX-IP-7",
+      "AD-11",
+      "AD-15",
+      "AD-22"
+    ],
+    "Story 6.8": [
+      "AD-22",
+      "FR-40",
+      "UX-CP-11",
+      "UX-IP-7",
+      "UX-ST-8"
+    ],
     "Story 6.9": [
       "FR-40",
+      "NFR-2",
       "UJ-4",
+      "UX-FND-2",
       "UX-ST-9",
       "UX-ST-10",
       "UX-ST-11",
@@ -1153,12 +1403,19 @@ requirement plus every AD-11 row.
       "AD-22",
       "SM-3"
     ],
-    "Story 6.10": ["AD-11", "AD-22", "FR-40", "UX-IP-10"],
+    "Story 6.10": [
+      "FR-40",
+      "UX-IP-10",
+      "UX-A11Y-5",
+      "AD-11",
+      "AD-22"
+    ],
     "Story 6.11": [
       "FR-40",
       "UX-IA-10",
       "UX-CP-15",
       "UX-IP-7",
+      "UX-IP-9",
       "UX-IP-11",
       "UX-A11Y-3",
       "AD-11",
@@ -1178,8 +1435,6 @@ requirement plus every AD-11 row.
       "AD-22"
     ],
     "Story 6.13": [
-      "AD-11",
-      "AD-22",
       "FR-35",
       "FR-36",
       "FR-37",
@@ -1191,47 +1446,136 @@ requirement plus every AD-11 row.
       "NFR-8",
       "NFR-12",
       "NFR-13",
+      "UJ-3",
       "UJ-4",
+      "UJ-5",
       "UX-FND-3",
       "UX-IP-7",
-      "UX-A11Y-3"
+      "UX-IP-11",
+      "UX-A11Y-2",
+      "UX-A11Y-3",
+      "SR-A11Y-1",
+      "AD-11",
+      "AD-22"
     ],
-    "Story 7.1": ["AD-11", "AD-12", "FR-42", "FR-43", "NFR-15"],
-    "Story 7.2": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.3": ["FR-43", "UX-IA-10", "AD-11", "AD-23"],
-    "Story 7.4": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.5": ["AD-23", "FR-43"],
-    "Story 7.6": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.7": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.8": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.9": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.10": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.11": ["AD-23", "FR-43"],
-    "Story 7.12": ["AD-11", "AD-23", "FR-43"],
-    "Story 7.13": ["AD-23", "FR-43"],
-    "Story 7.14": ["AD-11", "AD-23", "FR-43"],
+    "Story 7.1": [
+      "AD-11",
+      "AD-12",
+      "FR-42",
+      "FR-43",
+      "NFR-15"
+    ],
+    "Story 7.2": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.3": [
+      "FR-43",
+      "NFR-7",
+      "UX-IA-10",
+      "UX-CP-15",
+      "AD-11",
+      "AD-23"
+    ],
+    "Story 7.4": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.5": [
+      "FR-43",
+      "NFR-9",
+      "NFR-12",
+      "AD-23"
+    ],
+    "Story 7.6": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.7": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.8": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.9": [
+      "FR-43",
+      "NFR-2",
+      "AD-11",
+      "AD-23"
+    ],
+    "Story 7.10": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.11": [
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.12": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.13": [
+      "AD-23",
+      "FR-43"
+    ],
+    "Story 7.14": [
+      "AD-11",
+      "AD-23",
+      "FR-43"
+    ],
     "Story 7.15": [
       "FR-42",
       "FR-43",
+      "NFR-4",
       "NFR-9",
       "NFR-11",
+      "NFR-14",
       "NFR-15",
       "NFR-16",
       "UJ-6",
       "UX-IA-9",
       "UX-CP-16",
       "UX-IP-8",
+      "UX-A11Y-2",
       "AD-11",
       "AD-23"
     ]
   },
   "requirementCoverage": {
-    "FR-1": ["Story 2.2", "Story 2.6"],
-    "FR-2": ["Story 2.2", "Story 2.6"],
-    "FR-3": ["Story 2.3", "Story 2.6"],
-    "FR-4": ["Story 2.4", "Story 2.6"],
-    "FR-5": ["Story 2.5", "Story 2.6"],
-    "FR-6": ["Story 2.3", "Story 2.6"],
+    "FR-1": [
+      "Story 2.2",
+      "Story 2.6"
+    ],
+    "FR-2": [
+      "Story 2.2",
+      "Story 2.6"
+    ],
+    "FR-3": [
+      "Story 2.3",
+      "Story 2.6"
+    ],
+    "FR-4": [
+      "Story 2.4",
+      "Story 2.6"
+    ],
+    "FR-5": [
+      "Story 2.5",
+      "Story 2.6"
+    ],
+    "FR-6": [
+      "Story 2.3",
+      "Story 2.6"
+    ],
     "FR-7": [
       "Story 2.1",
       "Story 2.2",
@@ -1240,12 +1584,30 @@ requirement plus every AD-11 row.
       "Story 2.5",
       "Story 2.6"
     ],
-    "FR-8": ["Story 3.4", "Story 3.11"],
-    "FR-9": ["Story 3.5", "Story 3.11"],
-    "FR-10": ["Story 3.6", "Story 3.11"],
-    "FR-11": ["Story 3.7", "Story 3.11"],
-    "FR-12": ["Story 3.8", "Story 3.11"],
-    "FR-13": ["Story 3.9", "Story 3.11"],
+    "FR-8": [
+      "Story 3.4",
+      "Story 3.11"
+    ],
+    "FR-9": [
+      "Story 3.5",
+      "Story 3.11"
+    ],
+    "FR-10": [
+      "Story 3.6",
+      "Story 3.11"
+    ],
+    "FR-11": [
+      "Story 3.7",
+      "Story 3.11"
+    ],
+    "FR-12": [
+      "Story 3.8",
+      "Story 3.11"
+    ],
+    "FR-13": [
+      "Story 3.9",
+      "Story 3.11"
+    ],
     "FR-14": [
       "Story 3.1",
       "Story 3.2",
@@ -1259,7 +1621,9 @@ requirement plus every AD-11 row.
       "Story 3.10",
       "Story 3.11"
     ],
-    "FR-15": ["Story 3.11"],
+    "FR-15": [
+      "Story 3.11"
+    ],
     "FR-16": [
       "Story 1.1",
       "Story 1.2",
@@ -1273,15 +1637,42 @@ requirement plus every AD-11 row.
       "Story 1.10",
       "Story 3.11"
     ],
-    "FR-17": ["Story 3.10", "Story 3.11"],
-    "FR-18": ["Story 4.1", "Story 4.10"],
-    "FR-19": ["Story 4.2", "Story 4.10"],
-    "FR-20": ["Story 4.2", "Story 4.10"],
-    "FR-21": ["Story 4.3", "Story 4.10"],
-    "FR-22": ["Story 4.3", "Story 4.10"],
-    "FR-23": ["Story 4.4", "Story 4.10"],
-    "FR-24": ["Story 4.4", "Story 4.10"],
-    "FR-25": ["Story 4.5", "Story 4.10"],
+    "FR-17": [
+      "Story 3.10",
+      "Story 3.11"
+    ],
+    "FR-18": [
+      "Story 4.1",
+      "Story 4.10"
+    ],
+    "FR-19": [
+      "Story 4.2",
+      "Story 4.10"
+    ],
+    "FR-20": [
+      "Story 4.2",
+      "Story 4.10"
+    ],
+    "FR-21": [
+      "Story 4.3",
+      "Story 4.10"
+    ],
+    "FR-22": [
+      "Story 4.3",
+      "Story 4.10"
+    ],
+    "FR-23": [
+      "Story 4.4",
+      "Story 4.10"
+    ],
+    "FR-24": [
+      "Story 4.4",
+      "Story 4.10"
+    ],
+    "FR-25": [
+      "Story 4.5",
+      "Story 4.10"
+    ],
     "FR-26": [
       "Story 4.1",
       "Story 4.2",
@@ -1295,13 +1686,38 @@ requirement plus every AD-11 row.
       "Story 4.10",
       "Story 6.4"
     ],
-    "FR-27": ["Story 4.7", "Story 4.8", "Story 4.10", "Story 5.10"],
-    "FR-28": ["Story 4.9", "Story 4.10", "Story 5.10"],
-    "FR-29": ["Story 4.10", "Story 5.10"],
-    "FR-30": ["Story 5.1", "Story 5.10"],
-    "FR-31": ["Story 5.3", "Story 5.10"],
-    "FR-32": ["Story 5.4", "Story 5.5", "Story 5.10"],
-    "FR-33": ["Story 5.7", "Story 5.10"],
+    "FR-27": [
+      "Story 4.7",
+      "Story 4.8",
+      "Story 4.10",
+      "Story 5.10"
+    ],
+    "FR-28": [
+      "Story 4.9",
+      "Story 4.10",
+      "Story 5.10"
+    ],
+    "FR-29": [
+      "Story 4.10",
+      "Story 5.10"
+    ],
+    "FR-30": [
+      "Story 5.1",
+      "Story 5.10"
+    ],
+    "FR-31": [
+      "Story 5.3",
+      "Story 5.10"
+    ],
+    "FR-32": [
+      "Story 5.4",
+      "Story 5.5",
+      "Story 5.10"
+    ],
+    "FR-33": [
+      "Story 5.7",
+      "Story 5.10"
+    ],
     "FR-34": [
       "Story 5.1",
       "Story 5.2",
@@ -1313,11 +1729,26 @@ requirement plus every AD-11 row.
       "Story 5.8",
       "Story 5.9"
     ],
-    "FR-35": ["Story 6.2", "Story 6.13"],
-    "FR-36": ["Story 6.1", "Story 6.13"],
-    "FR-37": ["Story 6.4", "Story 6.13"],
-    "FR-38": ["Story 6.3", "Story 6.13"],
-    "FR-39": ["Story 6.6", "Story 6.13"],
+    "FR-35": [
+      "Story 6.2",
+      "Story 6.13"
+    ],
+    "FR-36": [
+      "Story 6.1",
+      "Story 6.13"
+    ],
+    "FR-37": [
+      "Story 6.4",
+      "Story 6.13"
+    ],
+    "FR-38": [
+      "Story 6.3",
+      "Story 6.13"
+    ],
+    "FR-39": [
+      "Story 6.6",
+      "Story 6.13"
+    ],
     "FR-40": [
       "Story 6.1",
       "Story 6.2",
@@ -1332,8 +1763,14 @@ requirement plus every AD-11 row.
       "Story 6.11",
       "Story 6.12"
     ],
-    "FR-41": ["Story 6.2", "Story 6.13"],
-    "FR-42": ["Story 7.1", "Story 7.15"],
+    "FR-41": [
+      "Story 6.2",
+      "Story 6.13"
+    ],
+    "FR-42": [
+      "Story 7.1",
+      "Story 7.15"
+    ],
     "FR-43": [
       "Story 7.1",
       "Story 7.2",
@@ -1351,43 +1788,182 @@ requirement plus every AD-11 row.
       "Story 7.14",
       "Story 7.15"
     ],
-    "NFR-1": ["Story 4.1", "Story 4.10"],
-    "NFR-2": ["Story 3.10", "Story 3.11"],
-    "NFR-3": ["Story 3.2", "Story 3.11"],
-    "NFR-4": ["Story 1.9", "Story 3.11"],
-    "NFR-5": ["Story 3.11", "Story 6.7", "Story 6.13"],
-    "NFR-6": ["Story 5.1", "Story 5.10"],
-    "NFR-7": ["Story 2.6", "Story 6.13"],
-    "NFR-8": ["Story 5.7", "Story 5.10", "Story 6.13"],
-    "NFR-9": ["Story 1.7", "Story 7.15"],
-    "NFR-10": ["Story 2.3", "Story 2.6"],
-    "NFR-11": ["Story 1.8", "Story 7.15"],
-    "NFR-12": ["Story 6.6", "Story 6.13"],
-    "NFR-13": ["Story 1.10", "Story 5.10", "Story 6.13"],
-    "NFR-14": ["Story 1.3", "Story 5.10"],
-    "NFR-15": ["Story 7.1", "Story 7.15"],
-    "NFR-16": ["Story 1.5", "Story 7.15"],
-    "UJ-1": ["Story 4.9", "Story 5.10"],
-    "UJ-2": ["Story 2.6"],
-    "UJ-3": ["Story 4.2", "Story 4.10"],
-    "UJ-4": ["Story 6.9", "Story 6.13"],
-    "UJ-5": ["Story 4.4", "Story 4.10"],
-    "UJ-6": ["Story 7.15"],
-    "UX-FND-1": ["Story 5.1"],
-    "UX-FND-2": ["Story 4.2"],
-    "UX-FND-3": ["Story 1.4", "Story 6.6", "Story 6.13"],
-    "UX-FND-4": ["Story 3.10"],
-    "UX-FND-5": ["Story 4.5"],
-    "UX-FND-6": ["Story 1.3"],
-    "UX-IA-1": ["Story 4.9"],
-    "UX-IA-2": ["Story 4.10", "Story 5.2"],
-    "UX-IA-3": ["Story 5.4"],
-    "UX-IA-4": ["Story 3.11"],
-    "UX-IA-5": ["Story 5.3"],
-    "UX-IA-6": ["Story 6.2"],
-    "UX-IA-7": ["Story 4.8"],
-    "UX-IA-8": ["Story 5.8"],
-    "UX-IA-9": ["Story 7.15"],
+    "NFR-1": [
+      "Story 4.1",
+      "Story 4.10"
+    ],
+    "NFR-2": [
+      "Story 1.6",
+      "Story 3.10",
+      "Story 3.11",
+      "Story 4.7",
+      "Story 6.9",
+      "Story 7.9"
+    ],
+    "NFR-3": [
+      "Story 3.2",
+      "Story 3.11"
+    ],
+    "NFR-4": [
+      "Story 1.9",
+      "Story 3.11",
+      "Story 6.7",
+      "Story 7.15"
+    ],
+    "NFR-5": [
+      "Story 3.11",
+      "Story 6.7",
+      "Story 6.13"
+    ],
+    "NFR-6": [
+      "Story 5.1",
+      "Story 5.10"
+    ],
+    "NFR-7": [
+      "Story 2.6",
+      "Story 3.10",
+      "Story 5.1",
+      "Story 6.13",
+      "Story 7.3"
+    ],
+    "NFR-8": [
+      "Story 5.7",
+      "Story 5.10",
+      "Story 6.13"
+    ],
+    "NFR-9": [
+      "Story 1.7",
+      "Story 2.2",
+      "Story 4.7",
+      "Story 6.6",
+      "Story 7.5",
+      "Story 7.15"
+    ],
+    "NFR-10": [
+      "Story 2.3",
+      "Story 2.6"
+    ],
+    "NFR-11": [
+      "Story 1.5",
+      "Story 1.8",
+      "Story 3.11",
+      "Story 6.7",
+      "Story 7.15"
+    ],
+    "NFR-12": [
+      "Story 3.1",
+      "Story 4.7",
+      "Story 6.6",
+      "Story 6.13",
+      "Story 7.5"
+    ],
+    "NFR-13": [
+      "Story 1.10",
+      "Story 2.6",
+      "Story 3.11",
+      "Story 4.1",
+      "Story 5.10",
+      "Story 6.13"
+    ],
+    "NFR-14": [
+      "Story 1.3",
+      "Story 5.10",
+      "Story 7.15"
+    ],
+    "NFR-15": [
+      "Story 7.1",
+      "Story 7.15"
+    ],
+    "NFR-16": [
+      "Story 1.5",
+      "Story 7.15"
+    ],
+    "UJ-1": [
+      "Story 4.9",
+      "Story 5.10"
+    ],
+    "UJ-2": [
+      "Story 2.6",
+      "Story 3.11",
+      "Story 4.2"
+    ],
+    "UJ-3": [
+      "Story 4.2",
+      "Story 4.10",
+      "Story 6.13"
+    ],
+    "UJ-4": [
+      "Story 6.9",
+      "Story 6.13"
+    ],
+    "UJ-5": [
+      "Story 4.4",
+      "Story 4.10",
+      "Story 6.13"
+    ],
+    "UJ-6": [
+      "Story 7.15"
+    ],
+    "UX-FND-1": [
+      "Story 5.1"
+    ],
+    "UX-FND-2": [
+      "Story 3.10",
+      "Story 4.2",
+      "Story 4.5",
+      "Story 4.6",
+      "Story 6.9"
+    ],
+    "UX-FND-3": [
+      "Story 1.4",
+      "Story 6.6",
+      "Story 6.13"
+    ],
+    "UX-FND-4": [
+      "Story 3.10",
+      "Story 5.6",
+      "Story 6.4"
+    ],
+    "UX-FND-5": [
+      "Story 4.5",
+      "Story 4.10"
+    ],
+    "UX-FND-6": [
+      "Story 1.3"
+    ],
+    "UX-IA-1": [
+      "Story 4.9",
+      "Story 5.1",
+      "Story 5.10"
+    ],
+    "UX-IA-2": [
+      "Story 4.10",
+      "Story 5.2",
+      "Story 5.3"
+    ],
+    "UX-IA-3": [
+      "Story 5.4"
+    ],
+    "UX-IA-4": [
+      "Story 3.11",
+      "Story 5.4"
+    ],
+    "UX-IA-5": [
+      "Story 5.3"
+    ],
+    "UX-IA-6": [
+      "Story 6.2"
+    ],
+    "UX-IA-7": [
+      "Story 4.8",
+      "Story 5.3"
+    ],
+    "UX-IA-8": [
+      "Story 5.8"
+    ],
+    "UX-IA-9": [
+      "Story 7.15"
+    ],
     "UX-IA-10": [
       "Story 2.6",
       "Story 3.10",
@@ -1395,54 +1971,162 @@ requirement plus every AD-11 row.
       "Story 6.11",
       "Story 7.3"
     ],
-    "UX-IA-11": ["Story 5.3"],
-    "UX-IA-12": ["Story 5.8"],
-    "UX-VT-1": ["Story 5.7", "Story 5.9"],
-    "UX-VT-2": ["Story 5.7", "Story 5.9"],
-    "UX-VT-3": ["Story 5.8", "Story 5.9"],
-    "UX-VT-4": ["Story 5.8", "Story 5.9"],
-    "UX-CP-1": ["Story 4.9"],
-    "UX-CP-2": ["Story 3.10"],
-    "UX-CP-3": ["Story 5.2"],
-    "UX-CP-4": ["Story 4.10"],
-    "UX-CP-5": ["Story 5.4"],
-    "UX-CP-6": ["Story 5.4"],
-    "UX-CP-7": ["Story 3.11"],
-    "UX-CP-8": ["Story 5.3"],
-    "UX-CP-9": ["Story 6.2"],
-    "UX-CP-10": ["Story 6.3"],
-    "UX-CP-11": ["Story 6.8"],
-    "UX-CP-12": ["Story 4.8"],
-    "UX-CP-13": ["Story 5.8"],
-    "UX-CP-14": ["Story 4.3", "Story 5.9"],
-    "UX-CP-15": ["Story 6.11"],
-    "UX-CP-16": ["Story 7.15"],
-    "UX-ST-1": ["Story 5.6"],
-    "UX-ST-2": ["Story 5.6"],
-    "UX-ST-3": ["Story 5.6"],
-    "UX-ST-4": ["Story 3.10"],
-    "UX-ST-5": ["Story 3.10"],
-    "UX-ST-6": ["Story 5.6"],
-    "UX-ST-7": ["Story 5.3"],
-    "UX-ST-8": ["Story 6.8"],
-    "UX-ST-9": ["Story 6.9"],
-    "UX-ST-10": ["Story 6.9"],
-    "UX-ST-11": ["Story 6.9"],
-    "UX-ST-12": ["Story 6.9"],
-    "UX-ST-13": ["Story 6.9"],
-    "UX-ST-14": ["Story 6.4"],
-    "UX-ST-15": ["Story 6.9"],
-    "UX-ST-16": ["Story 4.8"],
-    "UX-ST-17": ["Story 3.11"],
-    "UX-ST-18": ["Story 5.8"],
-    "UX-ST-19": ["Story 5.3"],
-    "UX-ST-20": ["Story 6.3"],
-    "UX-IP-1": ["Story 5.1"],
-    "UX-IP-2": ["Story 5.3"],
-    "UX-IP-3": ["Story 5.3"],
-    "UX-IP-4": ["Story 6.2"],
-    "UX-IP-5": ["Story 6.3"],
-    "UX-IP-6": ["Story 4.8"],
+    "UX-IA-11": [
+      "Story 5.3"
+    ],
+    "UX-IA-12": [
+      "Story 5.8"
+    ],
+    "UX-VT-1": [
+      "Story 5.7",
+      "Story 5.9"
+    ],
+    "UX-VT-2": [
+      "Story 5.7",
+      "Story 5.9"
+    ],
+    "UX-VT-3": [
+      "Story 5.8",
+      "Story 5.9"
+    ],
+    "UX-VT-4": [
+      "Story 5.8",
+      "Story 5.9"
+    ],
+    "UX-CP-1": [
+      "Story 4.9"
+    ],
+    "UX-CP-2": [
+      "Story 3.10"
+    ],
+    "UX-CP-3": [
+      "Story 5.2"
+    ],
+    "UX-CP-4": [
+      "Story 4.10"
+    ],
+    "UX-CP-5": [
+      "Story 5.4"
+    ],
+    "UX-CP-6": [
+      "Story 5.4"
+    ],
+    "UX-CP-7": [
+      "Story 3.11",
+      "Story 5.4"
+    ],
+    "UX-CP-8": [
+      "Story 5.3"
+    ],
+    "UX-CP-9": [
+      "Story 6.2"
+    ],
+    "UX-CP-10": [
+      "Story 6.3"
+    ],
+    "UX-CP-11": [
+      "Story 6.8"
+    ],
+    "UX-CP-12": [
+      "Story 4.8",
+      "Story 5.3"
+    ],
+    "UX-CP-13": [
+      "Story 5.8"
+    ],
+    "UX-CP-14": [
+      "Story 4.3",
+      "Story 5.9"
+    ],
+    "UX-CP-15": [
+      "Story 2.6",
+      "Story 3.10",
+      "Story 5.1",
+      "Story 6.11",
+      "Story 7.3"
+    ],
+    "UX-CP-16": [
+      "Story 7.15"
+    ],
+    "UX-ST-1": [
+      "Story 5.6"
+    ],
+    "UX-ST-2": [
+      "Story 5.6"
+    ],
+    "UX-ST-3": [
+      "Story 5.6"
+    ],
+    "UX-ST-4": [
+      "Story 3.10"
+    ],
+    "UX-ST-5": [
+      "Story 3.10"
+    ],
+    "UX-ST-6": [
+      "Story 5.6"
+    ],
+    "UX-ST-7": [
+      "Story 5.3"
+    ],
+    "UX-ST-8": [
+      "Story 6.8"
+    ],
+    "UX-ST-9": [
+      "Story 6.9"
+    ],
+    "UX-ST-10": [
+      "Story 6.9"
+    ],
+    "UX-ST-11": [
+      "Story 6.9"
+    ],
+    "UX-ST-12": [
+      "Story 6.9"
+    ],
+    "UX-ST-13": [
+      "Story 6.9"
+    ],
+    "UX-ST-14": [
+      "Story 6.4"
+    ],
+    "UX-ST-15": [
+      "Story 6.9"
+    ],
+    "UX-ST-16": [
+      "Story 4.8"
+    ],
+    "UX-ST-17": [
+      "Story 3.11"
+    ],
+    "UX-ST-18": [
+      "Story 5.8"
+    ],
+    "UX-ST-19": [
+      "Story 5.3"
+    ],
+    "UX-ST-20": [
+      "Story 6.3"
+    ],
+    "UX-IP-1": [
+      "Story 5.1"
+    ],
+    "UX-IP-2": [
+      "Story 5.3"
+    ],
+    "UX-IP-3": [
+      "Story 5.3"
+    ],
+    "UX-IP-4": [
+      "Story 6.2"
+    ],
+    "UX-IP-5": [
+      "Story 6.3"
+    ],
+    "UX-IP-6": [
+      "Story 4.8",
+      "Story 5.3"
+    ],
     "UX-IP-7": [
       "Story 6.3",
       "Story 6.4",
@@ -1453,40 +2137,125 @@ requirement plus every AD-11 row.
       "Story 6.11",
       "Story 6.13"
     ],
-    "UX-IP-8": ["Story 7.15"],
-    "UX-IP-9": ["Story 2.6"],
-    "UX-IP-10": ["Story 6.10"],
-    "UX-IP-11": ["Story 6.11"],
-    "UX-IP-12": ["Story 5.8"],
-    "UX-RP-1": ["Story 5.2"],
-    "UX-RP-2": ["Story 5.2"],
-    "UX-RP-3": ["Story 5.2"],
-    "UX-RP-4": ["Story 5.2"],
-    "UX-RP-5": ["Story 5.2", "Story 6.12"],
-    "UX-RP-6": ["Story 5.1"],
-    "UX-BUD-1": ["Story 5.9"],
-    "UX-BUD-2": ["Story 5.9"],
-    "UX-BUD-3": ["Story 5.9"],
-    "UX-BUD-4": ["Story 6.12"],
-    "UX-BUD-5": ["Story 6.12"],
-    "UX-BUD-6": ["Story 6.12"],
-    "UX-BUD-7": ["Story 5.9"],
-    "UX-A11Y-1": ["Story 5.7", "Story 6.12"],
-    "UX-A11Y-2": ["Story 5.3", "Story 6.12"],
-    "UX-A11Y-3": ["Story 5.9", "Story 6.11", "Story 6.13"],
-    "UX-A11Y-4": ["Story 5.7"],
-    "UX-A11Y-5": ["Story 5.7", "Story 6.12"],
-    "SR-A11Y-1": ["Story 6.12"],
-    "AD-1": ["Story 1.1"],
-    "AD-2": ["Story 1.7"],
-    "AD-3": ["Story 1.1"],
-    "AD-4": ["Story 4.10"],
-    "AD-5": ["Story 4.7"],
-    "AD-6": ["Story 6.1"],
-    "AD-7": ["Story 5.1"],
-    "AD-8": ["Story 5.3"],
-    "AD-9": ["Story 1.3"],
-    "AD-10": ["Story 3.2"],
+    "UX-IP-8": [
+      "Story 7.15"
+    ],
+    "UX-IP-9": [
+      "Story 2.6",
+      "Story 6.11"
+    ],
+    "UX-IP-10": [
+      "Story 6.10"
+    ],
+    "UX-IP-11": [
+      "Story 5.10",
+      "Story 6.11",
+      "Story 6.13"
+    ],
+    "UX-IP-12": [
+      "Story 5.8"
+    ],
+    "UX-RP-1": [
+      "Story 5.2"
+    ],
+    "UX-RP-2": [
+      "Story 5.2"
+    ],
+    "UX-RP-3": [
+      "Story 5.2"
+    ],
+    "UX-RP-4": [
+      "Story 5.2"
+    ],
+    "UX-RP-5": [
+      "Story 5.2",
+      "Story 6.12"
+    ],
+    "UX-RP-6": [
+      "Story 5.1"
+    ],
+    "UX-BUD-1": [
+      "Story 5.9"
+    ],
+    "UX-BUD-2": [
+      "Story 5.9"
+    ],
+    "UX-BUD-3": [
+      "Story 5.9"
+    ],
+    "UX-BUD-4": [
+      "Story 6.12"
+    ],
+    "UX-BUD-5": [
+      "Story 6.12"
+    ],
+    "UX-BUD-6": [
+      "Story 6.12"
+    ],
+    "UX-BUD-7": [
+      "Story 5.9"
+    ],
+    "UX-A11Y-1": [
+      "Story 5.7",
+      "Story 6.12"
+    ],
+    "UX-A11Y-2": [
+      "Story 5.3",
+      "Story 5.10",
+      "Story 6.12",
+      "Story 6.13",
+      "Story 7.15"
+    ],
+    "UX-A11Y-3": [
+      "Story 5.9",
+      "Story 5.10",
+      "Story 6.11",
+      "Story 6.13"
+    ],
+    "UX-A11Y-4": [
+      "Story 5.7"
+    ],
+    "UX-A11Y-5": [
+      "Story 5.1",
+      "Story 5.7",
+      "Story 6.10",
+      "Story 6.12"
+    ],
+    "SR-A11Y-1": [
+      "Story 5.10",
+      "Story 6.12",
+      "Story 6.13"
+    ],
+    "AD-1": [
+      "Story 1.1"
+    ],
+    "AD-2": [
+      "Story 1.7"
+    ],
+    "AD-3": [
+      "Story 1.1"
+    ],
+    "AD-4": [
+      "Story 4.10"
+    ],
+    "AD-5": [
+      "Story 4.7"
+    ],
+    "AD-6": [
+      "Story 6.1"
+    ],
+    "AD-7": [
+      "Story 5.1"
+    ],
+    "AD-8": [
+      "Story 5.3"
+    ],
+    "AD-9": [
+      "Story 1.3"
+    ],
+    "AD-10": [
+      "Story 3.2"
+    ],
     "AD-11": [
       "Story 1.1",
       "Story 1.3",
@@ -1553,9 +2322,15 @@ requirement plus every AD-11 row.
       "Story 7.14",
       "Story 7.15"
     ],
-    "AD-12": ["Story 7.1"],
-    "AD-13": ["Story 1.4"],
-    "AD-14": ["Story 5.1"],
+    "AD-12": [
+      "Story 7.1"
+    ],
+    "AD-13": [
+      "Story 1.4"
+    ],
+    "AD-14": [
+      "Story 5.1"
+    ],
     "AD-15": [
       "Story 3.4",
       "Story 3.5",
@@ -1564,8 +2339,12 @@ requirement plus every AD-11 row.
       "Story 3.8",
       "Story 6.7"
     ],
-    "AD-16": ["Story 1.6"],
-    "AD-17": ["Story 2.3"],
+    "AD-16": [
+      "Story 1.6"
+    ],
+    "AD-17": [
+      "Story 2.3"
+    ],
     "AD-18": [
       "Story 4.1",
       "Story 4.2",
@@ -1578,8 +2357,12 @@ requirement plus every AD-11 row.
       "Story 4.9",
       "Story 4.10"
     ],
-    "AD-19": ["Story 1.5"],
-    "AD-20": ["Story 1.5"],
+    "AD-19": [
+      "Story 1.5"
+    ],
+    "AD-20": [
+      "Story 1.5"
+    ],
     "AD-21": [
       "Story 3.1",
       "Story 3.2",
@@ -1624,42 +2407,114 @@ requirement plus every AD-11 row.
       "Story 7.14",
       "Story 7.15"
     ],
-    "AD-24": ["Story 1.4"],
-    "AD-25": ["Story 3.3"],
-    "ARCH-LIM-1": ["Story 1.5"],
-    "ARCH-LIM-2": ["Story 1.5"],
-    "ARCH-LIM-3": ["Story 1.5"],
-    "ARCH-LIM-4": ["Story 1.5"],
-    "ARCH-LIM-5": ["Story 1.5"],
-    "ARCH-LIM-6": ["Story 1.5"],
-    "ARCH-LIM-7": ["Story 1.5"],
-    "ARCH-LIM-8": ["Story 1.5"],
-    "ARCH-LIM-9": ["Story 1.5"],
-    "ARCH-LIM-10": ["Story 1.5"],
-    "ARCH-LIM-11": ["Story 1.5"],
-    "ARCH-LIM-12": ["Story 1.5"],
-    "ARCH-LIM-13": ["Story 1.5"],
-    "ARCH-LIM-14": ["Story 1.5"],
-    "ARCH-LIM-15": ["Story 1.5"],
-    "ARCH-LIM-16": ["Story 1.5"],
-    "ARCH-LIM-17": ["Story 1.5"],
-    "ARCH-LIM-18": ["Story 1.5"],
-    "ARCH-LIM-19": ["Story 1.5"],
-    "ARCH-LIM-20": ["Story 1.5"],
-    "ARCH-LIM-21": ["Story 1.5"],
-    "ARCH-LIM-22": ["Story 1.5"],
-    "ARCH-LIM-23": ["Story 1.5"],
-    "ARCH-LIM-24": ["Story 1.5"],
-    "ARCH-HOST-1": ["Story 5.9"],
-    "SM-1": ["Story 4.9"],
-    "SM-2": ["Story 4.2"],
-    "SM-3": ["Story 6.9"],
-    "SM-4": ["Story 1.3"],
-    "SM-5": ["Story 2.6"],
-    "SM-6": ["Story 5.4"],
-    "SM-C1": ["Story 4.3"],
-    "SM-C2": ["Story 3.10"],
-    "SM-C3": ["Story 4.5"]
+    "AD-24": [
+      "Story 1.4"
+    ],
+    "AD-25": [
+      "Story 3.3"
+    ],
+    "ARCH-LIM-1": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-2": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-3": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-4": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-5": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-6": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-7": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-8": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-9": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-10": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-11": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-12": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-13": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-14": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-15": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-16": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-17": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-18": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-19": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-20": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-21": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-22": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-23": [
+      "Story 1.5"
+    ],
+    "ARCH-LIM-24": [
+      "Story 1.5"
+    ],
+    "ARCH-HOST-1": [
+      "Story 5.9"
+    ],
+    "SM-1": [
+      "Story 4.9"
+    ],
+    "SM-2": [
+      "Story 4.2"
+    ],
+    "SM-3": [
+      "Story 6.9"
+    ],
+    "SM-4": [
+      "Story 1.3"
+    ],
+    "SM-5": [
+      "Story 2.6"
+    ],
+    "SM-6": [
+      "Story 5.4"
+    ],
+    "SM-C1": [
+      "Story 4.3"
+    ],
+    "SM-C2": [
+      "Story 3.10"
+    ],
+    "SM-C3": [
+      "Story 4.5"
+    ]
   },
   "ad11Rows": [
     {
@@ -2468,7 +3323,7 @@ So that built-in, system, user, explicit, environment, and CLI values resolve in
 
 **Implementation Boundary:** Implement AD-19 precedence/provenance and every Contract C-08 default, inclusive range, formula, and visible failure.
 
-**Requirement Mapping:** AD-11, AD-19, AD-20, ARCH-LIM-1, ARCH-LIM-10, ARCH-LIM-11, ARCH-LIM-12, ARCH-LIM-13, ARCH-LIM-14, ARCH-LIM-15, ARCH-LIM-16, ARCH-LIM-17, ARCH-LIM-18, ARCH-LIM-19, ARCH-LIM-2, ARCH-LIM-20, ARCH-LIM-21, ARCH-LIM-22, ARCH-LIM-23, ARCH-LIM-24, ARCH-LIM-3, ARCH-LIM-4, ARCH-LIM-5, ARCH-LIM-6, ARCH-LIM-7, ARCH-LIM-8, ARCH-LIM-9, FR-16, NFR-16.
+**Requirement Mapping:** FR-16, NFR-11, NFR-16, AD-11, AD-19, AD-20, ARCH-LIM-1, ARCH-LIM-2, ARCH-LIM-3, ARCH-LIM-4, ARCH-LIM-5, ARCH-LIM-6, ARCH-LIM-7, ARCH-LIM-8, ARCH-LIM-9, ARCH-LIM-10, ARCH-LIM-11, ARCH-LIM-12, ARCH-LIM-13, ARCH-LIM-14, ARCH-LIM-15, ARCH-LIM-16, ARCH-LIM-17, ARCH-LIM-18, ARCH-LIM-19, ARCH-LIM-20, ARCH-LIM-21, ARCH-LIM-22, ARCH-LIM-23, ARCH-LIM-24.
 
 **Dependencies:** Story 1.4.
 
@@ -2491,7 +3346,7 @@ So that fresh and existing databases accept only the exact WAL, synchronous, for
 
 **Implementation Boundary:** Implement Contract C-07 path, modes, pragma readbacks, versioned schema, exclusive forward migrations under BEGIN IMMEDIATE, pre-migration backup, integrity/foreign-key checks, crash restart, and invariant-preserving read-only recovery.
 
-**Requirement Mapping:** AD-11, AD-16, FR-16.
+**Requirement Mapping:** FR-16, NFR-2, AD-11, AD-16.
 
 **Dependencies:** Story 1.5.
 
@@ -2633,7 +3488,7 @@ So that valid declare/revise returns the original PromiseId and Lease on retry w
 
 **Implementation Boundary:** Persist complete required intent, config provenance, Contract C-15 expected-revision CAS, event sequence, caller idempotency, deterministic line-oriented human output, and CanonicalJsonV1 results.
 
-**Requirement Mapping:** AD-11, FR-1, FR-2, FR-7.
+**Requirement Mapping:** FR-1, FR-2, FR-7, NFR-9, AD-11.
 
 **Dependencies:** Story 2.1.
 
@@ -2725,7 +3580,7 @@ So that each command and retry maps to one documented result/exit and references
 
 **Implementation Boundary:** Expose typed argv declare, revise, query, renew, close, and validate with deterministic JSON/linear stdout, human stderr, stable framing, exits, no ambiguous stdin grammar, and the complete Contract C-22 Agent lifecycle gate.
 
-**Requirement Mapping:** FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, FR-7, NFR-7, NFR-10, UJ-2, UX-IA-10, UX-IP-9, AD-11, SM-5.
+**Requirement Mapping:** FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, FR-7, NFR-7, NFR-10, NFR-13, UJ-2, UX-IA-10, UX-CP-15, UX-IP-9, AD-11, SM-5.
 
 **Dependencies:** Story 2.5.
 
@@ -2752,7 +3607,7 @@ So that the plan fingerprint and all cuts are immutable before spawn and no late
 
 **Implementation Boundary:** Compile Contract C-16 obligations and ScopeManifestV1, compile the DispatchSchedule, then admit one CollectionPlanV1 under BEGIN IMMEDIATE with GenerationId, ClockSampleV1, Promise/policy revision cuts, and typed optional later-aggregate cuts; this story does not create baseline, operation, history, Snapshot, or current aggregates.
 
-**Requirement Mapping:** AD-11, AD-21, FR-14.
+**Requirement Mapping:** FR-14, NFR-12, AD-11, AD-21.
 
 **Dependencies:** Story 2.6.
 
@@ -2959,7 +3814,7 @@ So that default and promoted scopes retain usable successes while withheld concl
 
 **Implementation Boundary:** Apply every Contract C-16 per-scope obligation/outcome row, exact reason token, aggregate precedence, duration/diagnostic, preserved partial truth, and strict exit before CollectionCandidateV1 freezes.
 
-**Requirement Mapping:** FR-14, FR-17, NFR-2, UX-FND-4, UX-IA-10, UX-CP-2, UX-ST-4, UX-ST-5, AD-11, AD-21, SM-C2.
+**Requirement Mapping:** FR-14, FR-17, NFR-2, NFR-7, UX-FND-2, UX-FND-4, UX-IA-10, UX-CP-2, UX-CP-15, UX-ST-4, UX-ST-5, AD-11, AD-21, SM-C2.
 
 **Dependencies:** Story 3.9.
 
@@ -2982,7 +3837,7 @@ So that inspection is stable by typed ID and visibly names truncation/redaction 
 
 **Implementation Boundary:** Expose sanitized typed detail, provenance, diagnostics, redaction, earlier-of bounds, and run the Contract C-22 five-Provider consequence gate.
 
-**Requirement Mapping:** FR-8, FR-9, FR-10, FR-11, FR-12, FR-13, FR-14, FR-15, FR-16, FR-17, NFR-2, NFR-3, NFR-4, NFR-5, UX-IA-4, UX-CP-7, UX-ST-17, AD-21.
+**Requirement Mapping:** FR-8, FR-9, FR-10, FR-11, FR-12, FR-13, FR-14, FR-15, FR-16, FR-17, NFR-2, NFR-3, NFR-4, NFR-5, NFR-11, NFR-13, UJ-2, UX-IA-4, UX-CP-7, UX-ST-17, AD-21.
 
 **Dependencies:** Story 3.10.
 
@@ -3009,7 +3864,7 @@ So that exact Provider identity or locator anchors and ordered secondary evidenc
 
 **Implementation Boundary:** Run the AD-18 lexicographic exact-anchor evidence engine over only the frozen plan and candidate reports, retaining conflicts and ambiguity.
 
-**Requirement Mapping:** AD-11, AD-18, FR-18, FR-26, NFR-1.
+**Requirement Mapping:** FR-18, FR-26, NFR-1, NFR-13, AD-11, AD-18.
 
 **Dependencies:** Story 3.11.
 
@@ -3032,7 +3887,7 @@ So that healthy, broken, unresolved, and inactive remain explicit and orthogonal
 
 **Implementation Boundary:** Apply every Contract C-17 lifecycle/evidence/outcome row; unresolved is active-intent-only and expired or closed intent is inactive without erasing other findings.
 
-**Requirement Mapping:** AD-11, AD-18, FR-19, FR-20, FR-26, SM-2, UJ-3, UX-FND-2.
+**Requirement Mapping:** FR-19, FR-20, FR-26, UJ-2, UJ-3, UX-FND-2, AD-11, AD-18, SM-2.
 
 **Dependencies:** Story 4.1.
 
@@ -3101,7 +3956,7 @@ So that each label names its exact positive and missing evidence and coexists wi
 
 **Implementation Boundary:** Classify from Durable Ownership, Launch Mechanism, Lease, Heartbeat, and explicit closure evidence while retaining all truth and performing no stop.
 
-**Requirement Mapping:** AD-11, AD-18, FR-25, FR-26, SM-C3, UX-FND-5.
+**Requirement Mapping:** FR-25, FR-26, UX-FND-2, UX-FND-5, AD-11, AD-18, SM-C3.
 
 **Dependencies:** Story 4.4.
 
@@ -3124,7 +3979,7 @@ So that the same frozen truth yields identical assessment/reasons and changed re
 
 **Implementation Boundary:** Compute safe, unsafe, or unknown with identity, contradictions, missing evidence, ownership, purpose, lifetime, mechanism, policy, and provenance; recalculate after refresh.
 
-**Requirement Mapping:** AD-11, AD-18, FR-26.
+**Requirement Mapping:** FR-26, UX-FND-2, AD-11, AD-18.
 
 **Dependencies:** Story 4.5.
 
@@ -3147,7 +4002,7 @@ So that latest requested generation commits reports, diagnostics, Observations, 
 
 **Implementation Boundary:** Transform exactly one eligible CollectionCandidateV1 into architecture-native SnapshotV1 in the complete AD-16 transaction and own the only current-pointer CAS.
 
-**Requirement Mapping:** AD-11, AD-18, AD-5, FR-26, FR-27.
+**Requirement Mapping:** FR-26, FR-27, NFR-2, NFR-9, NFR-12, AD-5, AD-11, AD-18.
 
 **Dependencies:** Story 4.6.
 
@@ -3215,7 +4070,7 @@ So that identical findings produce identical grouping/order and group rows remai
 
 **Implementation Boundary:** Order attention first, infer Stack only from evidence, retain Ungrouped ambiguity, and run the complete Contract C-22 reconciliation/Brief journey gate.
 
-**Requirement Mapping:** FR-18, FR-19, FR-20, FR-21, FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-29, NFR-1, UJ-3, UJ-5, UX-IA-2, UX-CP-4, AD-4, AD-11, AD-18.
+**Requirement Mapping:** FR-18, FR-19, FR-20, FR-21, FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-29, NFR-1, UJ-3, UJ-5, UX-FND-5, UX-IA-2, UX-CP-4, AD-4, AD-11, AD-18.
 
 **Dependencies:** Story 4.9.
 
@@ -3242,7 +4097,7 @@ So that bare, explicit format, TUI, deprecated fzf, help, internal worker, and n
 
 **Implementation Boundary:** Route raw argv before effects, preserve legacy noninteractive output, enter TUI only when eligible, and use one RAII terminal owner for every exit/panic/signal path.
 
-**Requirement Mapping:** FR-30, FR-34, NFR-6, UX-FND-1, UX-IA-10, UX-IP-1, UX-RP-6, AD-7, AD-11, AD-14.
+**Requirement Mapping:** FR-30, FR-34, NFR-6, NFR-7, UX-FND-1, UX-IA-1, UX-IA-10, UX-CP-15, UX-IP-1, UX-RP-6, UX-A11Y-5, AD-7, AD-11, AD-14.
 
 **Dependencies:** Story 4.10.
 
@@ -3288,7 +4143,7 @@ So that valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Cle
 
 **Implementation Boundary:** Implement complete navigation/filter keys, deterministic facets, Contract C-02 search, identity-based focus, and the TUI Accepted-Baseline adapter: `b` opens only for the exact selected Snapshot, Cancel starts focused, Esc makes no write, and confirmed input calls Story 4.8.
 
-**Requirement Mapping:** AD-11, AD-8, FR-31, FR-34, UX-A11Y-2, UX-CP-8, UX-IA-11, UX-IA-5, UX-IP-2, UX-IP-3, UX-ST-19, UX-ST-7.
+**Requirement Mapping:** FR-31, FR-34, UX-IA-2, UX-IA-5, UX-IA-7, UX-IA-11, UX-CP-8, UX-CP-12, UX-ST-7, UX-ST-19, UX-IP-2, UX-IP-3, UX-IP-6, UX-A11Y-2, AD-8, AD-11.
 
 **Dependencies:** Story 5.2.
 
@@ -3298,7 +4153,7 @@ So that valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Cle
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** AC-5.3-P01 executes its approved input bytes, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** repeated runs over
+1. **Given** the fixed positive fixtures in tests/fixtures/implementation/tui-navigation-search-v1, **When** AC-5.3-P01 executes its approved input bytes, **Then** valid Unicode and raw-byte fixtures return stable rows and Esc/focus/Clear-all behavior matches UX-IA-11 and UX-ST-19, **And** `b` opens Accepted Baseline only for the selected Snapshot with Cancel initially focused, Esc performs no write, confirmation delegates that exact Snapshot to Story 4.8, and the recomputed Project view preserves identity focus, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** AC-5.3-N01's approved input bytes and boundary state, **When** simple fold, NFKC, locale, lossy bytes, row-index focus, or action retargeting occurs, **Then** AC-5.3-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3311,7 +4166,7 @@ So that enter/Esc/Ctrl-F/n/N/PgUp/PgDn operate within the selected typed aggrega
 
 **Implementation Boundary:** Render Promise and Observation axes, bounded evidence/provider detail, provenance, redaction, diagnostics, and exact return paths without identity merging.
 
-**Requirement Mapping:** FR-32, FR-34, SM-6, UX-CP-5, UX-CP-6, UX-IA-3.
+**Requirement Mapping:** FR-32, FR-34, UX-IA-3, UX-IA-4, UX-CP-5, UX-CP-6, UX-CP-7, SM-6.
 
 **Dependencies:** Story 5.3.
 
@@ -3356,7 +4211,7 @@ So that loading, refreshing, stale, partial-failure, unavailable-Provider, empty
 
 **Implementation Boundary:** Keep committed truth visible during loading/refresh, show generation progress, stale/partial/unavailable/empty states, and disable stale actions without optimistic mutation.
 
-**Requirement Mapping:** FR-34, UX-ST-1, UX-ST-2, UX-ST-3, UX-ST-6.
+**Requirement Mapping:** FR-34, UX-FND-4, UX-ST-1, UX-ST-2, UX-ST-3, UX-ST-6.
 
 **Dependencies:** Story 5.5.
 
@@ -3412,7 +4267,7 @@ So that question-mark/Esc restores prior focus and invalid config emits one dete
 
 **Acceptance Criteria:**
 
-1. **Given** the fixed positive fixtures in tests/fixtures/implementation/help-config-recovery-v1, **When** AC-5.8-P01 executes its approved input bytes, **Then** question-mark/Esc restores prior focus and invalid config emits one deterministic linear/JSON error before TUI, collection, SQLite, or mutation, **And** repeated runs over
+1. **Given** valid layered config plus one invalid field fixture, **When** AC-5.8-P01 runs `config explain` and startup validation, **Then** success and error records include field, redacted value, source, type, range, precedence, default, correction, and restart-required guidance before TUI/collection/SQLite/mutation, while question-mark/Esc restores prior focus, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** AC-5.8-N01's approved input bytes and boundary state, **When** help omits a key/safety/linear/exit rule or config silently clamps/hides a lower source, **Then** AC-5.8-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3435,7 +4290,7 @@ So that all UX-ST read-only states/components match immutable goldens and 30 pos
 
 **Acceptance Criteria:**
 
-1. **Given** every read-only component, finding-marker, voice, hostile-text, and geometry golden, **When** AC-5.9-P01 renders each isolated state for 30 iterations, **Then** every mapped component/voice row matches its approved bytes and UX-BUD-1/2/3/7 p95 passes without running an end-to-end route, **And** repeated runs over
+1. **Given** every read-only component, finding-marker, voice, hostile-text, geometry, and Contract C-24 DVS-01..DVS-12 golden, **When** AC-5.9-P01 renders each isolated state for 30 iterations, **Then** every mapped component/voice/DESIGN row matches approved bytes and UX-BUD-1/2/3/7 p95 passes without running an end-to-end route, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** the fixed negative and boundary fixtures for this story, **When** a golden is self-recoded, benchmark evidence is incomplete, or any mapped read-only state/budget row is missing, **Then** AC-5.9-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
@@ -3448,7 +4303,7 @@ So that I can enter, understand withheld truth, navigate, inspect, accept a base
 
 **Implementation Boundary:** Integrate only the already-owned read-only capabilities from Stories 3.11 through 5.9 into the Contract C-22 UJ-1 path; it adds route wiring and journey tests, not new collection, reconciliation, storage, or component implementations.
 
-**Requirement Mapping:** AD-11, FR-27, FR-28, FR-29, FR-30, FR-31, FR-32, FR-33, NFR-6, NFR-8, NFR-13, NFR-14, UJ-1.
+**Requirement Mapping:** FR-27, FR-28, FR-29, FR-30, FR-31, FR-32, FR-33, NFR-6, NFR-8, NFR-13, NFR-14, UJ-1, UX-IA-1, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11.
 
 **Dependencies:** Story 5.9.
 
@@ -3542,7 +4397,7 @@ So that unchanged exact evidence authorizes submit while stale/reused/missing/am
 
 **Implementation Boundary:** After confirmation and strictly before mutation re-resolve every captured identity/capability/generation/policy/BootIdentity and recompute Safe-to-stop within ARCH-LIM-21.
 
-**Requirement Mapping:** FR-26, FR-37, FR-40, UX-ST-14, UX-IP-7, AD-11, AD-22.
+**Requirement Mapping:** FR-26, FR-37, FR-40, UX-FND-4, UX-ST-14, UX-IP-7, AD-11, AD-22.
 
 **Dependencies:** Story 6.3.
 
@@ -3588,7 +4443,7 @@ So that retry returns the same operation and phase/evidence transitions are gap-
 
 **Implementation Boundary:** Consume a valid plan by CAS, allocate OperationId only at submit, enforce exact-target/idempotency uniqueness, persist only planned/launch-authorized/executing/verifying, and implement Contract C-20 shared POSIX action lock plus persisted/read-back ActionExecutorHandoffV1 before launch.
 
-**Requirement Mapping:** FR-39, FR-40, NFR-12, UX-FND-3, UX-IP-7, AD-11, AD-22.
+**Requirement Mapping:** FR-39, FR-40, NFR-9, NFR-12, UX-FND-3, UX-IP-7, AD-11, AD-22.
 
 **Dependencies:** Story 6.5.
 
@@ -3611,7 +4466,7 @@ So that each supported matrix cell invokes only its exact D-Bus/socket/protocol/
 
 **Implementation Boundary:** Execute systemd/Docker/PM2/direct-process/Launch-Mechanism effects only in the Contract C-20 lock owner under Contracts C-10 and C-18, with direct signal encoded as stop parameters.
 
-**Requirement Mapping:** FR-40, NFR-5, UX-IP-7, AD-11, AD-15, AD-22.
+**Requirement Mapping:** FR-40, NFR-4, NFR-5, NFR-11, UX-IP-7, AD-11, AD-15, AD-22.
 
 **Dependencies:** Story 6.6.
 
@@ -3657,7 +4512,7 @@ So that every verification predicate and race resolves to exactly one ordered ou
 
 **Implementation Boundary:** Collect OperationId-correlated post-launch Provider evidence and apply Contract C-06 as the sole OperationCoordinator terminal CAS.
 
-**Requirement Mapping:** FR-40, UJ-4, UX-ST-9, UX-ST-10, UX-ST-11, UX-ST-12, UX-ST-13, UX-ST-15, UX-IP-7, AD-11, AD-22, SM-3.
+**Requirement Mapping:** FR-40, NFR-2, UJ-4, UX-FND-2, UX-ST-9, UX-ST-10, UX-ST-11, UX-ST-12, UX-ST-13, UX-ST-15, UX-IP-7, AD-11, AD-22, SM-3.
 
 **Dependencies:** Story 6.8.
 
@@ -3680,7 +4535,7 @@ So that pre-launch exit refuses; executing/verifying uncertainty resolves conser
 
 **Implementation Boundary:** Apply phase-specific cancellation and Contract C-10 no-detach behavior, consume Story 5.1 terminal restoration, and retry bounded finalization without reexecuting mutation.
 
-**Requirement Mapping:** AD-11, AD-22, FR-40, UX-IP-10.
+**Requirement Mapping:** FR-40, UX-IP-10, UX-A11Y-5, AD-11, AD-22.
 
 **Dependencies:** Story 6.9.
 
@@ -3703,7 +4558,7 @@ So that tUI, --linear, and --json share ActionKind, PlanId/OperationId, phases, 
 
 **Implementation Boundary:** Expose exact typed action plan, execute, status, acknowledgement, outcome, stdout/stderr, and exit contracts with no alternate stdin grammar.
 
-**Requirement Mapping:** FR-40, UX-IA-10, UX-CP-15, UX-IP-7, UX-IP-11, UX-A11Y-3, AD-11, AD-22.
+**Requirement Mapping:** FR-40, UX-IA-10, UX-CP-15, UX-IP-7, UX-IP-9, UX-IP-11, UX-A11Y-3, AD-11, AD-22.
 
 **Dependencies:** Story 6.10.
 
@@ -3747,9 +4602,9 @@ As a srvls Operator,
 I want one complete exact-target action journey,
 So that plan, confirmation, admission, execution, verification, and outcome remain one inspectable operation across every surface.
 
-**Implementation Boundary:** Integrate Stories 6.1 through 6.12 into the Contract C-22 UJ-4 and UX-IP-7 path; it adds journey routing and parity tests without reimplementing enum, plan, pool, executor, persistence, verification, or presentation owners.
+**Implementation Boundary:** Integrate Stories 2.1 through 2.8 and 6.1 through 6.12 into the Contract C-22 UJ-2/UJ-3/UJ-4/UJ-5 and UX-IP-7 paths; add journey routing and parity tests without reimplementing lifecycle, enum, plan, pool, executor, persistence, verification, or presentation owners.
 
-**Requirement Mapping:** AD-11, AD-22, FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-4, UX-FND-3, UX-IP-7, UX-A11Y-3.
+**Requirement Mapping:** FR-35, FR-36, FR-37, FR-38, FR-39, FR-41, NFR-5, NFR-7, NFR-8, NFR-12, NFR-13, UJ-3, UJ-4, UJ-5, UX-FND-3, UX-IP-7, UX-IP-11, UX-A11Y-2, UX-A11Y-3, SR-A11Y-1, AD-11, AD-22.
 
 **Dependencies:** Story 6.12.
 
@@ -3759,8 +4614,8 @@ So that plan, confirmation, admission, execution, verification, and outcome rema
 
 **Acceptance Criteria:**
 
-1. **Given** exact safe and acknowledged-unknown targets, **When** TUI and linear paths perform select → Action Menu → plan → confirm → revalidate → submit → execute → verify → inspect outcome, **Then** one ActionKindV1, identity tuple, PlanId, OperationId, four durable phases, evidence chain, and five-outcome vocabulary remain byte-equivalent across surfaces, **And** AC-6.13-P01 pins every transition/result/exit.
-2. **Given** stale identity, duplicate submission, expired plan, unsafe target, refresh/navigation, signal, storage-finalization, and replacement cuts, **When** the journey runs, **Then** the exact architecture-native refusal/outcome wins, no privilege prompt or detached mutation occurs, and status remains retrievable, **And** AC-6.13-N01 pins precedence and no-write/no-replay proofs.
+1. **Given** exact safe and acknowledged-unknown targets plus an Agent declaration, **When** the linear Agent path declares → leases → starts → heartbeats → reconciles healthy and the TUI and line-oriented action paths perform select → Action Menu → plan → confirm → revalidate → submit → execute → verify → inspect outcome, **Then** one Promise identity, ActionKindV1, target identity tuple, PlanId, OperationId, four durable phases, evidence chain, and five-outcome vocabulary remain byte-equivalent across surfaces, close removes the live promise, and lease expiry with a surviving observation yields Abandoned rather than healthy, **And** AC-6.13-P01 pins every transition/result/exit.
+2. **Given** stale identity, duplicate submission, expired plan, unsafe target, refresh/navigation, signal, storage-finalization, replacement cuts, or an unresolved unknown, **When** the UJ-3/UJ-5 investigation or action journey runs, **Then** evidence navigation returns to the same Project identity with explicit safe resolution alternatives, unknown-safety defers without mutation, the exact architecture-native refusal/outcome wins, no privilege prompt or detached mutation occurs, and status remains retrievable, **And** AC-6.13-N01 pins precedence and no-write/no-replay proofs.
 
 ## Epic 7: Upgrade and recover the installed pair without split truth
 
@@ -3820,7 +4675,7 @@ So that each exact verb and argument set routes to one application command and d
 
 **Implementation Boundary:** Parse exactly Contract C-19 `release install|upgrade|validate|status|rollback` argv/result/exit/confirmation rows without mutation implementation.
 
-**Requirement Mapping:** FR-43, UX-IA-10, AD-11, AD-23.
+**Requirement Mapping:** FR-43, NFR-7, UX-IA-10, UX-CP-15, AD-11, AD-23.
 
 **Dependencies:** Story 7.2.
 
@@ -3855,7 +4710,7 @@ So that ordered unit-contract and pair readback names every byte/hash/path/enabl
 
 1. **Given** tests/fixtures/implementation/consumer-discovery-v1, **When** discovery readback completes, **Then** every pair-specific byte/hash/path/enablement is frozen before any preimage, **And** repeated runs over
    identical input produce identical typed results and evidence.
-2. **Given** an extra consumer, missing occurrence, script, or ambiguous path, **When** preimage capture begins before ordered ManagedConsumerUnitContractV1 and BrownfieldConsumerPairsV1 readback completes, **Then** the owning acceptance test rejects the implementation and proves no preimage or mutation occurred, **And**
+2. **Given** AC-7.4-N01's approved extra-consumer, missing-occurrence, script, and ambiguous-path fixtures, **When** preimage capture is attempted before ordered ManagedConsumerUnitContractV1 and BrownfieldConsumerPairsV1 readback completes, **Then** AC-7.4-N01 exits 1 with its approved expected-byte diff, proves an empty preimage and mutation ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.
 
 ### Story 7.5: UpgradeTransaction planning, preimages, and staging
@@ -3866,7 +4721,7 @@ So that all preimages and checksums are immutable/read back before the first eff
 
 **Implementation Boundary:** Create architecture-native UpgradeTransactionV1 from ReleaseBinaryArtifactV1 and Contract C-21 ordered transaction consumers, freeze installed-prior binary/state/consumer/admission authorities, backup, and staged candidate before mutation; FirstInstall is excluded until Story 7.11.
 
-**Requirement Mapping:** AD-23, FR-43.
+**Requirement Mapping:** FR-43, NFR-9, NFR-12, AD-23.
 
 **Dependencies:** Story 7.4.
 
@@ -3958,7 +4813,7 @@ So that each generic pre-decision crash cut resumes from readback without claimi
 
 **Implementation Boundary:** Recover named installed-prior pre-decision cuts by restoring and freshly validating the entire prior pair, with exact idempotency and no reexecution; end only `forward-failed-recovered` or `upgrade-recovery-required`. KnownGood, post-decision commit, and FirstInstall cuts are excluded.
 
-**Requirement Mapping:** AD-11, AD-23, FR-43.
+**Requirement Mapping:** FR-43, NFR-2, AD-11, AD-23.
 
 **Dependencies:** Story 7.8.
 
@@ -4096,7 +4951,7 @@ So that every AD-11 release registry row and exact final-artifact Host smoke pas
 
 **Implementation Boundary:** Invoke prior story gates without re-owning them and execute both metrics and snapshot pairs together through every forward, rollback, FirstInstall, takeover, KnownGood, FD4, D-Bus, service-manager, and crash boundary using the exact final artifact.
 
-**Requirement Mapping:** FR-42, FR-43, NFR-9, NFR-11, NFR-15, NFR-16, UJ-6, UX-IA-9, UX-CP-16, UX-IP-8, AD-11, AD-23.
+**Requirement Mapping:** FR-42, FR-43, NFR-4, NFR-9, NFR-11, NFR-14, NFR-15, NFR-16, UJ-6, UX-IA-9, UX-CP-16, UX-IP-8, UX-A11Y-2, AD-11, AD-23.
 
 **Dependencies:** Story 7.14.
 
@@ -4106,7 +4961,7 @@ So that every AD-11 release registry row and exact final-artifact Host smoke pas
 
 **Acceptance Criteria:**
 
-1. **Given** the Contract C-22 installed-prior, FirstInstall, upgrade, rollback, compatibility, and two-pair crash fixtures, **When** the exact final artifact runs every release journey, **Then** installed version/compatibility output is exact and activation occurs only after ABI, storage, consumer, FD4, D-Bus, Host-smoke, and recovery checks pass, **And** repeated runs over
+1. **Given** installed-prior, FirstInstall, upgrade, rollback, compatibility, and two-pair crash fixtures, **When** the exact final artifact runs every release journey in human/linear/JSON modes, **Then** persistent named phase lines, stdout/stderr separation, no alternate screen, stop-on-failure, KnownGood/rollback recovery copy, installed version/compatibility output, and activation-after-all-checks match approved bytes, **And** repeated runs over
    identical input produce identical typed results and evidence.
 2. **Given** AC-7.15-N01's approved input bytes and boundary state, **When** a registry row, fixture, assertion, command, terminal, consumer, crash cut, or quarantine expectation is omitted, **Then** AC-7.15-N01 exits 1 with its approved expected-byte diff and an empty unauthorized-side-effect ledger, **And**
    bash tests/validate_architecture_contracts.sh rejects any missing owning row.

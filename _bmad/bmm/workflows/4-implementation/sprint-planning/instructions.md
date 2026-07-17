@@ -80,7 +80,9 @@ development_status:
 **Story file detection:**
 
 - Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
-- If exists → upgrade status to at least `ready-for-dev`
+- If it exists, run `python3 tests/validate_story_fixture_approvals.py E.S`.
+  Upgrade status to at least `ready-for-dev` only when that command exits zero;
+  otherwise retain `backlog` and report the fail-closed C-23 gate.
 
 **Preservation rule:**
 
