@@ -224,8 +224,8 @@
     </check>
 
     <check if="{{sprint_status}} file does NOT exist">
-      <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
-      <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
+      <output>🚫 No canonical sprint status exists; dependency/status authority cannot be proved.</output>
+      <action>HALT</action>
     </check>
   </step>
 

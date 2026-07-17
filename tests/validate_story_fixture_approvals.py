@@ -162,8 +162,8 @@ def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str,
         fail(f"Story {story} reviewer and fixture author commits are not distinct")
     for commit in commits + [approval_commit]:
         git("cat-file", "-e", f"{commit}^{{commit}}")
-    if len({author_email(commit) for commit in commits}) != 2:
-        fail(f"Story {story} reviewer and fixture author Git identities are not distinct")
+    if len({committer_email(commit) for commit in commits}) != 2:
+        fail(f"Story {story} reviewer and fixture author Git committer identities are not distinct")
     if committer_email(approval_commit) != committer_email(data["reviewerCommit"]):
         fail(f"Story {story} approval commit is not committed by the declared reviewer")
     if any(subprocess.run(["git", "merge-base", "--is-ancestor", commit, approval_commit], cwd=ROOT).returncode for commit in commits):
@@ -194,6 +194,8 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
     completion_commit = committed_clean(completion_path)
     if data["approvalCommit"] != approval_commit or not SHA.fullmatch(data["implementationCommit"]):
         fail(f"Story {story} completion does not bind its approval and implementation")
+    if len({approval_commit, data["implementationCommit"], completion_commit}) != 3:
+        fail(f"Story {story} approval, implementation, and completion commits are not distinct")
     git("cat-file", "-e", f"{data['implementationCommit']}^{{commit}}")
     if subprocess.run(["git", "merge-base", "--is-ancestor", approval_commit, data["implementationCommit"]], cwd=ROOT).returncode:
         fail(f"Story {story} implementation does not descend from approval")

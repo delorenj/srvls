@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
+import json
+import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -48,4 +52,81 @@ require("<action>HALT</action>" in create and "<action>HALT</action>" in dev,
         "workflow nonzero transition lacks HALT")
 require("C-23 validity dominates preservation" in sprint,
         "sprint preservation can bypass approval")
+
+
+def hermetic_git_gate() -> None:
+    """Execute one valid approval/completion/dependency chain, then mutate it."""
+    with tempfile.TemporaryDirectory() as temporary:
+        root = Path(temporary)
+        subprocess.run(["git", "init", "-q", "--object-format=sha256"], cwd=root, check=True)
+
+        def commit(message: str, email: str) -> str:
+            env = os.environ | {
+                "GIT_AUTHOR_NAME": email, "GIT_AUTHOR_EMAIL": email,
+                "GIT_COMMITTER_NAME": email, "GIT_COMMITTER_EMAIL": email,
+            }
+            subprocess.run(["git", "add", "-A"], cwd=root, check=True, env=env)
+            subprocess.run(["git", "commit", "-q", "--allow-empty", "-m", message], cwd=root, check=True, env=env)
+            return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+
+        planning = root / "_bmad-output/planning-artifacts"
+        approvals = root / "_bmad-output/implementation-artifacts/fixture-approvals"
+        oracle = root / "tests/fixtures/story-v1"
+        planning.mkdir(parents=True); approvals.mkdir(parents=True); oracle.mkdir(parents=True)
+        (planning / "epics.md").write_text(
+            "### Story 1.1: First\n**Dependencies:** None.\n"
+            "**Validation Expectations:** The owning oracle is tests/fixtures/story-v1.\n\n"
+            "### Story 1.2: Second\n**Dependencies:** Story 1.1.\n"
+            "**Validation Expectations:** The owning oracle is tests/fixtures/story-v1.\n"
+        )
+        fixture = oracle / "input"; expected = oracle / "expected"
+        fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
+        fixture_commit = commit("fixtures", "fixture@example.test")
+        reviewer_commit = commit("review evidence", "reviewer@example.test")
+        rows = {
+            f"AC-{story}-{kind}": {"storyId": story, "criterionSha256": hashlib.sha256(f"{story}-{kind}".encode()).hexdigest()}
+            for story in ("1.1", "1.2") for kind in ("P01", "N01")
+        }
+        approval.ROOT, approval.EPICS, approval.APPROVALS = root, planning / "epics.md", approvals
+
+        def approval_payload(story: str) -> dict[str, object]:
+            return {
+                "schema": "srvls-fixture-approval-v1", "storyId": story,
+                "rowIds": [f"AC-{story}-P01", f"AC-{story}-N01"],
+                "criterionSha256": [rows[f"AC-{story}-P01"]["criterionSha256"], rows[f"AC-{story}-N01"]["criterionSha256"]],
+                "oracleBindings": [{
+                    "oraclePath": "tests/fixtures/story-v1", "fixturePath": "tests/fixtures/story-v1/input",
+                    "fixtureSha256": hashlib.sha256(b"input").hexdigest(),
+                    "expectedResultPath": "tests/fixtures/story-v1/expected",
+                    "expectedResultSha256": hashlib.sha256(b"expected").hexdigest(),
+                }],
+                "reviewerCommit": reviewer_commit, "fixtureAuthorCommit": fixture_commit, "verdict": "approved",
+            }
+
+        (approvals / "1.1-v1.json").write_text(json.dumps(approval_payload("1.1")))
+        approval_commit = commit("approve 1.1", "reviewer@example.test")
+        (root / "implementation").write_text("done")
+        implementation_commit = commit("implement 1.1", "implementer@example.test")
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps({
+            "schema": "srvls-story-completion-v1", "storyId": "1.1", "approvalCommit": approval_commit,
+            "implementationCommit": implementation_commit, "verdict": "completed",
+        }))
+        commit("complete 1.1", "reviewer@example.test")
+        require(approval.validate_completion("1.1", rows) == implementation_commit, "valid completion rejected")
+        (approvals / "1.2-v1.json").write_text(json.dumps(approval_payload("1.2")))
+        commit("approve 1.2", "reviewer@example.test")
+        approval.validate_assignment("1.2", rows)
+        mutated = json.loads((approvals / "1.1-completed-v1.json").read_text())
+        mutated["implementationCommit"] = mutated["approvalCommit"]
+        (approvals / "1.1-completed-v1.json").write_text(json.dumps(mutated))
+        commit("mutate false completion", "reviewer@example.test")
+        try:
+            approval.validate_completion("1.1", rows)
+        except SystemExit:
+            pass
+        else:
+            require(False, "zero-change completion mutation escaped")
+
+
+hermetic_git_gate()
 print("story approval regression mutations: PASS")
