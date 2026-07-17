@@ -42,7 +42,7 @@
     - [x] Clean-pass acceptance against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-clean-pass2; Commit: 813f472; Verdict: PASS — zero findings)**
     - [x] Clean-pass acceptance of technology and deployment contracts — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-architecture-clean-pass2; Commit: b85627f; Verdict: CHANGES REQUIRED — 1 High finding)**
     - [x] Clean-pass acceptance of two-unit implementation seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-clean-pass2; Commit: 09c5ec2; Verdict: CHANGES REQUIRED — 7 findings)**
-    - [ ] Close the clean-pass2 release, byte-totality, and edge-semantics findings — **CLAIMED by Professor Fiddlesticks (Session: prof-fiddlesticks-architecture-clean2-remediation)**
+    - [x] Close the clean-pass2 release, byte-totality, and edge-semantics findings — **COMPLETED by Professor Fiddlesticks (Session: prof-fiddlesticks-architecture-clean2-remediation; Commit: 96fc2c5)**
 
 ## Planned work
 
