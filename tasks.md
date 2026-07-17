@@ -46,6 +46,7 @@
     - [x] Pass-3 acceptance against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-clean-pass3; Commit: 64687f5; Verdict: CHANGES REQUIRED — 1 blocking finding)**
     - [x] Pass-3 acceptance of technology and deployment contracts — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-architecture-clean-pass3; Commit: be2974c; Verdict: PASS — zero findings)**
     - [x] Pass-3 acceptance of two-unit implementation seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-clean-pass3; Commit: e3e566c; Verdict: CHANGES REQUIRED — 8 blocking and 2 high findings)**
+    - [ ] Close all pass-3 interoperability, recovery, and frozen-oracle findings — **CLAIMED by Taskforce Aegis (Session: taskforce-aegis; Branch: epic-architecture-pass3-remediation)**
 
 ## Planned work
 
