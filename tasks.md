@@ -39,6 +39,9 @@
     - [x] Independently accept the integrated two-unit seams — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-final-pass; Commit: d00ca07; Verdict: CHANGES REQUIRED — 1 blocking finding)**
     - [x] Freeze the dispatch reservation schedule and remove the duplicate worker seed — **COMPLETED by Doctor Von Code (Session: doctor-von-code-architecture-schedule-remediation; Commit: 58ab39e)**
     - [x] Close the final technology acceptance findings — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-architecture-tech-remediation; Commit: 09b8a59)**
+    - [ ] Clean-pass acceptance against the complete good-spine rubric — **CLAIMED by Bartholomew the Builder (Session: bartholomew-architecture-clean-pass2)**
+    - [ ] Clean-pass acceptance of technology and deployment contracts — **CLAIMED by WidgetWhisperer (Session: widgetwhisperer-architecture-clean-pass2)**
+    - [ ] Clean-pass acceptance of two-unit implementation seams — **CLAIMED by Sir Fix-a-Lot (Session: sir-fix-a-lot-architecture-clean-pass2)**
 
 ## Planned work
 
