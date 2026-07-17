@@ -1,0 +1,1 @@
+{"protocol":"srvls-worker-v1","kind":"ready","request_id":"00000000-0000-7000-8000-000000000013","capability":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","observed_worker":{"pid":1203,"boot_start_ticks":103,"executable_device":8,"executable_inode":903,"process_group_id":1203}}

@@ -357,7 +357,14 @@ flowchart LR
   the reservation is already expired: it creates no capability, socket,
   `OwnedSpawnV1`, child, or process-group state and synthesizes the AD-25
   no-child `worker-timeout` at the earlier exact absolute cut with
-  `termination_origin=none`. Catch-up is deterministic after admission or
+  `termination_origin=none`. This is the sole pre-request-allocation transport
+  failure lane: its WorkerTransportDiagnosticV1 `request_id` value is the
+  tagged `absent` variant required by AD-25. It allocates no placeholder,
+  deterministic, random, or reserved RequestId, and it creates no capability,
+  socket, `OwnedSpawnV1`, child, process-group, root, cleanup, or reap record.
+  Every lane that passes this strict-before check allocates exactly one real
+  RequestId and encodes the tagged `id` variant thereafter. Catch-up is
+  deterministic after admission or
   scheduler latency: visit missed epochs by ascending epoch offset and members
   by ascending worker ID, terminalize every already-expired reservation in
   that complete order, and only then start the still-live members in the same
@@ -545,19 +552,44 @@ flowchart LR
   runtime, repository, and two independent test encoders must emit the exact
   checked-in bytes and hashes without recapture or normalization.
 
+  `tests/fixtures/contracts/collection-plan-v1/nonempty.preimage.json` is a
+  second complete plan, not a fragment: it contains one `active-promise`
+  promotion, one accepted SnapshotV1 baseline projection with nonempty Promise,
+  Observation, and Finding rows, and one ResourceHistoryCutV1 row whose
+  `observation_id` is the complete cron ObservationIdV1 rather than a UUID.
+  Its companion Snapshot preimage, every row preimage, ScopeManifest binary,
+  plan and Snapshot fingerprints, and fixed expected SHA-256 values exercise
+  every formerly opaque branch. The validator rejects any reason synonym,
+  precedence change, reconstructed Provider detail, UUID-shaped ObservationId,
+  empty substitute, or byte change.
+
   Observation identity goldens live at
   `tests/fixtures/contracts/observation-id-v1/{cron,systemd,docker,pm2,process}.bin`
   with matching uppercase-percent display and fingerprint files. Their fixed
   inputs are, respectively: cron-user UID 1000, source `/etc/cron.d/srvls`,
-  physical line 0, entry-hash bytes `0x55`, and occurrence 0; systemd-system unit
+  physical line 0, raw schedule `* * * * *`, NFC user `root`, raw command
+  `/bin/true`, and occurrence 0; systemd-system unit
   `srvls-metrics.service`; Docker endpoint `unix:///var/run/docker.sock`,
   context `default`, and 32 raw bytes `0x11`; PM2_HOME `/home/test/.pm2`, ID 7,
-  `created_at` 1,000 UTC ms, and fingerprint bytes `0x22`; and process HostId
-  bytes `0x33`, boot UUID `00000000-0000-4000-8000-000000000001`, PID 42,
-  start tick 99, and fingerprint bytes `0x44`. Each repeated byte notation means
-  exactly 32 bytes. Independent encoders must match all five complete binary
-  envelopes, displays, and `srvls-observation-id-v1` fingerprints byte for
-  byte.
+  `created_at` 1,000 UTC ms, normalized executable `/usr/bin/node`, and NFC name
+  `srvls-worker`; and process HostId bytes `0x33`, boot UUID
+  `00000000-0000-4000-8000-000000000001`, PID 42, start tick 99,
+  discriminator executable, and normalized executable `/usr/bin/srvls`. Each
+  repeated byte notation means exactly 32 bytes. The corpus freezes each raw
+  HashTupleV1 input, tuple bytes, inner digest, complete ObservationId binary,
+  display, and `srvls-observation-id-v1` fingerprint. Independent encoders must
+  derive rather than inject all three inner hashes and match all five complete
+  identities byte for byte.
+
+  Provider-assignment goldens at
+  `tests/fixtures/contracts/provider-scope-input-v1/{cron,systemd,docker,pm2,process}`
+  freeze logical raw inputs, complete binary bytes, uppercase-percent form, and
+  ScopeAssignmentFingerprint. Every Provider case contains two CommandSpecV1
+  values, two environment entries including an empty raw value, two read roots,
+  an empty argument, and non-UTF-8 path or argument bytes. The checked-in
+  expected bytes arbitrate all nested `u32be` element, executable, argument,
+  environment-name/value, and root frames, sorting, duplicates, and trailing
+  rejection; no fixture is captured from a Rust encoder.
 
   IPC fixtures cover
   every AD-25 peer check, Hello/Ready credentials and field echo, silent child,
@@ -591,6 +623,16 @@ flowchart LR
   synthesized report, canonical candidate bytes and final DiagnosticId,
   primary/secondary precedence, current-pointer result, Brief completeness, and
   required/optional strict and non-strict exit.
+  `tests/fixtures/contracts/ipc-v1/complete-exchange` additionally freezes the
+  four complete CanonicalJsonV1 payloads, their `u32be` frame bytes, one
+  nonempty Observation of each Provider detail variant, candidate references,
+  process extension, and nontruncated capture accounting. The dedicated
+  `preallocation-timeout` fixture freezes cron-user ScopeId bytes, diagnostic
+  subject bytes, the seven-key parameter JSON with tagged-absent `request_id`,
+  the complete coordinator candidate bytes, outcome, failure cut, and final
+  ordinal. One-nanosecond-before uses a real tagged ID; equality and after use
+  identical tagged-absent bytes and prove zero request/capability/socket/child/
+  root/reap allocation.
   Storage fixtures cover fresh and existing database
   pragma readbacks, timeout equality, generation CAS, AD-22 plan and launch
   handoffs, every AD-23 pending effect and crash edge, torn or bad-checksum
@@ -773,13 +815,28 @@ flowchart LR
   provider_tag:u8 || field_count:u16be`, followed by the following exact fields
   in ascending tag order as `field_tag:u16be || length:u32be || value`:
 
+  Every nested identity hash uses exactly one `HashTupleV1`; the phrase
+  `length-framed` has no other valid interpretation. Its bytes are
+  `version:0x01 || field_count:u16be || (field_tag:u16be || length:u32be ||
+  value)*`. Field tags are the schema-declared consecutive values starting at
+  `0x0001` and appear once in ascending order. `length` is the complete value
+  byte length, empty values are permitted only where the table explicitly says
+  so, arithmetic is checked, and a wrong version, count, tag, length, order,
+  normalization, duplicate, unknown field, or trailing byte is invalid. Raw
+  values are copied byte-for-byte and may be non-UTF-8; normalized-path values
+  use the AD-24 absolute raw-path grammar before framing; text values are NFC
+  UTF-8 before framing. A hash preimage is the named ASCII domain, one zero
+  byte, then the complete HashTupleV1 bytes—never an uncounted concatenation,
+  implementation word size, serde sequence, or finished digest supplied as an
+  input.
+
   | Provider / tag | Count | `0x0001` | Remaining field tags and exact values |
   | --- | ---: | --- | --- |
-  | cron / `0x01` | 5 | complete ScopeIdV1 bytes | `0x0002 source`: AD-24 normalized absolute raw path; `0x0003 physical_line`: zero-based `u64be`; `0x0004 entry_hash`: 32 raw SHA-256 bytes over domain `srvls-cron-entry-v1`, zero byte, then length-framed exact schedule, user, and command bytes; `0x0005 duplicate_occurrence`: zero-based `u32be` |
+  | cron / `0x01` | 5 | complete ScopeIdV1 bytes | `0x0002 source`: AD-24 normalized absolute raw path; `0x0003 physical_line`: zero-based `u64be`; `0x0004 entry_hash`: 32 raw SHA-256 bytes over domain `srvls-cron-entry-v1`, zero byte, then HashTupleV1 fields `0x0001 schedule` as nonempty complete raw bytes, `0x0002 user` as nonempty NFC UTF-8, and `0x0003 command` as nonempty complete raw bytes; `0x0005 duplicate_occurrence`: zero-based `u32be` |
   | systemd / `0x02` | 2 | complete ScopeIdV1 bytes | `0x0002 unit`: nonempty NFC UTF-8 full unit name, case preserved and with no alias or suffix removal |
   | Docker / `0x03` | 2 | complete ScopeIdV1 bytes | `0x0002 container_id`: exactly 32 raw bytes decoded from the canonical 64-lowercase-hex immutable full container ID |
-  | PM2 / `0x04` | 4 | complete ScopeIdV1 bytes, including PM2_HOME | `0x0002 pm_id`: `u32be`; `0x0003 birth_origin`: nine bytes, tag `0x01` for `created_at` or `0x02` for `pm_uptime`, then its nonnegative UTC-millisecond `u64be`; `0x0004 executable_name_fingerprint`: 32 raw SHA-256 bytes over domain `srvls-pm2-birth-v1`, zero byte, then length-framed normalized executable raw path and NFC name bytes |
-  | process / `0x05` | 5 | complete process ScopeIdV1 bytes | `0x0002 boot_id`: kernel UUID as 16 bytes; `0x0003 pid`: `u32be`; `0x0004 start_ticks`: Linux `/proc/<pid>/stat` start time as `u64be`; `0x0005 executable_command_fingerprint`: 32 raw SHA-256 bytes over domain `srvls-process-birth-v1`, zero byte, then a one-byte `0x01` executable or `0x02` command discriminator and one length-framed complete raw value |
+  | PM2 / `0x04` | 4 | complete ScopeIdV1 bytes, including PM2_HOME | `0x0002 pm_id`: `u32be`; `0x0003 birth_origin`: nine bytes, tag `0x01` for `created_at` or `0x02` for `pm_uptime`, then its nonnegative UTC-millisecond `u64be`; `0x0004 executable_name_fingerprint`: 32 raw SHA-256 bytes over domain `srvls-pm2-birth-v1`, zero byte, then HashTupleV1 fields `0x0001 executable` as a nonempty AD-24 normalized absolute raw path and `0x0002 name` as nonempty NFC UTF-8 |
+  | process / `0x05` | 5 | complete process ScopeIdV1 bytes | `0x0002 boot_id`: kernel UUID as 16 bytes; `0x0003 pid`: `u32be`; `0x0004 start_ticks`: Linux `/proc/<pid>/stat` start time as `u64be`; `0x0005 executable_command_fingerprint`: 32 raw SHA-256 bytes over domain `srvls-process-birth-v1`, zero byte, then HashTupleV1 fields `0x0001 discriminator` as exactly one byte `0x01` executable or `0x02` command and `0x0002 value` as, respectively, a nonempty AD-24 normalized absolute raw path or nonempty complete raw command bytes |
 
   A variant has no undeclared occurrence or birth field: cron's duplicate field
   disambiguates byte-identical physical entries, while the other native locator
@@ -2091,10 +2148,43 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   - `ResourceHistoryCutV1` has key order `repository_revision`,
     `window_start_utc_ns`, `rows`; rows sort by sample UUID bytes and have exact
     key order `sample_id`, `snapshot_id`, `observation_id`, `sample_utc_ns`,
-    `cpu_basis_points`, `rss_bytes`, `host_memory_bytes`. Every value after the
-    three UUIDs is unsigned.
+    `cpu_basis_points`, `rss_bytes`, `host_memory_bytes`. `sample_id` and
+    `snapshot_id` are lowercase-hyphenated UUIDv7 values; `observation_id` is
+    the uppercase-percent encoding of the complete Provider-tagged
+    ObservationIdV1 binary envelope and is never a UUID or surrogate. The four
+    remaining values are unsigned `u64` JSON integers. A row whose Snapshot ID
+    does not name the immutable SnapshotV1 carrying the same ObservationId and
+    sample values is invalid; duplicate sample IDs or observation identities
+    with conflicting bytes reject admission.
   - `prior_current_snapshot` is exactly `{"kind":"none"}` or has key order
     `kind`, `snapshot_id`, `snapshot_revision` with kind `present`.
+
+  `SnapshotV1` totalizes the immutable aggregate from which baseline bytes and
+  ResourceHistory rows are copied. Its CanonicalJsonV1 key order is
+  `schema_version`, `snapshot_id`, `snapshot_revision`, `generation_id`,
+  `collection_plan_fingerprint`, `clock_sample`, `policy_fingerprint`,
+  `scope_manifest_fingerprint`, `decision_contract_version`, `reports`,
+  `diagnostics`, `observations`, `resource_samples`, `baseline_projection`,
+  `snapshot_fingerprint`; the schema token is `srvls-snapshot-v1`. IDs,
+  revision, generation, clocks, and fingerprints use the AD-24 scalar rules.
+  Reports sort by unsigned ScopeIdV1 bytes and are exact persisted
+  CollectorReportV1 objects from AD-25 after every candidate reference has been
+  rewritten to its final DiagnosticId. Diagnostics sort by DiagnosticId and
+  each `SnapshotDiagnosticV1` has key order `diagnostic_id`, `candidate`, where
+  `candidate` is the exact accepted DiagnosticCandidateV1. Observations sort by
+  ObservationIdV1 bytes and use the complete AD-25 ObservationV1 schema with
+  only final DiagnosticId references. Resource samples are complete
+  ResourceHistoryCutRowV1 objects sorted by sample UUID and must name this
+  Snapshot ID. `baseline_projection` is the complete
+  BaselineComparisonProjectionV1 materialized from these same rows in the same
+  transaction; its `provider_detail` byte field is the uppercase-percent
+  encoding of the exact CanonicalJsonV1 ProviderDetailV1 object present in the
+  source Observation, not a repository-dependent struct or reconstruction.
+  `snapshot_fingerprint` is SHA-256 over domain `srvls-snapshot-v1`, a zero
+  byte, and the complete canonical object excluding only that final key. A
+  baseline acceptance copies this persisted projection and its row preimages
+  byte-for-byte and verifies the Snapshot fingerprint; it may not reserialize
+  Provider detail, findings, or absent values.
 
   A wrong key, row field, field-name order, tagged type, row order, union
   member, duplicate, omission, or unknown value makes the plan noncanonical.
@@ -2122,9 +2212,33 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   unsigned ScopeIdV1 bytes as `scope_length:u32be || ScopeIdV1 ||
   obligation_tag:u8 || reason_length:u16be || reason`. Obligation tags are
   `required=0x01`, `optional=0x02`, and `not-applicable=0x03`; reason is a
-  nonempty stable ASCII token. Duplicate ScopeIds, an unknown tag, empty or
-  noncanonical reason, wrong length, unsorted entry, or trailing byte is
-  invalid. LPT consumes only the ScopeId portion of every entry, while
+  nonempty stable ASCII token selected by the following exhaustive first-match
+  table. `supported` means the exact scope can be observed by a v1 Collector;
+  `configured excluded|required|optional` is the single winning AD-19 setting;
+  `active Promise` means at least one active projection names the exact scope;
+  and `Provider detected` applies only to Docker or PM2 evidence admitted at
+  the same repository cut.
+
+  | Precedence | Predicate | Obligation | Exact reason token |
+  | ---: | --- | --- | --- |
+  | 1 | unsupported and active Promise | `not-applicable` | `active-promise-unsupported` |
+  | 2 | unsupported | `not-applicable` | `unsupported-scope` |
+  | 3 | configured excluded and active Promise | `not-applicable` | `active-promise-excluded` |
+  | 4 | configured excluded | `not-applicable` | `configured-excluded` |
+  | 5 | configured required | `required` | `configured-required` |
+  | 6 | active Promise | `required` | `active-promise` |
+  | 7 | Provider detected | `required` | `provider-detected` |
+  | 8 | built-in required scope | `required` | `default-required` |
+  | 9 | configured optional | `optional` | `configured-optional` |
+  | 10 | built-in optional scope | `optional` | `default-supported` |
+
+  Exactly one row must match. A supported scope has one built-in required or
+  optional disposition, so falling through row 10 is invalid. No synonym,
+  caller prose, Promise ID, Provider error, or implementation enum spelling is
+  a valid reason. Duplicate ScopeIds, an unknown tag, reason outside this
+  vocabulary, wrong winning reason, empty reason, wrong length, unsorted entry,
+  or trailing byte is invalid. LPT consumes only the ScopeId portion of every
+  entry, while
   admission, report validation, and WorkerRequest obligation require the exact
   kind and reason from that same entry. Its fingerprint is SHA-256 over domain
   `srvls-scopes-v1`, a zero byte, and the complete obligation-bearing manifest
@@ -2190,6 +2304,29 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   Zero length, early EOF, wrong direction or kind, out-of-order, repeated,
   trailing, or over-limit framing is invalid. The sender computes the complete
   payload length before sending and never truncates.
+
+  The four frame schemas use the following literal keys in this exact order;
+  these names and orders, not adjacent Rust field or serde declaration order,
+  are the shared wire registry:
+
+  | Frame | Exact top-level key order |
+  | --- | --- |
+  | WorkerHelloV1 | `protocol`, `kind`, `request_id`, `capability`, `dispatch_schedule_fingerprint`, `worker_id`, `schedule_origin_boot_ns`, `reservation_epoch_offset_ns`, `reservation_budget_ns`, `full_budget_makespan_ns`, `generation_cutoff_offset_ns`, `absolute_scope_deadline_boot_ns`, `absolute_generation_cutoff_boot_ns`, `expected_worker` |
+  | WorkerReadyV1 | `protocol`, `kind`, `request_id`, `capability`, `observed_worker` |
+  | WorkerRequestV1 | `protocol`, `request_id`, `capability`, `mode`, `collection_plan_fingerprint`, `dispatch_schedule_fingerprint`, `current_repository_revision`, `generation_id`, `scope_id`, `scope_assignment_fingerprint`, `obligation`, `worker_id`, `schedule_origin_boot_ns`, `reservation_epoch_offset_ns`, `reservation_budget_ns`, `full_budget_makespan_ns`, `generation_cutoff_offset_ns`, `absolute_scope_deadline_boot_ns`, `absolute_generation_cutoff_boot_ns`, `capture_reservation`, `self_process_set`, `provider_scope_input` |
+  | WorkerResultV1 | `protocol`, `request_id`, `capability`, `collection_plan_fingerprint`, `dispatch_schedule_fingerprint`, `current_repository_revision`, `generation_id`, `scope_id`, `scope_assignment_fingerprint`, `reservation`, `result`, `diagnostic_candidates`, `capture_accounting` |
+
+  `protocol` is exactly `srvls-worker-v1`; Hello and Ready `kind` are exactly
+  `hello` and `ready`; Request `mode` is exactly `collect-scope`. Request IDs
+  are lowercase-hyphenated UUIDs, capabilities and fingerprints are exactly 64
+  lowercase hex characters, Scope IDs are uppercase-percent complete binary
+  values, and all revisions, generations, worker IDs, offsets, budgets,
+  deadlines, PID/birth/device/inode/group fields, and capture counts are
+  nonnegative `u64` JSON integers unless an explicitly narrower binary schema
+  says otherwise. `ExpectedWorkerV1` and `ObservedWorkerV1` both use exact key
+  order `pid`, `boot_start_ticks`, `executable_device`, `executable_inode`,
+  `process_group_id`. No frame has an optional, omitted, `null`, flattened,
+  renamed, or unknown key.
 
   `WorkerHelloV1` is one CanonicalJsonV1 object in this exact order and with no
   optional fields: protocol string `srvls-worker-v1`; kind string `hello`;
@@ -2300,12 +2437,16 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   DiagnosticSubjectV1 scope variant bytes `0x01 || 0x01 || length:u32be ||
   ScopeIdV1`; source encounter `0`; and duplicate occurrence `0`. Its
   DiagnosticParameterV1 object has exactly these declared-order keys and no
-  others: `request_id` as tagged `id`; `worker_subcode` as tagged `absent |
-  text`; `exit_code` as tagged `absent | u64`; `signal` as tagged `absent |
-  u64`; `termination_origin` as tagged text token `none | parent-cleanup |
-  worker`; `measured_bytes` as tagged `absent | u64`; and `allowed_bytes` as
-  tagged `absent | u64`. Inactive fields are always tagged absent; the following
-  matrix is exhaustive and every unspecified field in a row is absent:
+  others: `request_id` as tagged `absent | id`; `worker_subcode` as tagged
+  `absent | text`; `exit_code` as tagged `absent | u64`; `signal` as tagged
+  `absent | u64`; `termination_origin` as tagged text token `none |
+  parent-cleanup | worker`; `measured_bytes` as tagged `absent | u64`; and
+  `allowed_bytes` as tagged `absent | u64`. `request_id` is tagged absent if
+  and only if AD-10 rejected an already-expired reservation before RequestId
+  allocation; every other row has the exact allocated UUID tagged `id` even
+  when spawn produced no child. Inactive fields are always tagged absent; the
+  following matrix is exhaustive and every unspecified field in a row is
+  absent:
 
   | Causal evidence at the cut | Primary code | `worker_subcode` | `exit_code` | `signal` | `termination_origin` | `measured_bytes` / `allowed_bytes` |
   | --- | --- | --- | --- | --- | --- | --- |
@@ -2324,7 +2465,7 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   | direct bare exit 70 before any earlier cause | `worker-internal-error` | absent | `70` | absent | `worker` | absent / absent |
   | direct signal before any earlier cause | `worker-signal` | absent | absent | exact signal number | `worker` | absent / absent |
   | other direct nonzero exit before any earlier cause | `worker-exit` | absent | exact exit code | absent | `worker` | absent / absent |
-  | deadline with no child | `worker-timeout` | absent | absent | absent | `none` | absent / absent |
+  | pre-allocation deadline with no child; `request_id` is tagged absent | `worker-timeout` | absent | absent | absent | `none` | absent / absent |
   | deadline with a spawned child | `worker-timeout` | absent | absent | absent | `parent-cleanup` | absent / absent |
 
   Request and Result size measurements exclude the four-byte frame header. Only
@@ -2370,28 +2511,144 @@ no wall clock, systemd timeout, or FD4-local default may select another cut.
   unsigned worker process-group ID; and
   one `ProviderScopeInputV1`.
 
-  `ProviderScopeInputV1` is `{"schema":<stable provider-v1 token>,"bytes":<uppercase-percent binary>}`;
-  the only schema tokens are `cron-v1 | systemd-v1 | docker-v1 | pm2-v1 |
-  process-v1` and they must match the ScopeId Provider.
+  `ProviderScopeInputV1` is `{"schema":<stable provider-v1 token>,"bytes":<uppercase-percent binary>}`
+  with that literal key order. The only `(schema, provider_tag)` pairs are
+  `(cron-v1,0x01)`, `(systemd-v1,0x02)`, `(docker-v1,0x03)`, `(pm2-v1,0x04)`,
+  and `(process-v1,0x05)` and they must match the ScopeId Provider.
   Its binary envelope is `0x01 || provider_tag:u8 || field_count:u16be`, then
   schema-declared fields in ascending tag order as `field_tag:u16be ||
   value_kind:u8 || length:u32be || value`. Value kinds are `0x01` complete raw
   bytes, `0x02` NFC UTF-8, `0x03` `u64be`, `0x04` one byte `0x00 | 0x01`,
-  `0x05` ScopeIdV1 bytes, `0x06` ordered list encoded as `count:u32be` plus
-  length-framed values, and `0x07` set encoded the same way after unsigned
-  canonical-byte sort. Every variant has exactly five fields: `0x0001` invocation
-  kind `command | host-read` as NFC UTF-8; `0x0002` ordered CommandSpecV1 list,
-  each item encoded `executable_length:u32be || normalized_absolute_raw_path ||
-  argc:u32be || (argument_length:u32be || complete_raw_argument)*`; `0x0003`
-  environment set whose entries are ASCII-name and raw-value length pairs sorted
-  by name bytes; `0x0004` ordered normalized absolute read-root raw-path list;
-  and `0x0005` privilege token `invoking-principal | sudo-n`. Empty lists are
-  count zero, never absent. Wrong field count, tag,
-  kind, order, missing, repeated, unknown, noncanonical path, or trailing data
-  is invalid. It contains only the one scope's already-resolved absolute
+  `0x05` complete ScopeIdV1 bytes, `0x06` FramedSequenceV1 in semantic order,
+  and `0x07` FramedSequenceV1 in unsigned complete-element-byte order with
+  duplicates forbidden.
+
+  `FramedSequenceV1` is exactly `count:u32be || (element_length:u32be ||
+  complete_element_bytes)*`. Count zero is the only empty encoding; an empty
+  element is legal only when the element schema permits it. Counts are at most
+  65,535, each element is at most 16 MiB, every addition is checked, and the
+  complete WorkerRequest must remain within its 32 MiB payload cap. No `u16`,
+  `u64`, native-width, terminator, omitted empty item, implicit map, or trailing
+  byte is a valid alternate.
+
+  Every Provider variant has exactly five fields and the same nested grammar:
+
+  | Tag | Kind | Exact value schema |
+  | --- | --- | --- |
+  | `0x0001` | `0x02` | nonempty NFC token; one of `command`, `host-read` |
+  | `0x0002` | `0x06` | ordered FramedSequenceV1 of CommandSpecV1; at most 65,535 commands |
+  | `0x0003` | `0x07` | set FramedSequenceV1 of EnvironmentEntryV1; at most 4,096 entries |
+  | `0x0004` | `0x06` | ordered FramedSequenceV1 of normalized absolute raw-path bytes; at most 4,096 roots |
+  | `0x0005` | `0x02` | nonempty NFC token; one of `invoking-principal`, `sudo-n` |
+
+  `CommandSpecV1` is exactly `executable_length:u32be || executable ||
+  argc:u32be || (argument_length:u32be || complete_raw_argument)*`.
+  `executable` is a nonempty AD-24 normalized absolute raw path; arguments are
+  complete raw bytes, may be empty or non-UTF-8, retain semantic order and
+  duplicates, and number at most 65,535. `EnvironmentEntryV1` is exactly
+  `name_length:u32be || ASCII_name || value_length:u32be || complete_raw_value`.
+  The name is 1–255 bytes, matches `[A-Za-z_][A-Za-z0-9_]*`, and the value is
+  0–1 MiB of complete raw bytes, including legal empty and non-UTF-8 values.
+  Environment entries sort unsigned by name bytes and duplicate names are
+  invalid; value bytes do not participate in the sort key. Each read root is a
+  nonempty AD-24 normalized absolute raw path, may be non-UTF-8, retains list
+  order and duplicates, and receives its outer `element_length:u32be` frame.
+  Empty command, environment, and root collections are encoded by count zero,
+  never absence. A wrong schema/provider pair, version, field count, tag,
+  value kind, length, order, count, maximum, path or text normalization,
+  environment sort key, duplicate set element, missing or repeated field,
+  unknown field, arithmetic overflow, or trailing byte is invalid. It contains
+  only the one scope's already-resolved absolute
   executables, argv, environment, read roots, and privilege—never policy,
   baseline, operation, resource-history, Promise, current-pointer, or discovery
   handles.
+
+  All shared WorkerRequest, WorkerResult, report, Observation, diagnostic, and
+  capture objects use the following exhaustive CanonicalJsonV1 registry.
+  `PresenceV1<T>` is exactly `{"kind":"absent"}` or key order `kind`, `value`
+  with kind `present` and one value of the declared type. It is the only option
+  representation below. A `set<T>` sorts unsigned by each complete canonical
+  element, rejects duplicates, and an `ordered<T>` array retains semantic
+  order and duplicates unless a narrower rule forbids them.
+
+  | Shared type | Exact key order and constraints |
+  | --- | --- |
+  | `ObligationV1` | `kind`, `reason`; kind is one of `required`, `optional`, or `not-applicable` and reason is exactly the AD-24 winning vocabulary token for that ScopeManifest entry |
+  | `CaptureReservationV1` | `stdout_bytes`, `stderr_bytes`; both are unsigned and equal the scope reservations frozen in the plan |
+  | `StreamCaptureAccountingV1` | `observed_bytes`, `retained_bytes`, `truncated_bytes`, `truncated`; all counts are unsigned, `observed = retained + truncated`, and the boolean is exactly `truncated_bytes > 0` |
+  | `CaptureAccountingV1` | `stdout`, `stderr`; each value is one StreamCaptureAccountingV1 and retained counts may not exceed the matching reservation |
+  | `SelfProcessRootV1` | `kind`, `pid`, `boot_start_ticks`, `executable_device`, `executable_inode`, `process_group_id`; kind is either `coordinator` or `worker`, integers are unsigned, and group ID is PresenceV1 of unsigned |
+  | `DiagnosticCandidateV1` | `schema`, `producer`, `scope_id`, `code`, `parameter_schema`, `subject`, `source_encounter`, `parameters`, `duplicate_occurrence`; schema is `srvls-diagnostic-candidate-v1`, producer is either `coordinator` or `worker`, code and parameter schema are nonempty stable ASCII, subject is uppercase-percent complete DiagnosticSubjectV1, source encounter and occurrence are unsigned, and parameters are the complete AD-13 declared-order tagged-value object |
+  | `DiagnosticCandidateRefV1` | `scope_id`, `producer`, `local_ordinal`; ScopeId and producer must equal the referenced candidate and ordinal is unsigned `u32` represented as a JSON integer |
+  | `DiagnosticIdV1` | `generation_id`, `scope_id`, `ordinal`; generation is unsigned and ordinal is unsigned `u32` represented as a JSON integer |
+  | `DiagnosticReferenceV1` | candidate form key order `kind`, `value` with kind `candidate` and DiagnosticCandidateRefV1, or final form with kind `diagnostic-id` and DiagnosticIdV1; WorkerResult permits only candidate and SnapshotV1 permits only diagnostic-id |
+
+  `CollectorReportV1` has exact key order `schema`, `generation_id`,
+  `scope_id`, `obligation`, `observations`, `duration_ns`,
+  `diagnostic_references`, `outcome`, `process_extension`; schema is
+  `srvls-collector-report-v1`, IDs and duration use the scalar rules,
+  obligation byte-equals the ScopeManifest value, Observations sort unsigned
+  by complete ObservationIdV1 bytes without duplicates, diagnostic references
+  sort by their referenced candidate tuple in WorkerResult and by DiagnosticId
+  in SnapshotV1, and outcome is exactly `complete | partial | unavailable |
+  denied | timed-out | invalid-output`. A report may reference only candidates
+  in its same-scope WorkerResult; the reducer's persisted form must reference
+  only final same-generation/same-scope IDs. `process_extension` is exactly
+  `{"kind":"absent"}` for non-process scope or key order `kind`, `value` with
+  kind `process` and one ProcessReportExtensionV1 for process scope.
+
+  `ObservationV1` has exact key order `schema`, `observation_id`, `scope_id`,
+  `encounter_ordinal`, `display_name`, `lifecycle`, `schedule`, `health`,
+  `project`, `source`, `ownership_hints`, `resources`, `provider_detail`,
+  `diagnostic_references`. Schema is `srvls-observation-v1`; both identities
+  are uppercase-percent complete canonical binary values and must agree on
+  Provider and Scope; encounter is unsigned; display name is nonempty NFC;
+  lifecycle is exactly `scheduled | active | inactive | failed | unknown`;
+  schedule is PresenceV1 of NFC text; health is PresenceV1 of stable token
+  `healthy | unhealthy | starting | unknown`; project is PresenceV1 of an
+  object with key order `id`, `label`, both nonempty NFC; source is PresenceV1
+  of an AD-24 normalized absolute raw path encoded uppercase-percent;
+  ownership hints are a set sorted as below; resources has exact key order
+  `cpu_basis_points`, `rss_bytes`, `host_memory_bytes`, each PresenceV1 of
+  unsigned; provider detail is one exact ProviderDetailV1; and references obey
+  the same WorkerResult-versus-Snapshot cut as CollectorReportV1.
+
+  `ProcessOwnershipHintV1` has key order `process_observation_id`,
+  `claimant_scope_id`, `rule`; the identities are complete uppercase-percent
+  values and rule is exactly `self-executable | collection-worker-pgrp |
+  systemd-main-pid | systemd-cgroup | docker-init-pid | docker-cgroup |
+  pm2-pid-birth`. Hints sort by process ObservationId, claimant ScopeId, then
+  rule bytes and duplicate complete objects are invalid.
+
+  `ProviderDetailV1` is a tagged object with exact key order `kind`, `value`.
+  Its kind must match ObservationId and Scope Providers; every listed value
+  object has exactly the following key order and types:
+
+  | Kind | Exact value key order and types |
+  | --- | --- |
+  | `cron` | `source_path` normalized absolute raw path, `physical_line` unsigned, `user` NFC, `schedule` NFC, `command_fingerprint` SHA-256 hex, `duplicate_occurrence` unsigned |
+  | `systemd` | `manager_scope` token `system` or `user`, `unit` NFC, `unit_kind` token `service` or `timer`, `load_state` NFC, `active_state` NFC, `sub_state` NFC, `unit_file_state` PresenceV1 of NFC, `timer_schedule` ordered NFC array |
+  | `docker` | `container_id` SHA-256-sized full-ID hex, `name` NFC, `state` NFC, `health` PresenceV1 of NFC, `restart_policy` NFC, `image` NFC, `compose_project` PresenceV1 of NFC, `labels` set of key-order `key`, `value` NFC objects sorted by key then value, `working_directory` PresenceV1 of normalized absolute raw path |
+  | `pm2` | `pm2_home` normalized absolute raw path, `pm_id` unsigned, `birth_origin` token `created_at` or `pm_uptime`, `birth_utc_ms` unsigned, `name` NFC, `namespace` NFC, `script_path` PresenceV1 of normalized absolute raw path, `working_directory` PresenceV1 of normalized absolute raw path, `status` NFC, `restart_count` unsigned |
+  | `process` | `host_identity` SHA-256 hex, `boot_id` UUID, `pid` unsigned, `start_ticks` unsigned, `uid` unsigned, `parent` PresenceV1 of key-order `pid`, `start_ticks` unsigned object, `executable` PresenceV1 of normalized absolute raw path, `command_fingerprint` SHA-256 hex, `working_directory` PresenceV1 of normalized absolute raw path, `process_group_id` PresenceV1 of unsigned |
+
+  Every raw path in ProviderDetailV1 is encoded as an uppercase-percent string;
+  every SHA value is 64 lowercase hex; Provider strings are NFC and bounded by
+  the accepted Result cap. `ProcessReportExtensionV1` has exact key order
+  `frozen_roots`, `materialized_members`. Roots are SelfProcessRootV1 sorted by
+  kind `coordinator < worker`, PID, then boot-start ticks. Each member has exact
+  key order `observation_id`, `pid`, `start_ticks`, `process_group_id`,
+  `root_kind`, `root_pid`, `root_start_ticks`; identities are complete process
+  ObservationIdV1, integers unsigned, root kind uses the same order, and rows
+  sort by PID, start ticks, then ObservationId bytes. A member must match a
+  frozen worker group and a report Observation; a missing, extra, duplicate, or
+  mismatched root/member rejects the report.
+
+  These schemas are closed: a wrong key name or order, omitted inactive option,
+  `null`, untagged union, float, negative or out-of-range integer, unknown enum,
+  Provider mismatch, wrong array order, duplicate set element, invalid Unicode,
+  noncanonical percent/UUID/hash, dangling diagnostic reference, or unknown
+  nested field makes the complete WorkerResult schema-invalid.
 
   `ScopeAssignmentFingerprint` is SHA-256 over domain
   `srvls-scope-assignment-v1`, a zero byte, and one CanonicalJsonV1 object with
