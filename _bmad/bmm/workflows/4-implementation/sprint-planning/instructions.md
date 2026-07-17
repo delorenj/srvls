@@ -88,7 +88,10 @@ development_status:
 
 **Preservation rule:**
 
-- If existing `{status_file}` exists and has more advanced status, preserve it
+- C-23 validity dominates preservation: on a non-zero approval command, force
+  the Story to `backlog` even if an existing status is more advanced and report
+  the invalid transition evidence.
+- If C-23 passes and existing `{status_file}` has a more advanced status, preserve it
 - Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
 
 **Status Flow Reference:**

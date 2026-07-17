@@ -308,6 +308,7 @@
     <check if="the C-23 command exits non-zero">
       <output>STOP: fixture approval, reviewer separation, commit ancestry, or a declared predecessor is not valid for {{story_id}}.</output>
       <action>Do not create, assign, save ready-for-dev status, or update sprint status</action>
+      <action>HALT</action>
     </check>
     <!-- CRITICAL: Set status to ready-for-dev only after C-23 passes. -->
     <action>Set story Status to: "ready-for-dev"</action>

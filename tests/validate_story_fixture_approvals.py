@@ -98,19 +98,26 @@ def git_file_hash(commit: str, path: str) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
-def declared_oracle(story: str) -> str:
+def declared_oracles(story: str) -> list[str]:
     text = EPICS.read_text(encoding="utf-8")
-    match = re.search(
-        rf"^### Story {re.escape(story)}:.*?^\*\*Validation Expectations:\*\* "
-        rf"(?:The owning oracle is |Contract C-23 rows .*? are owned by )([^;\n]+)",
+    section = re.search(
+        rf"^### Story {re.escape(story)}:.*?(?=^### Story |^## Epic |\Z)",
         text, re.MULTILINE | re.DOTALL,
     )
-    if not match:
+    if not section:
+        fail(f"Story {story} section is missing")
+    line = re.search(r"^\*\*Validation Expectations:\*\* (.*)$", section.group(), re.MULTILINE)
+    oracles = re.findall(r"tests/[A-Za-z0-9_.\-/]+", line.group(1) if line else "")
+    if not oracles:
         fail(f"Story {story} has no parseable owning oracle")
-    return match.group(1).strip().strip('`')
+    return list(dict.fromkeys(path.rstrip(".,;`)'") for path in oracles))
 
 
-def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
+def within_oracle(path: str, oracle: str) -> bool:
+    return path == oracle or path.startswith(oracle.rstrip("/") + "/") or path.startswith(oracle + ".expected")
+
+
+def validate_approval(story: str, rows: dict[str, dict[str, str]]) -> tuple[str, dict[str, object]]:
     if not STORY.fullmatch(story):
         fail(f"invalid Story ID {story!r}")
     path = APPROVALS / f"{story}-v1.json"
@@ -129,10 +136,10 @@ def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
     for key in ("fixtureSha256", "expectedResultSha256"):
         if not SHA.fullmatch(data[key]):
             fail(f"Story {story} {key} is invalid")
-    oracle = declared_oracle(story).rstrip("/")
-    if not (data["fixturePath"] == oracle or data["fixturePath"].startswith(oracle + "/")):
+    oracles = declared_oracles(story)
+    if not any(within_oracle(data["fixturePath"], oracle) for oracle in oracles):
         fail(f"Story {story} fixturePath is outside its declared owning oracle")
-    if not (data["expectedResultPath"] == oracle or data["expectedResultPath"].startswith(oracle + "/")):
+    if not any(within_oracle(data["expectedResultPath"], oracle) for oracle in oracles):
         fail(f"Story {story} expectedResultPath is outside its declared owning oracle")
     for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("expectedResultPath", "expectedResultSha256")):
         target = (ROOT / data[path_key]).resolve()
@@ -150,11 +157,18 @@ def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
         git("cat-file", "-e", f"{commit}^{{commit}}")
     if len({author_email(commit) for commit in commits}) != 2:
         fail(f"Story {story} reviewer and fixture author Git identities are not distinct")
+    if author_email(approval_commit) != author_email(data["reviewerCommit"]):
+        fail(f"Story {story} approval commit is not authored by the declared reviewer")
     if any(subprocess.run(["git", "merge-base", "--is-ancestor", commit, approval_commit], cwd=ROOT).returncode for commit in commits):
         fail(f"Story {story} approval does not descend from its author and reviewer evidence")
     for path_key, hash_key in (("fixturePath", "fixtureSha256"), ("expectedResultPath", "expectedResultSha256")):
         if git_file_hash(data["fixtureAuthorCommit"], data[path_key]) != data[hash_key]:
             fail(f"Story {story} {path_key} bytes are not bound to fixtureAuthorCommit")
+    return approval_commit, data
+
+
+def validate_assignment(story: str, rows: dict[str, dict[str, str]]) -> None:
+    approval_commit, _ = validate_approval(story, rows)
     for dependency in declared_dependencies(story):
         validate_completion(dependency, rows)
     print(f"Story {story} fixture approval: PASS ({approval_commit})")
@@ -168,13 +182,19 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
     data = json.loads(completion_path.read_text(encoding="utf-8"))
     if set(data) != COMPLETION_KEYS or data["schema"] != "srvls-story-completion-v1" or data["storyId"] != story or data["verdict"] != "completed":
         fail(f"Story {story} completion schema is invalid")
-    approval_commit = committed_clean(approval_path)
-    committed_clean(completion_path)
+    approval_commit, approval = validate_approval(story, rows)
+    completion_commit = committed_clean(completion_path)
     if data["approvalCommit"] != approval_commit or not SHA.fullmatch(data["implementationCommit"]):
         fail(f"Story {story} completion does not bind its approval and implementation")
     git("cat-file", "-e", f"{data['implementationCommit']}^{{commit}}")
     if subprocess.run(["git", "merge-base", "--is-ancestor", approval_commit, data["implementationCommit"]], cwd=ROOT).returncode:
         fail(f"Story {story} implementation does not descend from approval")
+    if subprocess.run(["git", "merge-base", "--is-ancestor", data["implementationCommit"], completion_commit], cwd=ROOT).returncode:
+        fail(f"Story {story} completion provenance does not descend from implementation")
+    for path_key in ("fixturePath", "expectedResultPath"):
+        relative = approval[path_key]
+        if subprocess.run(["git", "diff", "--quiet", approval_commit, data["implementationCommit"], "--", relative], cwd=ROOT).returncode:
+            fail(f"Story {story} implementation changed approved {path_key}")
     return data["implementationCommit"]
 
 
@@ -182,6 +202,12 @@ def main() -> None:
     rows = canonical_rows()
     if len(sys.argv) == 1:
         print("story acceptance registry: PASS (75 stories, 150 canonical-criterion-bound rows)")
+        return
+    if sys.argv[1:2] == ["--complete"]:
+        if len(sys.argv) != 3 or not STORY.fullmatch(sys.argv[2]):
+            fail("--complete requires exactly one Story ID")
+        commit = validate_completion(sys.argv[2], rows)
+        print(f"Story {sys.argv[2]} completion provenance: PASS ({commit})")
         return
     for story in sys.argv[1:]:
         validate_assignment(story, rows)

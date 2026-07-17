@@ -193,6 +193,7 @@
     <check if="the C-23 command exits non-zero">
       <output>STOP: fixture approval, reviewer separation, commit ancestry, or a declared predecessor is not valid for {{story_id}}.</output>
       <action>Do not begin implementation and do not change sprint status</action>
+      <action>HALT</action>
     </check>
     <check if="{{sprint_status}} file exists">
       <action>Load the FULL file: {{sprint_status}}</action>
@@ -330,6 +331,7 @@
     <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
     <action>Run the full regression suite (do not skip)</action>
     <action>Confirm File List includes every changed file</action>
+    <action>Require the committed `<story-id>-completed-v1.json` provenance object and run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on any non-zero exit before review status</action>
     <action>Execute enhanced definition-of-done validation</action>
     <action>Update the story Status to: "review"</action>
 
