@@ -94,7 +94,7 @@ def hermetic_git_gate() -> None:
         fixture = oracle / "input"; expected = oracle / "expected"
         fixture.write_bytes(b"input"); expected.write_bytes(b"expected")
         (oracle2 / "input").write_bytes(b"input"); (oracle2 / "expected").write_bytes(b"expected")
-        runner_bytes = b"#!/bin/sh\nprintf expected"
+        runner_bytes = b"#!/bin/sh\nsed 's/input/expected/' \"$1\""
         (oracle / "runner").write_bytes(runner_bytes); (oracle2 / "runner").write_bytes(runner_bytes)
         (oracle / "runner").chmod(0o755); (oracle2 / "runner").chmod(0o755)
         fixture_commit = commit("fixtures", "fixture@example.test")
@@ -113,6 +113,7 @@ def hermetic_git_gate() -> None:
                 "oracleBindings": [{
                     "oraclePath": path, "fixturePath": f"{path}/input",
                     "fixtureSha256": hashlib.sha256(b"input").hexdigest(),
+                    "runnerPath": f"{path}/runner", "runnerSha256": hashlib.sha256(runner_bytes).hexdigest(),
                     "expectedResultPath": f"{path}/expected",
                     "expectedResultSha256": hashlib.sha256(b"expected").hexdigest(),
                 } for path in approval.declared_oracles(story)],
@@ -128,8 +129,7 @@ def hermetic_git_gate() -> None:
             "schema": "srvls-story-completion-v1", "storyId": "1.1", "approvalCommit": approval_commit,
             "implementationCommit": implementation_commit,
             "oracleResults": [{
-                "oraclePath": path, "runnerPath": f"{path}/runner",
-                "runnerSha256": hashlib.sha256(runner_bytes).hexdigest(), "exitCode": 0,
+                "oraclePath": path, "exitCode": 0,
                 "resultPath": f"{path}/actual", "resultSha256": hashlib.sha256(b"expected").hexdigest(),
             } for path in approval.declared_oracles("1.1")],
             "verdict": "completed",

@@ -8,6 +8,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -22,9 +23,9 @@ APPROVAL_KEYS = {
     "schema", "storyId", "rowIds", "oracleBindings", "reviewerCommit",
     "fixtureAuthorCommit", "criterionSha256", "verdict",
 }
-BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "expectedResultPath", "expectedResultSha256"}
+BINDING_KEYS = {"oraclePath", "fixturePath", "fixtureSha256", "runnerPath", "runnerSha256", "expectedResultPath", "expectedResultSha256"}
 COMPLETION_KEYS = {"schema", "storyId", "approvalCommit", "implementationCommit", "oracleResults", "verdict"}
-RESULT_KEYS = {"oraclePath", "runnerPath", "runnerSha256", "exitCode", "resultPath", "resultSha256"}
+RESULT_KEYS = {"oraclePath", "exitCode", "resultPath", "resultSha256"}
 
 
 def fail(message: str) -> None:
@@ -49,6 +50,9 @@ def canonical_rows() -> dict[str, dict[str, str]]:
     expected_ids = {f"AC-{story}-{kind}" for story in stories for kind in ("P01", "N01")}
     if len(stories) != 75 or data["rowCount"] != 150 or set(rows) != expected_ids:
         fail("acceptance registry must contain the exact P01/N01 rows for 75 canonical stories")
+    dangling = sorted(set(re.findall(r"Story (\d+\.\d+)", epics)) - set(stories))
+    if dangling:
+        fail(f"canonical artifact contains dangling Story references: {dangling}")
     for row_id, row in rows.items():
         if set(row) != {"rowId", "storyId", "kind", "criterionMarkdown", "criterionSha256"}:
             fail(f"{row_id} has unknown or missing keys")
@@ -109,6 +113,13 @@ def git_file_hash(commit: str, path: str) -> str:
     except subprocess.CalledProcessError:
         fail(f"{path} is absent from declared commit {commit}")
     return hashlib.sha256(content).hexdigest()
+
+
+def git_file_bytes(commit: str, path: str) -> bytes:
+    try:
+        return subprocess.check_output(["git", "show", f"{commit}:{path}"], cwd=ROOT)
+    except subprocess.CalledProcessError:
+        fail(f"{path} is absent from declared commit {commit}")
 
 
 def git_path_exists(commit: str, path: str) -> bool:
@@ -226,17 +237,29 @@ def validate_completion(story: str, rows: dict[str, dict[str, str]]) -> str:
     for binding, result in zip(bindings, results, strict=True):
         if set(result) != RESULT_KEYS or result["oraclePath"] != binding["oraclePath"]:
             fail(f"Story {story} completion result binding is invalid")
-        if result["exitCode"] != 0 or not within_oracle(result["runnerPath"], result["oraclePath"]):
+        if result["exitCode"] != 0:
             fail(f"Story {story} completion lacks an approved successful oracle runner")
-        if git_file_hash(approval["fixtureAuthorCommit"], result["runnerPath"]) != result["runnerSha256"]:
+        if not within_oracle(binding["runnerPath"], result["oraclePath"]):
+            fail(f"Story {story} approved runner escapes its owning oracle")
+        if git_file_hash(approval["fixtureAuthorCommit"], binding["runnerPath"]) != binding["runnerSha256"]:
             fail(f"Story {story} runner bytes are not fixture-author approved")
         if not within_oracle(result["resultPath"], result["oraclePath"]):
             fail(f"Story {story} executed result escapes its owning oracle")
         if git_path_exists(approval_commit, result["resultPath"]):
             fail(f"Story {story} executed result is not fresh implementation evidence")
-        runner = (ROOT / result["runnerPath"]).resolve()
-        fixture = (ROOT / binding["fixturePath"]).resolve()
-        executed = subprocess.run([str(runner), str(fixture)], cwd=ROOT, capture_output=True)
+        with tempfile.TemporaryDirectory(prefix="srvls-oracle-") as temporary:
+            isolated = Path(temporary)
+            runner = isolated / "runner"; fixture = isolated / "fixture"; home = isolated / "home"
+            runner.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["runnerPath"]))
+            fixture.write_bytes(git_file_bytes(approval["fixtureAuthorCommit"], binding["fixturePath"]))
+            runner.chmod(0o500); fixture.chmod(0o400); home.mkdir()
+            try:
+                executed = subprocess.run(
+                    [str(runner), str(fixture)], cwd=isolated, capture_output=True, timeout=10,
+                    env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "HOME": str(home)},
+                )
+            except subprocess.TimeoutExpired:
+                fail(f"Story {story} approved runner exceeded the 10-second replay budget")
         if executed.returncode != result["exitCode"] or hashlib.sha256(executed.stdout).hexdigest() != result["resultSha256"]:
             fail(f"Story {story} approved runner replay does not reproduce the attested result")
         if result["resultSha256"] != binding["expectedResultSha256"]:

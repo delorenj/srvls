@@ -513,7 +513,8 @@ the ordered two `rowIds`, their ordered `criterionSha256` values,
 `oracleBindings`, `reviewerCommit`, `fixtureAuthorCommit`, and
 `verdict: approved`. `oracleBindings` has exactly one ordered object for every
 declared owning oracle, each containing only `oraclePath`, `fixturePath`,
-`fixtureSha256`, `expectedResultPath`, and `expectedResultSha256`. The named
+`fixtureSha256`, `runnerPath`, `runnerSha256`, `expectedResultPath`, and
+`expectedResultSha256`. The named
 fixture paths must bind every Story-declared owning oracle, the named author
 commit must contain those exact bytes, and the committed approval must descend
 from distinct fixture-author and reviewer Git identities. Production work is
