@@ -54,7 +54,6 @@
     - [x] Final acceptance of two-unit implementation convergence — **COMPLETED by SyntaxSorcerer (Session: syntaxsorcerer-aegis-divergence-0717-r4; Verdict: PASS — zero findings; Report: review-pass3-final-two-unit-divergence-2026-07-17.md)**
     - [x] Final acceptance of Linux/systemd release, recovery, and corpus reality — **COMPLETED by Sir Fix-a-Lot (Session: sir-fix-a-lot-aegis-release-0717-r4; Verdict: PASS — zero findings; Report: review-pass3-final-linux-release-recovery-2026-07-17.md)**
     - [x] Finalize the architecture spine and append the acceptance event — **COMPLETED by Taskforce Aegis Directional Recovery (2026-07-17; architecture body SHA-256: 06df98f6d201abd47289d6c6771e15b83fb9d8a6c856a3a67e2e20e178a670aa)**
-    - [ ] Create and independently accept the canonical epics and story breakdown — **CLAIMED by Taskforce Daedalus (Session: taskforce-daedalus; Branch: epic-canonical-epics-stories)**
 
 ## Planned work
 
