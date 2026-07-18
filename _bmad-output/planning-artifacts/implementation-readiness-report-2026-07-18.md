@@ -3,6 +3,7 @@ stepsCompleted:
   - step-01-document-discovery
   - step-02-prd-analysis
   - step-03-epic-coverage-validation
+  - step-04-ux-alignment
 inputDocuments:
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md
@@ -976,3 +977,57 @@ None
 ### Reciprocal Validation
 
 All 43 PRD FRs have nonempty owner sets; every named owner exists as a canonical story definition; every owner story reciprocally cites its FR; and the epic functional inventory, reciprocal story requirement lists, and requirement-coverage keys contain zero extra FR IDs.
+
+## UX Alignment Assessment
+
+### UX Document Status
+
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md` — **Found** and final; it defines the terminal-native visual semantics, textual state treatments, responsive collapse order, and 16-component visual contract.
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md` — **Found** and final; it defines the interaction, state, accessibility, responsive, lifecycle-safety, compatibility, non-interactive, and acceptance-budget contracts.
+- The documents agree on all 16 component names: `brief-summary`, `completeness-banner`, `attention-row`, `group-row`, `runtime-detail`, `evidence-table`, `provider-detail`, `filter-bar`, `action-menu`, `confirmation-dialog`, `operation-status`, `baseline-dialog`, `help-overlay`, `finding-marker`, `machine-result`, and `install-phase`. DESIGN.md owns visual semantics and EXPERIENCE.md owns behavior, with no duplicate owner or component conflict.
+
+**UX to PRD:** The UX source-traceability tables contain one named coverage row for every canonical requirement extracted above: UJ-1 through UJ-6 (6/6), FR-1 through FR-43 (43/43), and NFR-1 through NFR-16 (16/16), with no missing or extra identifier.
+
+| PRD scope | Auditable UX coverage | Architecture landing | Result |
+| --- | --- | --- | --- |
+| UJ-1 | UX-IA-1 through UX-IA-5 and Key Flow UJ-1 | AD-5, AD-7, AD-18, AD-20 through AD-21, AD-24 through AD-25 | Aligned |
+| UJ-2 | UX-IP-9 and Key Flow UJ-2 | AD-13, AD-16 through AD-17, AD-19 through AD-21, AD-24 | Aligned |
+| UJ-3 | UX-IA-3, UX-IA-6, UX-IP-4, and Key Flow UJ-3 | AD-5 through AD-6, AD-13, AD-18, AD-20 through AD-22 | Aligned |
+| UJ-4 | UX-IP-5, UX-IP-7, and Key Flow UJ-4 | AD-6, AD-13 through AD-16, AD-18, AD-20 through AD-22, AD-24 | Aligned |
+| UJ-5 | UX-FND-2, UX-FND-5, and Key Flow UJ-5 | AD-4 through AD-5, AD-16, AD-18, AD-20 through AD-21, AD-25 | Aligned |
+| UJ-6 | UX-IP-8, UX-CP-16, and Key Flow UJ-6 | AD-3, AD-7, AD-9, AD-11 through AD-12, AD-16, AD-23 through AD-24 | Aligned |
+| FR-1 through FR-7 | Agent Promise lifecycle, provenance, Lease/Heartbeat, closure, persistence, and deterministic machine contracts | Promise application service under AD-2, AD-3, AD-13, AD-16 through AD-17, AD-19 through AD-21, AD-24 | 7/7 aligned |
+| FR-8 through FR-17 | Collector scope/completeness, normalized and bounded detail, legacy compatibility, and strict policy | Host adapters and collection/legacy presenters under AD-3, AD-5, AD-9 through AD-11, AD-13, AD-15, AD-20 through AD-21, AD-24 through AD-25 | 10/10 aligned |
+| FR-18 through FR-27 | Correlation, all Promise/Observation findings, Safe-to-stop, Snapshots, and Accepted Baseline | Reconciliation and baseline services under AD-2, AD-5, AD-13, AD-16 through AD-21, AD-24 through AD-25 | 10/10 aligned |
+| FR-28 through FR-35 | Brief, attention/Stack exploration, terminal routing, keyboard refinement, inspection, explicit states, and Action Menu | Brief/grouping/planning/presentation under AD-4 through AD-8, AD-11, AD-13 through AD-16, AD-18 through AD-22, AD-24 through AD-25 | 8/8 aligned |
+| FR-36 through FR-41 | Exact-target planning, confirmation, immediate revalidation, isolated asynchronous execution, canonical outcomes, and read-only groups | Action domain/application/adapters under AD-6, AD-10, AD-13 through AD-16, AD-20, AD-22, AD-24 | 6/6 aligned |
+| FR-42 through FR-43 | Verifiable release, atomic upgrade, consumer validation, known-good retention, and rollback | Release application and recovery under AD-3, AD-7, AD-9, AD-11 through AD-12, AD-16, AD-23 through AD-24 | 2/2 aligned |
+| NFR-1 through NFR-2 | Deterministic outcomes and honest partial truth | AD-2, AD-5, AD-11, AD-18, AD-21, AD-24 | 2/2 aligned |
+| NFR-3 through NFR-7 | Bounded refresh, argv-only Host safety, least privilege, terminal restoration, and clean machine interfaces | AD-3, AD-6 through AD-10, AD-14 through AD-15, AD-20 through AD-22, AD-25 | 5/5 aligned |
+| NFR-8 | Text-first accessible terminal communication and complete human-linear alternative | UX-A11Y-1 through UX-A11Y-5, SR-A11Y-1, UX-RP-1 through UX-RP-6, UX-IP-11; AD-7, AD-8, AD-11, AD-14 | Aligned |
+| NFR-9 through NFR-12 | Atomic durable state, Lease time semantics, data minimization, and concurrency correctness | AD-10, AD-13 through AD-25 | 4/4 aligned |
+| NFR-13 through NFR-16 | Fixture testability, brownfield compatibility, supported release, and visible validated policy | AD-9, AD-11 through AD-12, AD-19 through AD-20, AD-23 through AD-24 | 4/4 aligned |
+
+**State, lifecycle, and platform validation:** UX-ST-1 through UX-ST-18 explicitly cover loading, refreshing, stale, partial/unavailable evidence, empty/filtered-empty, pending, all five terminal Action Outcomes, identity drift, baseline availability, bounded detail, and invalid configuration; UX-ST-19 preserves focus by exact identity; UX-ST-20 keeps controls conservative. UX-IP-4 through UX-IP-7 and UX-IP-10 require one exact identity and generation, Cancel-first confirmation, typed acknowledgement for unknown safety, duplicate suppression, pre-execution revalidation, typed Provider execution, fresh correlated verification, one canonical outcome, durable audit, and phase-correct exit/signal behavior. AD-5, AD-6, AD-10, AD-13 through AD-16, and AD-22 supply those boundaries without widening actions to Stack, Project, Agent, or finding groups.
+
+**Accessibility, responsive, and compatibility validation:** UX-A11Y-1 through UX-A11Y-5 plus SR-A11Y-1 preserve meaning in text, NO_COLOR, ASCII, monochrome, keyboard-only, hostile-input, no-animation, terminal-restoration, and human-linear paths. UX-RP-1 through UX-RP-6 define full (120x30), compact (80x24), narrow (60x20), below-minimum startup, below-minimum resize, and redirected/TERM=dumb behavior; exact identity, states, labels, completeness, focus, and action safety survive collapse. UX-FND-6, UX-IP-1, UX-IP-8 through UX-IP-12, UX-IA-10, UX-IA-12, and UX-RP-6 preserve legacy table/JSON/Prometheus/Markdown/inspection and explicit-action behavior while adding deterministic `--linear` and Agent surfaces; machine stdout contains no ANSI, cursor control, progress, icons, logs, prose diagnostics, or nondeterministic ordering. AD-7 through AD-9, AD-11 through AD-12, AD-14, and AD-23 through AD-24 support these contracts. No web, mobile, graphical, external-fzf, hard-coded-theme, animation, or other unsupported UI assumption appears.
+
+**UX to architecture acceptance budgets:** ARCH-HOST-1 uses the same canonical fixture (2,000 Observations, 500 Runtime Promises, eight Collector scopes, 500 attention-bearing exact items, and bounded Provider detail), ratatui `TestBackend`, a release build, 30 measured iterations after warm-up, and a constrained four-vCPU/8-GiB Linux/glibc-2.42 profile. AD-11 gates all canonical UX states and budgets; AD-19 rejects values outside UX ranges; AD-20 exposes separate operational limits and provenance; the architecture retains every UX default and valid range unchanged.
+
+| Budget | UX contract | ARCH-HOST-1 and corresponding architecture boundary | Result |
+| --- | --- | --- | --- |
+| UX-BUD-1 | Local key/focus/overlay/filter feedback: 100 ms p95; valid 50–150 ms p95 | ARCH-HOST-1; AD-8 text/style rendering, AD-14 single Update/View owner, AD-11 TestBackend measurement | Aligned |
+| UX-BUD-2 | Refresh acknowledgement: 100 ms; valid 50–150 ms | ARCH-HOST-1; AD-5 stale-while-refreshing Snapshot truth, AD-10 generation admission/coalescing, AD-14 model update | Aligned |
+| UX-BUD-3 | Slow-refresh disclosure: 2,000 ms; valid 1,000–5,000 ms | ARCH-HOST-1; AD-5 completeness/obligation truth, AD-10 bounded concurrent collection, AD-20 Collector limits, AD-14 responsive navigation | Aligned |
+| UX-BUD-4 | Action-submit acknowledgement: 100 ms; valid 50–150 ms | ARCH-HOST-1; AD-6 exact-target command, AD-22 durable OperationId handoff/duplicate suppression, AD-14 status rendering | Aligned |
+| UX-BUD-5 | Pending progress refresh: 1,000 ms; valid 500–2,000 ms | ARCH-HOST-1; AD-14 durable phase rendering, AD-22 operation-state authority, AD-20 independently bounded verification polling | Aligned |
+| UX-BUD-6 | Terminal outcome rendering: 100 ms after architecture emission; valid 50–150 ms | ARCH-HOST-1; AD-6 FR-40 outcome precedence, AD-22 sole terminal CAS, AD-14 durable outcome rendering | Aligned |
+| UX-BUD-7 | Resize response: 100 ms p95; valid 50–150 ms p95 | ARCH-HOST-1; AD-8 UX-owned responsive semantics, AD-14 terminal/model ownership, AD-11 TestBackend geometry fixtures | Aligned |
+
+### Alignment Issues
+
+None. DESIGN.md and EXPERIENCE.md align with UJ-1 through UJ-6, FR-1 through FR-43, NFR-1 through NFR-16, and ARCH-HOST-1. No unsupported UI assumptions, component conflicts, lifecycle-safety conflicts, compatibility conflicts, or performance/Host-budget gaps were found.
+
+### Warnings
+
+None. Both canonical UX documents are Found and complete; no missing-UX, accessibility, responsive/minimum-terminal, lifecycle-safety, compatibility/non-interactive, or architecture-support warning applies.
