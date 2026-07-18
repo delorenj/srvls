@@ -2,6 +2,7 @@
 stepsCompleted:
   - step-01-document-discovery
   - step-02-prd-analysis
+  - step-03-epic-coverage-validation
 inputDocuments:
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md
@@ -909,3 +910,69 @@ The canonical PRD package is structurally complete for this extraction step: it 
 PRD completeness is qualified by two explicit, non-phase-blocking evidence obligations. The Product Owner must establish the operator-impact measure before beta evaluation. UX and Architecture must publish operational acceptance budgets, defaults, valid ranges, and acceptance checks in their canonical contracts and stories before implementation readiness can report `READY`. The PRD intentionally delegates five concrete design decisions to downstream architecture: durable record formats and locations; Agent-facing lifecycle contracts; Lease-clock semantics; evidence-weighting and identity rules; and retention boundaries. The legacy UX decision identifiers also remain candidate inputs until superseded by the approved dedicated UX contract. These are recorded closure obligations and delegated design decisions, not missing FR or NFR identifiers.
 
 Epic coverage validation is explicitly deferred to the later BMAD epic-coverage step. This Step 2 assessment makes no judgment about whether any current epic or story covers the extracted requirements, closure obligations, or addendum directions.
+
+## Epic Coverage Validation
+
+### Coverage Matrix
+
+| FR ID | PRD Requirement | Canonical Epic / Story Owner(s) | Status |
+| --- | --- | --- | --- |
+| FR-1 | An Agent or Operator can declare a Runtime Promise containing Agent, Project, Runtime locator, purpose, Launch Mechanism, expected lifetime or termination condition, Owner, intended instance count, persistence choice, and optional opaque Plane, Git, or Telemetry references. | Epic 2 / Story 2.2; Epic 2 / Story 2.6 | Covered |
+| FR-2 | `srvls` records the declaration source, creation time, supplied Agent and Project identities, and subsequent lifecycle events without silently rewriting history. | Epic 2 / Story 2.2; Epic 2 / Story 2.6 | Covered |
+| FR-3 | A newly declared Runtime Promise receives a finite Lease unless the caller explicitly requests persistent intent. | Epic 2 / Story 2.3; Epic 2 / Story 2.6 | Covered |
+| FR-4 | An owning Agent can renew an active Lease and provide a Heartbeat associated with the Promise ID. | Epic 2 / Story 2.4; Epic 2 / Story 2.6 | Covered |
+| FR-5 | An authorized Agent or Operator can mark a Runtime Promise released, completed, or revoked with reason and time. | Epic 2 / Story 2.5; Epic 2 / Story 2.6 | Covered |
+| FR-6 | An Agent or Operator can opt a Runtime Promise into persistence only while supplying Durable Ownership and a Launch Mechanism that can be inspected later. | Epic 2 / Story 2.3; Epic 2 / Story 2.6 | Covered |
+| FR-7 | All declaration, query, renewal, release, and validation operations are available non-interactively with deterministic machine-readable responses and exit behavior. | Epic 2 / Story 2.1; Epic 2 / Story 2.2; Epic 2 / Story 2.3; Epic 2 / Story 2.4; Epic 2 / Story 2.5; Epic 2 / Story 2.6 | Covered |
+| FR-8 | `srvls` collects user, root, `/etc/crontab`, and `/etc/cron.d` entries with schedule, command identity, source location, user context, and provenance. | Epic 3 / Story 3.4; Epic 3 / Story 3.11 | Covered |
+| FR-9 | `srvls` collects system and user services and timers with full unit identity, enablement, runtime state, health, schedule, and provenance. | Epic 3 / Story 3.5; Epic 3 / Story 3.11 | Covered |
+| FR-10 | `srvls` collects containers with immutable identity, runtime state, health, restart policy, image, Compose Project, labels, and working-directory evidence when available. | Epic 3 / Story 3.6; Epic 3 / Story 3.11 | Covered |
+| FR-11 | `srvls` collects PM2 processes with stable observed identity, runtime state, restart count, namespace, script, working directory, and start-time evidence. | Epic 3 / Story 3.7; Epic 3 / Story 3.11 | Covered |
+| FR-12 | `srvls` collects direct Host process Observations needed to reconcile Agent-created Runtimes that are not owned by cron, systemd, Docker, or PM2. | Epic 3 / Story 3.8; Epic 3 / Story 3.11 | Covered |
+| FR-13 | Every Collector emits a Provider-neutral Observation composed from identity, lifecycle, schedule, health, provenance, ownership hints, resource signals, and Provider-specific detail references. | Epic 3 / Story 3.9; Epic 3 / Story 3.11 | Covered |
+| FR-14 | Each refresh returns Observations together with explicit per-Collector completeness, duration, and diagnostic outcomes. | Epic 3 / Story 3.1; Epic 3 / Story 3.2; Epic 3 / Story 3.3; Epic 3 / Story 3.4; Epic 3 / Story 3.5; Epic 3 / Story 3.6; Epic 3 / Story 3.7; Epic 3 / Story 3.8; Epic 3 / Story 3.9; Epic 3 / Story 3.10; Epic 3 / Story 3.11 | Covered |
+| FR-15 | An Operator can inspect an Observation's Provider-appropriate status, schedule, provenance, identity, and bounded log or output detail. | Epic 3 / Story 3.11 | Covered |
+| FR-16 | The replacement implementation preserves the established Python CLI's flat JSON, Prometheus, Markdown, table, inspection, executable-name, ordering, escaping, arguments, exit behavior, and explicit CLI-action behavior through a layered compatibility oracle unless a deliberate deviation is recorded and tested. | Epic 1 / Story 1.1; Epic 1 / Story 1.2; Epic 1 / Story 1.3; Epic 1 / Story 1.4; Epic 1 / Story 1.5; Epic 1 / Story 1.6; Epic 1 / Story 1.7; Epic 1 / Story 1.8; Epic 1 / Story 1.9; Epic 1 / Story 1.10; Epic 3 / Story 3.11 | Covered |
+| FR-17 | `srvls` exposes visible partial-failure diagnostics and a strict mode with deterministic Collector-outcome-to-exit behavior. | Epic 3 / Story 3.10; Epic 3 / Story 3.11 | Covered |
+| FR-18 | `srvls` correlates Runtime Promises to Observations using Provider-native stable identities, declared locators, Project and Launch Mechanism evidence, and bounded secondary evidence. | Epic 4 / Story 4.1; Epic 4 / Story 4.10 | Covered |
+| FR-19 | An active Runtime Promise with the intended number of compatible running Observations and sufficient Collector completeness receives a healthy Reconciliation Finding. | Epic 4 / Story 4.2; Epic 4 / Story 4.10 | Covered |
+| FR-20 | An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when the relevant Collection Obligations provide sufficient absence evidence. | Epic 4 / Story 4.2; Epic 4 / Story 4.10 | Covered |
+| FR-21 | A running Observation with no matching Runtime Promise receives an orphaned Reconciliation Finding. | Epic 4 / Story 4.3; Epic 4 / Story 4.10 | Covered |
+| FR-22 | When matching running Observations exceed a Runtime Promise's intended instance count, `srvls` emits duplicate Reconciliation Findings for the excess set without choosing a destructive target silently. | Epic 4 / Story 4.3; Epic 4 / Story 4.10 | Covered |
+| FR-23 | `srvls` can classify a running Runtime stale using configured, explainable evidence of non-use or obsolescence. | Epic 4 / Story 4.4; Epic 4 / Story 4.10 | Covered |
+| FR-24 | `srvls` can classify a Runtime hot when collected resource evidence crosses configured threshold or trend policy. | Epic 4 / Story 4.4; Epic 4 / Story 4.10 | Covered |
+| FR-25 | `srvls` emits unmanaged when an Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism, and abandoned when a surviving Observation outlives an ephemeral Lease, lost-Heartbeat grace, or intent explicitly closed as released, completed, or revoked. | Epic 4 / Story 4.5; Epic 4 / Story 4.10 | Covered |
+| FR-26 | Every attention-worthy Reconciliation Finding exposes classification rules, identity evidence, contradictory or missing evidence, confidence, ownership, purpose, expected lifetime, Launch Mechanism, and a Safe-to-stop Assessment with reasons. | Epic 4 / Story 4.1; Epic 4 / Story 4.2; Epic 4 / Story 4.3; Epic 4 / Story 4.4; Epic 4 / Story 4.5; Epic 4 / Story 4.6; Epic 4 / Story 4.7; Epic 4 / Story 4.8; Epic 4 / Story 4.9; Epic 4 / Story 4.10; Epic 6 / Story 6.4 | Covered |
+| FR-27 | `srvls` stores bounded local Snapshots sufficient to report new, resolved, changed, and persisting Runtime Promises, Observations, and Reconciliation Findings within an Evidence Window from an explicitly Accepted Baseline to the current Snapshot. | Epic 4 / Story 4.7; Epic 4 / Story 4.8; Epic 4 / Story 4.10; Epic 5 / Story 5.10 | Covered |
+| FR-28 | `srvls` produces a Brief answering what Agents created, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and which Runtimes carry duplicate, stale, abandoned, unmanaged, or hot findings. | Epic 4 / Story 4.9; Epic 4 / Story 4.10; Epic 5 / Story 5.10 | Covered |
+| FR-29 | The default TUI presents a concise attention summary followed by deterministic Stack groups, with Project, Agent, Provider, and Reconciliation Finding filters and an explicit Ungrouped section. | Epic 4 / Story 4.10; Epic 5 / Story 5.10 | Covered |
+| FR-30 | `srvls` opens the TUI by default only when both input and output are interactive terminals, while redirected execution retains non-interactive table behavior. | Epic 5 / Story 5.1; Epic 5 / Story 5.10 | Covered |
+| FR-31 | An Operator can navigate, expand or collapse Stacks, filter, search, refresh, inspect, open help, and return or quit entirely by keyboard. | Epic 5 / Story 5.3; Epic 5 / Story 5.10 | Covered |
+| FR-32 | The TUI and CLI inspection surfaces show linked Runtime Promise, Heartbeat, Lease, Observation, Project, Agent, Launch Mechanism, reconciliation evidence, and bounded Provider detail. | Epic 5 / Story 5.4; Epic 5 / Story 5.5; Epic 5 / Story 5.10 | Covered |
+| FR-33 | Rows and summaries communicate Provider, identity, running state, health, freshness, pending work, and Reconciliation Findings using text plus optional semantic color and icons. | Epic 5 / Story 5.7; Epic 5 / Story 5.10 | Covered |
+| FR-34 | Loading, refreshing, stale, partial-failure, unavailable-Provider, empty, filtered-empty, pending-action, verified, executed-unverified, refused, timed-out, failed, and baseline-unavailable states each receive explicit visible treatment, including responsive behavior on small terminals. | Epic 5 / Story 5.1; Epic 5 / Story 5.2; Epic 5 / Story 5.3; Epic 5 / Story 5.4; Epic 5 / Story 5.5; Epic 5 / Story 5.6; Epic 5 / Story 5.7; Epic 5 / Story 5.8; Epic 5 / Story 5.9 | Covered |
+| FR-35 | Pressing `a` on an actionable Runtime Promise or Observation opens the Action Menu with supported start, stop, restart, and disable or delete operations; direct `s`, `R`, and `x` shortcuts remain where unambiguous, and `?` documents all bindings. | Epic 6 / Story 6.2; Epic 6 / Story 6.13 | Covered |
+| FR-36 | `srvls` can plan a start from an active Runtime Promise whose Launch Mechanism resolves to a supported Provider target. It can plan a stop, restart, and disable or delete operation for individual systemd, Docker, PM2, and direct-process Observations according to Provider capability. Cron Observations remain read-only in v1. | Epic 6 / Story 6.1; Epic 6 / Story 6.13 | Covered |
+| FR-37 | Immediately before execution, `srvls` re-collects or verifies the selected Observation's canonical Provider identity, or revalidates the Runtime Promise, absence evidence, and Provider-native start target when no Observation exists. | Epic 6 / Story 6.4; Epic 6 / Story 6.13 | Covered |
+| FR-38 | The TUI requires confirmation for stop and disable or delete, names the exact Runtime and operation, and includes the current Safe-to-stop Assessment and uncertainty. | Epic 6 / Story 6.3; Epic 6 / Story 6.13 | Covered |
+| FR-39 | Each lifecycle operation has a unique operation identity, captures its source generation, suppresses duplicate submissions, and remains distinct from concurrent refreshes. | Epic 6 / Story 6.6; Epic 6 / Story 6.13 | Covered |
+| FR-40 | After a lifecycle operation begins, `srvls` refreshes relevant truth and reports exactly one canonical Action Outcome: `verified`, `executed-unverified`, `refused`, `timed-out`, or `failed`. | Epic 6 / Story 6.1; Epic 6 / Story 6.2; Epic 6 / Story 6.3; Epic 6 / Story 6.4; Epic 6 / Story 6.5; Epic 6 / Story 6.6; Epic 6 / Story 6.7; Epic 6 / Story 6.8; Epic 6 / Story 6.9; Epic 6 / Story 6.10; Epic 6 / Story 6.11; Epic 6 / Story 6.12 | Covered |
+| FR-41 | Stack, Project, Agent, and Reconciliation Finding groups remain read-only in v1, and any required privilege is limited to the selected Provider operation. | Epic 6 / Story 6.2; Epic 6 / Story 6.13 | Covered |
+| FR-42 | `srvls` can be built, versioned, checksum-verified, staged, smoke-tested, and installed as a standalone release artifact for the supported Host target. | Epic 7 / Story 7.1; Epic 7 / Story 7.15 | Covered |
+| FR-43 | An Operator can atomically upgrade `srvls`, validate existing metrics and Snapshot timer consumers, and roll back to the prior known-good target. | Epic 7 / Story 7.1; Epic 7 / Story 7.2; Epic 7 / Story 7.3; Epic 7 / Story 7.4; Epic 7 / Story 7.5; Epic 7 / Story 7.6; Epic 7 / Story 7.7; Epic 7 / Story 7.8; Epic 7 / Story 7.9; Epic 7 / Story 7.10; Epic 7 / Story 7.11; Epic 7 / Story 7.12; Epic 7 / Story 7.13; Epic 7 / Story 7.14; Epic 7 / Story 7.15 | Covered |
+
+### Missing Requirements
+
+None
+
+### Coverage Statistics
+
+- Total PRD FRs: 43
+- FRs covered in epics: 43
+- Coverage percentage: 100.00%
+- Missing PRD FRs: 0
+- Extra epic FR IDs: 0
+
+### Reciprocal Validation
+
+All 43 PRD FRs have nonempty owner sets; every named owner exists as a canonical story definition; every owner story reciprocally cites its FR; and the epic functional inventory, reciprocal story requirement lists, and requirement-coverage keys contain zero extra FR IDs.
