@@ -19,8 +19,11 @@
 
   <step n="1" goal="Determine target story">
     <check if="{{story_path}} is provided by user or user provided the epic and story number such as 2-4 or 1.6 or epic 1 story 5">
+      <action>Require {{sprint_status}}, load the canonical entry for the selected Story, and HALT unless its source state is exactly `backlog`</action>
       <action>Parse user-provided story path: extract epic_num, story_num, story_title from format like "1-2-user-auth"</action>
       <action>Set {{epic_num}}, {{story_num}}, {{story_key}} from user input</action>
+      <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}" and run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+      <check if="the C-23 command exits non-zero"><action>HALT</action></check>
       <action>GOTO step 2a</action>
     </check>
 
@@ -45,13 +48,18 @@
       </check>
 
       <check if="user provides epic-story number">
+        <action>Require the generated canonical sprint status and HALT unless the selected Story entry is exactly `backlog`</action>
         <action>Parse user input: extract epic_num, story_num, story_title</action>
         <action>Set {{epic_num}}, {{story_num}}, {{story_key}} from user input</action>
+        <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}" and run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+        <check if="the C-23 command exits non-zero"><action>HALT</action></check>
         <action>GOTO step 2a</action>
       </check>
 
       <check if="user provides story docs path">
-        <action>Use user-provided path for story documents</action>
+        <action>Require the generated canonical sprint status and HALT unless the derived Story entry is exactly `backlog`</action>
+        <action>Use user-provided path for story documents, derive an exact canonical {{story_id}}, and run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+        <check if="the Story ID cannot be derived or the C-23 command exits non-zero"><action>HALT</action></check>
         <action>GOTO step 2a</action>
       </check>
     </check>
@@ -88,6 +96,8 @@
         - story_title: remainder after second dash (e.g., "user-authentication")
       </action>
       <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
+      <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+      <check if="the C-23 command exits non-zero"><action>HALT</action></check>
       <action>Store story_key for later use (e.g., "1-2-user-authentication")</action>
 
       <!-- Mark epic as in-progress if this is first story -->
@@ -145,6 +155,8 @@
       - story_title: remainder after second dash (e.g., "user-authentication")
     </action>
     <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
+    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+    <check if="the C-23 command exits non-zero"><action>HALT</action></check>
     <action>Store story_key for later use (e.g., "1-2-user-authentication")</action>
 
     <!-- Mark epic as in-progress if this is first story -->
@@ -303,8 +315,9 @@
     <template-output file="{default_output_file}">
     story_completion_status</template-output>
 
-    <!-- CRITICAL: Set status to ready-for-dev -->
-    <action>Set story Status to: "ready-for-dev"</action>
+    <!-- Close the check/use window immediately before the assignable write. -->
+    <action>Re-run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` and re-read canonical sprint source state; HALT unless approval still passes and state is still exactly `backlog`</action>
+    <action>Do not write a second Story-file status; canonical assignability exists only in the atomically gated sprint-status entry</action>
     <action>Add completion note: "Ultimate
     context engine analysis completed - comprehensive developer guide created"</action>
   </step>
@@ -319,7 +332,7 @@
       <action>Load the FULL file and read all development_status entries</action>
       <action>Find development_status key matching {{story_key}}</action>
       <action>Verify current status is "backlog" (expected previous state)</action>
-      <action>Update development_status[{{story_key}}] = "ready-for-dev"</action>
+      <action>Use only `python3 tests/transition_story_status.py {{story_id}} {{story_key}} backlog ready-for-dev {{sprint_status}}`; HALT on non-zero and do not write sprint status directly</action>
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
     </check>
 

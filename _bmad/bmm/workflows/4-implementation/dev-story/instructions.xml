@@ -78,10 +78,8 @@
 
     <!-- Non-sprint story discovery -->
     <check if="{{sprint_status}} file does NOT exist">
-      <action>Search {story_dir} for stories directly</action>
-      <action>Find stories with "ready-for-dev" status in files</action>
-      <action>Look for story files matching pattern: *-*-*.md</action>
-      <action>Read each candidate story file to check Status section</action>
+      <output>🚫 Canonical sprint status is required; Story files are never status authority.</output>
+      <action>HALT</action>
 
       <check if="no ready-for-dev stories found in story files">
         <output>📋 No ready-for-dev stories found
@@ -188,13 +186,21 @@
   </step>
 
   <step n="4" goal="Mark story in-progress" tag="sprint-status">
+    <action>Derive {{story_id}} from the first two numeric components of {{story_key}} as `epic.story` (for example `6-13-complete-exact-target-action-journey` becomes `6.13`); STOP if that exact derivation fails</action>
+    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}` from {project-root}</action>
+    <check if="the C-23 command exits non-zero">
+      <output>STOP: fixture approval, reviewer separation, commit ancestry, or a declared predecessor is not valid for {{story_id}}.</output>
+      <action>Do not begin implementation and do not change sprint status</action>
+      <action>HALT</action>
+    </check>
     <check if="{{sprint_status}} file exists">
       <action>Load the FULL file: {{sprint_status}}</action>
       <action>Read all development_status entries to find {{story_key}}</action>
       <action>Get current status value for development_status[{{story_key}}]</action>
 
-      <check if="current status == 'ready-for-dev' OR review_continuation == true">
-        <action>Update the story in the sprint status report to = "in-progress"</action>
+      <check if="current status == 'ready-for-dev' OR (current status == 'review' AND review_continuation == true)">
+        <action>Immediately re-run the C-23 assignment command and re-read the canonical source status; HALT on any changed evidence before writing `in-progress`</action>
+        <action>Use only `python3 tests/transition_story_status.py {{story_id}} {{story_key}} {{current_status}} in-progress {{sprint_status}}`; HALT on non-zero and do not write sprint status directly</action>
         <output>🚀 Starting work on story {{story_key}}
           Status updated: ready-for-dev → in-progress
         </output>
@@ -206,18 +212,19 @@
         </output>
       </check>
 
-      <check if="current status is neither ready-for-dev nor in-progress">
-        <output>⚠️ Unexpected story status: {{current_status}}
-          Expected ready-for-dev or in-progress. Continuing anyway...
+      <check if="current status is neither ready-for-dev nor in-progress AND NOT (current status == 'review' AND review_continuation == true)">
+        <output>🚫 Unexpected story status: {{current_status}}
+          Expected ready-for-dev or in-progress.
         </output>
+        <action>HALT</action>
       </check>
 
       <action>Store {{current_sprint_status}} for later use</action>
     </check>
 
     <check if="{{sprint_status}} file does NOT exist">
-      <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
-      <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
+      <output>🚫 No canonical sprint status exists; dependency/status authority cannot be proved.</output>
+      <action>HALT</action>
     </check>
   </step>
 
@@ -324,8 +331,9 @@
     <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
     <action>Run the full regression suite (do not skip)</action>
     <action>Confirm File List includes every changed file</action>
+    <action>Require the committed `&lt;story-id&gt;-completed-v1.json` provenance object and run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on any non-zero exit before review status</action>
     <action>Execute enhanced definition-of-done validation</action>
-    <action>Update the story Status to: "review"</action>
+    <action>Do not write a second Story-file status; canonical state exists only in the atomically gated sprint-status entry</action>
 
     <!-- Enhanced Definition of Done Validation -->
     <action>Validate definition-of-done checklist with essential requirements:
@@ -347,7 +355,7 @@
       <action>Load the FULL file: {sprint_status}</action>
       <action>Find development_status key matching {{story_key}}</action>
       <action>Verify current status is "in-progress" (expected previous state)</action>
-      <action>Update development_status[{{story_key}}] = "review"</action>
+      <action>Use only `python3 tests/transition_story_status.py {{story_id}} {{story_key}} in-progress review {sprint_status}`; HALT on non-zero and do not write sprint status directly</action>
       <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
       <output>✅ Story status updated to "review" in sprint-status.yaml</output>
     </check>

@@ -22,6 +22,11 @@
 
 **No fuzzy aliases**: `user-stories.md`, story-only names, and files outside those two machine-readable patterns are not sprint-planning inputs. Rename a new canonical artifact to an `*epic*.md` name only after it is authoritative and assignable.
 
+**C-23 assignment gate**: before changing any canonical Story `E.S` from
+`backlog`, run `python3 tests/validate_story_fixture_approvals.py E.S`. A
+missing, malformed, same-author/reviewer, or same-commit approval fails closed;
+do not create or assign the story until the command passes.
+
 <workflow>
 
 <step n="1" goal="Parse epic files and extract all work items">
@@ -75,11 +80,21 @@ development_status:
 **Story file detection:**
 
 - Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
-- If exists → upgrade status to at least `ready-for-dev`
+- If it exists, derive `story_id` from the story key's first two numeric
+  components (`6-13-title` → `6.13`) and run
+  `python3 tests/validate_story_fixture_approvals.py <story_id>`.
+  Upgrade status to at least `ready-for-dev` only when that command exits zero;
+  otherwise retain `backlog` and report the fail-closed C-23 gate.
 
 **Preservation rule:**
 
-- If existing `{status_file}` exists and has more advanced status, preserve it
+- C-23 validity dominates preservation: on a non-zero approval command, force
+  the Story to `backlog` even if an existing status is more advanced and report
+  the invalid transition evidence.
+- If C-23 passes, preserve `ready-for-dev` or `in-progress`; preserve `review`
+  or `done` only when
+  `python3 tests/validate_story_fixture_approvals.py --complete <story_id>`
+  also exits zero. Otherwise force `backlog` and report the invalid provenance.
 - Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
 
 **Status Flow Reference:**

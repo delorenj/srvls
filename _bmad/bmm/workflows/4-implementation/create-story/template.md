@@ -1,6 +1,6 @@
 # Story {{epic_num}}.{{story_num}}: {{story_title}}
 
-Status: ready-for-dev
+Status: canonical-in-sprint-status
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

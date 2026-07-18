@@ -169,14 +169,18 @@
   </step>
 
   <step n="5" goal="Update story status and sync sprint tracking">
+    <action>Derive exact {{story_id}} from {{story_key}} and require canonical {sprint_status}; HALT if either is unavailable</action>
+    <action>Run `python3 tests/validate_story_fixture_approvals.py {{story_id}}`; HALT on non-zero before any Story or sprint-status write</action>
     <!-- Determine new status based on review outcome -->
     <check if="all HIGH and MEDIUM issues fixed AND all ACs implemented">
+      <action>Run `python3 tests/validate_story_fixture_approvals.py --complete {{story_id}}`; HALT on non-zero</action>
       <action>Set {{new_status}} = "done"</action>
-      <action>Update story Status field to "done"</action>
+      <action>Do not write a second Story-file status</action>
     </check>
     <check if="HIGH or MEDIUM issues remain OR ACs not fully implemented">
+      <action>Require the canonical source state to be `review`; HALT for any other source state</action>
       <action>Set {{new_status}} = "in-progress"</action>
-      <action>Update story Status field to "in-progress"</action>
+      <action>Do not write a second Story-file status</action>
     </check>
     <action>Save story file</action>
 
@@ -194,13 +198,15 @@
       <action>Find development_status key matching {{story_key}}</action>
 
       <check if="{{new_status}} == 'done'">
-        <action>Update development_status[{{story_key}}] = "done"</action>
+        <action>Immediately re-run both assignment and `--complete` gates and re-read source state; HALT on changed evidence</action>
+        <action>Use only `python3 tests/transition_story_status.py {{story_id}} {{story_key}} review done {sprint_status}`; HALT on non-zero and do not write sprint status directly</action>
         <action>Save file, preserving ALL comments and structure</action>
         <output>✅ Sprint status synced: {{story_key}} → done</output>
       </check>
 
       <check if="{{new_status}} == 'in-progress'">
-        <action>Update development_status[{{story_key}}] = "in-progress"</action>
+        <action>Immediately re-run the assignment gate and re-read source state; HALT on changed evidence</action>
+        <action>Use only `python3 tests/transition_story_status.py {{story_id}} {{story_key}} review in-progress {sprint_status}`; HALT on non-zero and do not write sprint status directly</action>
         <action>Save file, preserving ALL comments and structure</action>
         <output>🔄 Sprint status synced: {{story_key}} → in-progress</output>
       </check>
