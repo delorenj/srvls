@@ -27,6 +27,7 @@
   - [x] Create the canonical implementation-ready epics and stories — **COMPLETED by Taskforce Daedalus (Session: team-daedalus; R22 unanimous zero-finding acceptance; final artifact: `_bmad-output/planning-artifacts/epics.md`)**
     - [x] Draft the seven-epic canonical backlog and exhaustive coverage matrices — **COMPLETED by Taskforce Daedalus (75 stories; 43 FR, 16 NFR, 6 UJ, 89 UX IDs, AD-1..AD-25)**
     - [x] Repair the final UJ-2 reciprocal registry edge and rerun Step 4 validation — **COMPLETED by Sir Fix-a-Lot recovery (Session: sir-fix-a-lot-final-reciprocity; Commit: c6f71f6; all Step 4 gates PASS)**
+  - [ ] Validate canonical planning with BMAD Implementation Readiness — **CLAIMED by Taskforce Themis (Session: taskforce-themis; Branch: epic-implementation-readiness)**
     - [x] Reconcile canonical PRD and UX contracts against the architecture — **COMPLETED by Agent Buttercup (Session: agent-buttercup-architecture-inputs; Commit: 672b4a7; Verdict: RECONCILIATION REQUIRED and incorporated)**
     - [x] Reconcile live compatibility, readiness, and operational limits — **COMPLETED by Codemaster Zigzag (Sessions: codemaster-zigzag-architecture-live, codemaster-zigzag-architecture-live-recovery; Commit: d00b91a; Verdict: CHANGES REQUIRED and incorporated)**
     - [x] Validate the reconciled spine against the complete good-spine rubric — **COMPLETED by Bartholomew the Builder (Session: bartholomew-architecture-rubric; Commit: f7ef3d9; Verdict: CHANGES REQUIRED and incorporated)**
