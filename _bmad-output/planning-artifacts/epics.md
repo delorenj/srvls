@@ -1468,6 +1468,7 @@ requirement plus every AD-11 row.
       "NFR-8",
       "NFR-12",
       "NFR-13",
+      "UJ-2",
       "UJ-3",
       "UJ-4",
       "UJ-5",
