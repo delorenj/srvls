@@ -4,6 +4,7 @@ stepsCompleted:
   - step-02-prd-analysis
   - step-03-epic-coverage-validation
   - step-04-ux-alignment
+  - step-05-epic-quality-review
 inputDocuments:
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md
   - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md
@@ -1031,3 +1032,61 @@ None. DESIGN.md and EXPERIENCE.md align with UJ-1 through UJ-6, FR-1 through FR-
 ### Warnings
 
 None. Both canonical UX documents are Found and complete; no missing-UX, accessibility, responsive/minimum-terminal, lifecycle-safety, compatibility/non-interactive, or architecture-support warning applies.
+
+## Epic Quality Review
+
+### Validation Summary
+
+**Step 5 result:** PASS. The complete canonical `epics.md` was reviewed from first byte through EOF: all seven epics and all 75 stories were evaluated in canonical order, with zero sampled or skipped stories.
+
+| Epic | User-value outcome | Stories | Dependency edges | GWT criteria / approval rows | Result |
+| --- | --- | ---: | ---: | ---: | --- |
+| 1 — Trust the Rust replacement before it touches Host truth | Operators and maintainers gain non-mutating replacement trust before Provider or release mutation. | 10 | 9 | 20 | Pass |
+| 2 — Let Agents own runtime intent deterministically | Agents gain a retry-safe Runtime Promise lifecycle. | 6 | 6 | 12 | Pass |
+| 3 — See the actual work running on the Host | Operators gain bounded Provider evidence with explicit completeness. | 11 | 11 | 22 | Pass |
+| 4 — Reconcile intended and actual runtime truth | Operators gain explainable findings, safety assessments, Snapshots, baselines, and a Brief. | 10 | 10 | 20 | Pass |
+| 5 — Navigate one accessible terminal product | Operators gain accessible, responsive exploration and recovery in one terminal product. | 10 | 10 | 20 | Pass |
+| 6 — Act on one exact runtime safely | Operators gain exact-target planning, execution, verification, and recovery. | 13 | 14 | 26 | Pass |
+| 7 — Upgrade and recover the installed pair without split truth | Operators gain crash-convergent install, upgrade, validation, recovery, and rollback. | 15 | 15 | 30 | Pass |
+| **Total** | **Seven independently valuable, user-centric increments** | **75** | **75** | **150** | **Pass** |
+
+All seven titles and goals state an Agent, Operator, or maintainer outcome rather than a technical milestone. Each epic provides a usable increment on completion, consumes only outputs from earlier epics, and has no dependency on a later epic.
+
+**Story order and structure:** The canonical sequences are 1.1–1.10, 2.1–2.6, 3.1–3.11, 4.1–4.10, 5.1–5.10, 6.1–6.13, and 7.1–7.15. All 75 IDs are unique and sequential. Every story has one nonempty `As a`, `I want`, and `So that` statement and exactly one each of Implementation Boundary, Requirement Mapping, Dependencies, Validation Expectations, Out of Scope, and Acceptance Criteria. Every Requirement Mapping and owning-oracle declaration is nonempty, so traceability remains explicit.
+
+**Acceptance criteria and approval correspondence:** Every story has exactly two independently executable Given/When/Then criteria: one positive `P01` row and one negative `N01` row, for exactly 150 GWT criteria. The `srvls-story-acceptance-registry-v1` declares and contains exactly 150 rows, all 150 row IDs are unique and in canonical story/P01/N01 order, every `criterionMarkdown` value occurs byte-for-byte in its owning story, and all 150 SHA-256 values recompute. Story-to-criterion-to-approval correspondence is therefore 150/150 with zero missing, duplicate, stale, or dangling rows.
+
+**Dependency graph:** The complete graph contains exactly 75 declared edges. Story 1.1 is the sole root; 73 stories declare one predecessor; Story 6.13 declares the two earlier predecessors Story 2.6 and Story 6.12. Every referenced owner exists. All 75 edges point to a lower canonical story index, yielding zero forward edges, zero self edges, zero missing targets, and zero circular components. Per-epic edge counts are 9, 6, 11, 10, 10, 14, and 15 respectively.
+
+**Sizing and independent completion:** All 75 stories define one bounded outcome with an explicit non-goal and independently testable positive and negative behavior. Composition and aggregate-gate stories remain bounded to wiring or validation and explicitly refuse to re-own earlier implementation. No story requires future work to satisfy its own acceptance criteria, and no story is an indivisible epic-sized implementation milestone.
+
+**Brownfield, database, starter, and integration timing:** Brownfield compatibility arrives before replacement behavior through Stories 1.2, 1.3, and 1.10; Provider work follows only after the foundation gate; exact existing-consumer discovery precedes release preimages in Story 7.4, pair migration follows in Story 7.6, and the exact-artifact consumer/Host smoke closes Story 7.15. Story 1.6 creates only the fail-closed SQLite foundation, while Story 1.7 provides aggregate-neutral primitives and explicitly leaves concrete Promise, plan, operation, baseline, Snapshot, collection, and release schemas with their owning stories; there is no all-entities-upfront database violation. The architecture prescribes a direct Rust 2024 binary-workspace bootstrap rather than an external starter template, and Story 1.1 is the first story and owns that bootstrap, resolver 3, Rust 1.88 MSRV, moving-stable, lockfile, and early CI applicability.
+
+**Planning quarantine, compatibility, integration, release, and architecture evidence:** Every canonical command below exited 0. Individual execution was followed by the aggregate execution, and `git status --short` remained clean after all gates.
+
+| Gate | Canonical command | Exact result |
+| --- | --- | --- |
+| Planning quarantine | `python3 tests/validate_planning_quarantine.py` | PASS — 2 exact globs, 1 canonical artifact, and 1 byte-exact retired archive. |
+| Story fixture approval | `python3 tests/validate_story_fixture_approvals.py` | PASS — 75 stories and 150 canonical-criterion-bound rows. |
+| Story approval mutation regression | `python3 tests/validate_story_approval_regressions.py` | PASS — the hermetic dependency/approval chain and all fail-closed mutations passed. |
+| Frozen compatibility oracle | `bash tests/compat/validate.sh` | PASS — Provider, output, CLI, inspection, action, source-pin, immutable-hash, and AD-9 checks; 90 inherited rows plus 4 approved deviations. |
+| Contract oracles | `python3 tests/fixtures/contracts/validate.py` | `contract oracles: PASS`. |
+| Release oracles | `python3 tests/fixtures/contracts/release-transaction-v1/validate_oracles.py` | PASS — 11 crash cuts, 7 complete chains, 15 standalone authorities, 4 traces, 1 result, live lock/handoff proofs, positive two-pair FirstInstall proof, and all declared release mutation suites. |
+| Live smoke | `bash tests/test_smoke.sh` | PASS — 292 JSON items, 14 Prometheus samples, Markdown and table output, real cron inspection, and hostile-name injection safety. |
+| Architecture aggregate | `bash tests/validate_architecture_contracts.sh` | `architecture contract gate: PASS` after rerunning every gate above plus transition-script compilation. |
+
+### Critical Violations
+
+**Finding count: 0.** No technical epic, later-epic dependency, forward story dependency, circular dependency, missing dependency owner, or independently incompletable epic-sized story was found.
+
+### Major Issues
+
+**Finding count: 0.** No vague or unbound acceptance criterion, future-story requirement, story-sizing defect, brownfield integration timing defect, all-entities-upfront database violation, starter-bootstrap gap, approval correspondence defect, or release/compatibility gate failure was found.
+
+### Minor Concerns
+
+**Finding count: 0.** No numbering, formatting, required-section, persona/value/outcome, traceability, quarantine, fixture, mutation, contract, smoke, or documentation gap was found.
+
+### Actionable Recommendations
+
+**Remediation action count: 0.** No Step 5 remediation is required. Preserve the canonical story order, C-23 pre-assignment approval, planning quarantine, and `bash tests/validate_architecture_contracts.sh` aggregate gate as implementation proceeds.
