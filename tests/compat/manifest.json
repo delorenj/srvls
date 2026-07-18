@@ -1,0 +1,211 @@
+{
+  "schema": "srvls-legacy-oracle-manifest-v1",
+  "status": "frozen",
+  "captured_on": "2026-07-17",
+  "capture_runtime": {
+    "python": "3.14.4",
+    "platform": "Linux with all Host reads virtualized by fixtures"
+  },
+  "source_origin": {
+    "commit": "63757c542176e37d89eb3a2a8eef18e9fb2785e1",
+    "commit_date": "2026-07-14",
+    "subject": "feat: establish srvls baseline"
+  },
+  "source": {
+    "frozen_parent": "598eb0ccd0ad37a9432a2132a14d75aeea0f9f47",
+    "git_blob_sha1": "aebb996d1341fc44afe513126ca6553815faa904",
+    "path": "srvls",
+    "sha256": "06a7e312fba5f2ca03e99181cc208d7abd9ac4688f26ea0f8c89ee19eb9e8b62",
+    "size": 13388
+  },
+  "assertion_authority": {
+    "reference": "the frozen Python Git blob only",
+    "encoder_under_test": "never invoked by capture, replay, or validation",
+    "refresh_policy": "candidate output is external to the repository and requires manual review plus a new ledger entry"
+  },
+  "compatibility_disposition": {
+    "schema": "srvls-compatibility-disposition-v1",
+    "default": "inherited",
+    "approved_deviations": [
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.help-is-table",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "help",
+          "collection_started": false,
+          "stdout_bytes": "Usage%3A%20srvls%20%5BOPTIONS%5D%20%5BCOMMAND%5D%0A%0AOptions%3A%0A%20%20--json%20%20%20Emit%20legacy%20JSON%20inventory%0A%20%20--prom%20%20%20Emit%20Prometheus%20metrics%0A%20%20--md%20%20%20%20%20Emit%20Markdown%20inventory%0A%20%20--table%20%20Emit%20table%20inventory%0A%20%20--tui%20%20%20%20Open%20the%20terminal%20UI%0A%20%20--fzf%20%20%20%20Deprecated%20alias%20for%20--tui%0A%20%20-h%2C%20--help%20%20Print%20help%0A",
+          "stderr_bytes": "",
+          "exit_status": 0
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Use srvls --help; help is rendered without Host collection.",
+          "legacy fzf preview and action bindings": "Unaffected by this case.",
+          "script consumers": "Do not parse help; use a named machine profile."
+        }
+      },
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.help-plus-json",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "help",
+          "collection_started": false,
+          "stdout_bytes": "Usage%3A%20srvls%20%5BOPTIONS%5D%20%5BCOMMAND%5D%0A%0AOptions%3A%0A%20%20--json%20%20%20Emit%20legacy%20JSON%20inventory%0A%20%20--prom%20%20%20Emit%20Prometheus%20metrics%0A%20%20--md%20%20%20%20%20Emit%20Markdown%20inventory%0A%20%20--table%20%20Emit%20table%20inventory%0A%20%20--tui%20%20%20%20Open%20the%20terminal%20UI%0A%20%20--fzf%20%20%20%20Deprecated%20alias%20for%20--tui%0A%20%20-h%2C%20--help%20%20Print%20help%0A",
+          "stderr_bytes": "",
+          "exit_status": 0
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Remove --json when asking for help.",
+          "legacy fzf preview and action bindings": "Unaffected by this case.",
+          "script consumers": "Use srvls --json without --help for inventory bytes."
+        }
+      },
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.unknown-is-table",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "argument-error",
+          "collection_started": false,
+          "stdout_bytes": "",
+          "stderr_bytes": "error%3A%20unexpected%20argument%20%27--definitely-unknown%27%0A",
+          "exit_status": 2
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Correct or remove the unknown option; inventory is not collected.",
+          "legacy fzf preview and action bindings": "Unaffected by this case.",
+          "script consumers": "Treat the nonzero result as an invocation error."
+        }
+      },
+      {
+        "matrix_id": "cli",
+        "case_id": "flags.fzf-lines-wins",
+        "ledger_entry": "COMPAT-0002",
+        "old_behavior_version": "Python baseline v1",
+        "new_behavior_version": "Rust CLI v1",
+        "migration_window": "The Python baseline v1 golden remains immutable historical evidence; Rust CLI v1 and later apply this replacement assertion.",
+        "replacement_assertion": {
+          "selected_profile": "argument-error",
+          "collection_started": false,
+          "stdout_bytes": "",
+          "stderr_bytes": "error%3A%20retired%20option%20%27--fzf-lines%27%3B%20use%20%27--fzf%27%20or%20%27--json%27%0A",
+          "exit_status": 2,
+          "replacement_argv": ["srvls --fzf", "srvls --json"]
+        },
+        "consumer_dispositions": {
+          "human CLI users": "Use srvls --fzf for the deprecated ratatui alias.",
+          "legacy fzf preview and action bindings": "Migrate to the ratatui interaction model; no reload helper remains.",
+          "script consumers": "Use srvls --json for a supported structured inventory stream."
+        }
+      }
+    ]
+  },
+  "volatile_substitutions": [
+    {
+      "id": "clock.utc-now",
+      "rule": "datetime.now() is fixture-owned UTC instead of capture wall time"
+    },
+    {
+      "id": "clock.timer-local-rendering",
+      "rule": "datetime.fromtimestamp() renders in UTC instead of host local time"
+    },
+    {
+      "id": "host.load-average",
+      "rule": "os.getloadavg() is the fixture triple [1.25, 2.5, 3.75] unless overridden"
+    },
+    {
+      "id": "host.identity-and-paths",
+      "rule": "HOME, USER, PATH lookup, virtual /etc files, and tool presence are fixture-owned"
+    },
+    {
+      "id": "source.absolute-path",
+      "rule": "the frozen source __file__ and os.path.abspath(__file__) are /opt/srvls/srvls"
+    },
+    {
+      "id": "host.subprocess-results",
+      "rule": "stdout, stderr, exit, missing, denied, and timeout outcomes are fixture-owned"
+    },
+    {
+      "id": "python.traceback",
+      "rule": "unhandled tracebacks normalize to exception type and message; version, frame path, and line rendering are excluded"
+    }
+  ],
+  "matrices": [
+    {
+      "id": "providers",
+      "fixture": "fixtures/provider-matrix.json",
+      "golden": "golden/provider-matrix.oracle.json"
+    },
+    {
+      "id": "outputs",
+      "fixture": "fixtures/output-matrix.json",
+      "golden": "golden/output-matrix.oracle.json"
+    },
+    {
+      "id": "cli",
+      "fixture": "fixtures/cli-matrix.json",
+      "golden": "golden/cli-matrix.oracle.json"
+    },
+    {
+      "id": "inspection",
+      "fixture": "fixtures/inspect-matrix.json",
+      "golden": "golden/inspect-matrix.oracle.json"
+    },
+    {
+      "id": "actions",
+      "fixture": "fixtures/action-matrix.json",
+      "golden": "golden/action-matrix.oracle.json"
+    }
+  ],
+  "coverage": {
+    "provider_success": ["cron.success", "systemd-system.success", "systemd-user.success", "docker.success", "pm2.success"],
+    "provider_malformed": ["cron.malformed", "systemd.malformed", "docker.malformed", "pm2.malformed"],
+    "provider_unavailable": ["cron.unavailable", "systemd.unavailable", "docker.unavailable", "pm2.absent", "pm2.command-unavailable"],
+    "provider_denied": ["cron.denied", "cron.system-file-denied", "systemd.denied", "docker.denied", "pm2.denied"],
+    "provider_timeout": ["cron.timeout", "systemd.timeout", "docker.timeout", "pm2.timeout"],
+    "wrong_shaped_structured_data": ["systemd.wrong-shaped", "pm2.wrong-shaped"],
+    "output_surfaces": ["output.table", "output.json", "output.prometheus", "output.markdown", "output.fzf-lines"],
+    "ordering_and_escaping": ["output.table", "output.json", "output.prometheus", "output.markdown", "output.fzf-lines"],
+    "flag_precedence_help_unknown_arity": ["flags.all-known-json-wins", "flags.prom-wins", "flags.markdown-wins", "flags.fzf-lines-wins", "flags.help-is-table", "flags.unknown-is-table", "arity.inspect-one", "arity.stop-two"],
+    "empty_and_channel_placement": ["flags.fzf-lines-wins", "inspect.unknown-success-empty", "action.cron-refusal-stdout", "action.child-channel-placement"],
+    "missing_optional_tools": ["docker.unavailable", "pm2.absent", "flags.fzf-absent", "inspect.pm2-absent-success-empty"],
+    "inspection": ["inspect.docker-hostile-and-merged-logs", "inspect.user-service-hostile", "inspect.user-timer-hostile", "inspect.system-service-hostile", "inspect.system-timer-hostile", "inspect.pm2-hostile", "inspect.cron-hostile", "inspect.unknown-success-empty"],
+    "action_argv": ["action.stop.*", "action.restart.*", "action.start.*", "action.disable.*"],
+    "hostile_identifiers": ["output.*", "inspect.*-hostile", "action.*"]
+  },
+  "unsupported_legacy_provider": {
+    "provider": "direct-process",
+    "reason": "the frozen Python surface has no direct-process collector; AD-9 keeps direct-process observations off legacy presenters"
+  },
+  "deployed_consumers": [
+    {
+      "name": "srvls-metrics.service",
+      "surface": "--prom",
+      "oracle": "output.prometheus",
+      "definition_authority": "host-managed-user-systemd",
+      "release_oracle": "release-transaction-v1/brownfield-consumer-pairs.json#metrics"
+    },
+    {
+      "name": "srvls-snapshot.service",
+      "surface": "--md",
+      "oracle": "output.markdown",
+      "definition_authority": "host-managed-user-systemd",
+      "release_oracle": "release-transaction-v1/brownfield-consumer-pairs.json#snapshot"
+    },
+    {
+      "name": "legacy fzf preview and action bindings",
+      "surface": "--fzf, inspect, stop, restart, disable",
+      "oracle": "flags.fzf-present-bindings plus inspection and action matrices"
+    }
+  ]
+}

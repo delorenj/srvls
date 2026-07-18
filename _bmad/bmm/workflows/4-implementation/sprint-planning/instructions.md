@@ -1,5 +1,7 @@
 # Sprint Planning - Sprint Status Generator
 
+<!-- markdownlint-disable MD033 MD036 MD040 -->
+
 <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml</critical>
 
@@ -9,8 +11,8 @@
 
 **Epic Discovery Process:**
 
-1. **Search for whole document first** - Look for `epics.md`, `bmm-epics.md`, or any `*epic*.md` file
-2. **Check for sharded version** - If whole document not found, look for `epics/index.md`
+1. **Search for whole document first** - Use exactly the workflow's `*epic*.md` pattern in the planning-artifacts root.
+2. **Check for sharded version** - If no whole document exists, use exactly `*epic*/*.md` below that root.
 3. **If sharded version found**:
    - Read `index.md` to understand the document structure
    - Read ALL epic section files listed in the index (e.g., `epic-1.md`, `epic-2.md`, etc.)
@@ -18,7 +20,12 @@
    - This ensures complete sprint status coverage
 4. **Priority**: If both whole and sharded versions exist, use the whole document
 
-**Fuzzy matching**: Be flexible with document names - users may use variations like `epics.md`, `bmm-epics.md`, `user-stories.md`, etc.
+**No fuzzy aliases**: `user-stories.md`, story-only names, and files outside those two machine-readable patterns are not sprint-planning inputs. Rename a new canonical artifact to an `*epic*.md` name only after it is authoritative and assignable.
+
+**C-23 assignment gate**: before changing any canonical Story `E.S` from
+`backlog`, run `python3 tests/validate_story_fixture_approvals.py E.S`. A
+missing, malformed, same-author/reviewer, or same-commit approval fails closed;
+do not create or assign the story until the command passes.
 
 <workflow>
 
@@ -73,11 +80,21 @@ development_status:
 **Story file detection:**
 
 - Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
-- If exists → upgrade status to at least `ready-for-dev`
+- If it exists, derive `story_id` from the story key's first two numeric
+  components (`6-13-title` → `6.13`) and run
+  `python3 tests/validate_story_fixture_approvals.py <story_id>`.
+  Upgrade status to at least `ready-for-dev` only when that command exits zero;
+  otherwise retain `backlog` and report the fail-closed C-23 gate.
 
 **Preservation rule:**
 
-- If existing `{status_file}` exists and has more advanced status, preserve it
+- C-23 validity dominates preservation: on a non-zero approval command, force
+  the Story to `backlog` even if an existing status is more advanced and report
+  the invalid transition evidence.
+- If C-23 passes, preserve `ready-for-dev` or `in-progress`; preserve `review`
+  or `done` only when
+  `python3 tests/validate_story_fixture_approvals.py --complete <story_id>`
+  also exits zero. Otherwise force `backlog` and report the invalid provenance.
 - Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
 
 **Status Flow Reference:**

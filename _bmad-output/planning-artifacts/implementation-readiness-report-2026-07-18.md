@@ -1,0 +1,1122 @@
+---
+stepsCompleted:
+  - step-01-document-discovery
+  - step-02-prd-analysis
+  - step-03-epic-coverage-validation
+  - step-04-ux-alignment
+  - step-05-epic-quality-review
+  - step-06-final-assessment
+inputDocuments:
+  - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md
+  - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md
+  - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/ARCHITECTURE-SPINE.md
+  - _bmad-output/planning-artifacts/epics.md
+  - _bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md
+  - _bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md
+---
+
+# Implementation Readiness Assessment Report
+
+**Date:** 2026-07-18
+**Project:** srvls
+
+## Step 1: Document Discovery
+
+Discovery was limited to the Step 1 filename patterns, explicit user clarification, path existence, and file metadata. Planning-document contents were not read or analyzed.
+
+### Generic Step 1 Pattern Results
+
+The generic Step 1 filename patterns discovered only the root `_bmad-output/planning-artifacts/epics.md`. They did not discover the established nested PRD, architecture, or UX packages. Explicit user clarification selected those established nested packages together with the root epics document as the canonical Step 1 inputs.
+
+### Canonical Inventory
+
+#### PRD
+
+- `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md` (58,303 bytes; modified 2026-07-18 05:31:12.796884745 -0400)
+- `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md` (4,639 bytes; modified 2026-07-18 05:31:12.796884745 -0400)
+
+#### Architecture
+
+- `_bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/ARCHITECTURE-SPINE.md` (245,683 bytes; modified 2026-07-18 05:31:12.791307121 -0400)
+
+#### Epics & Stories
+
+- `_bmad-output/planning-artifacts/epics.md` (220,630 bytes; modified 2026-07-18 05:31:12.794894554 -0400)
+
+#### UX Design
+
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md` (13,854 bytes; modified 2026-07-18 05:31:12.800878223 -0400)
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md` (54,284 bytes; modified 2026-07-18 05:31:12.800878223 -0400)
+
+### Duplicate and Missing Findings
+
+- **Missing required document classes:** None after explicit user clarification; PRD, Architecture, Epics & Stories, and UX Design are all represented by the selected canonical inputs.
+- **Duplicate canonical documents:** None. Supporting reviews and memlogs are excluded and are not duplicate canonical documents.
+
+### Canonical Selections
+
+1. **PRD:** `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md`
+2. **PRD addendum:** `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md`
+3. **Architecture:** `_bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/ARCHITECTURE-SPINE.md`
+4. **Epics & Stories:** `_bmad-output/planning-artifacts/epics.md`
+5. **UX design:** `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md`
+6. **UX experience:** `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md`
+
+Step 1 is complete as a document-inventory correction only. No document contents or later workflow steps were read or analyzed.
+
+## PRD Analysis
+
+### Functional Requirements
+
+#### FR-1: Declare a Runtime Promise
+
+An Agent or Operator can declare a Runtime Promise containing Agent, Project, Runtime locator, purpose, Launch Mechanism, expected lifetime or termination condition, Owner, intended instance count, persistence choice, and optional opaque Plane, Git, or Telemetry references.
+
+**Consequences:**
+
+- Missing required identity, purpose, lifetime, or ownership fields produce deterministic field-level errors and no partial record.
+- A successful declaration returns a Promise ID and current Lease state in human- and machine-readable forms.
+
+#### FR-2: Preserve declaration provenance
+
+`srvls` records the declaration source, creation time, supplied Agent and Project identities, and subsequent lifecycle events without silently rewriting history.
+
+**Consequences:**
+
+- Corrections create auditable revisions or events associated with the same Promise ID.
+- Secrets and unrestricted command output are not required Promise metadata.
+
+#### FR-3: Make Runtime Promises ephemeral by default
+
+A newly declared Runtime Promise receives a finite Lease unless the caller explicitly requests persistent intent.
+
+**Consequences:**
+
+- Omitted persistence never creates an indefinite Runtime Promise.
+- The response makes expiry and renewal expectations explicit.
+
+#### FR-4: Renew ownership with Heartbeats
+
+An owning Agent can renew an active Lease and provide a Heartbeat associated with the Promise ID.
+
+**Consequences:**
+
+- Renewal is idempotent for a caller-supplied operation identity.
+- Late, unauthorized, or malformed renewals, and renewals for a released or unknown Promise ID, return distinct deterministic outcomes.
+
+#### FR-5: Release, complete, or revoke intent
+
+An authorized Agent or Operator can mark a Runtime Promise released, completed, or revoked with reason and time.
+
+**Consequences:**
+
+- Closing intent does not itself stop a Runtime.
+- The closure event retains exactly one reason: released, completed, or revoked.
+- On the next refresh, closed intent has inactive Promise Outcome and any fresh matched surviving Observation is abandoned with the closure reason.
+
+#### FR-6: Declare explicit persistent intent
+
+An Agent or Operator can opt a Runtime Promise into persistence only while supplying Durable Ownership and a Launch Mechanism that can be inspected later.
+
+**Consequences:**
+
+- Persistent intent without Durable Ownership is rejected or retained as unmanaged, never treated as healthy by assertion alone.
+- Persistent Runtime Promises remain auditable and can be revoked explicitly.
+
+#### FR-7: Expose deterministic Agent contracts
+
+All declaration, query, renewal, release, and validation operations are available non-interactively with deterministic machine-readable responses and exit behavior.
+
+**Consequences:**
+
+- Agents can safely retry idempotent operations and distinguish accepted, refused, stale, conflict, and unavailable outcomes.
+- Human-readable diagnostics do not corrupt machine-readable stdout.
+
+#### FR-8: Collect cron work
+
+`srvls` collects user, root, `/etc/crontab`, and `/etc/cron.d` entries with schedule, command identity, source location, user context, and provenance.
+
+**Consequences:**
+
+- Unavailable or denied sources produce explicit Collector diagnostics.
+- Hostile names and command text cannot inject terminal or shell behavior.
+
+#### FR-9: Collect systemd work
+
+`srvls` collects system and user services and timers with full unit identity, enablement, runtime state, health, schedule, and provenance.
+
+**Consequences:**
+
+- System and user scopes remain distinguishable.
+- Partial authorization or manager unavailability is represented explicitly.
+
+#### FR-10: Collect Docker work
+
+`srvls` collects containers with immutable identity, runtime state, health, restart policy, image, Compose Project, labels, and working-directory evidence when available.
+
+**Consequences:**
+
+- Container names are display data, not the sole action identity.
+- Docker daemon failure does not suppress other Provider results.
+
+#### FR-11: Collect PM2 work
+
+`srvls` collects PM2 processes with stable observed identity, runtime state, restart count, namespace, script, working directory, and start-time evidence.
+
+**Consequences:**
+
+- Reused numeric PM2 identifiers cannot silently target a different process.
+- Invalid or unexpected PM2 JSON produces bounded diagnostics rather than a crash.
+
+#### FR-12: Collect direct Host processes
+
+`srvls` collects direct Host process Observations needed to reconcile Agent-created Runtimes that are not owned by cron, systemd, Docker, or PM2.
+
+**Consequences:**
+
+- Observations include PID plus start-time or equivalent birth evidence, executable or command fingerprint, parent evidence, user, and working directory when permitted.
+- Kernel threads, `srvls` itself, and Provider-owned child processes are deduplicated or clearly attributed rather than double-counted.
+
+#### FR-13: Normalize Observations
+
+Every Collector emits a Provider-neutral Observation composed from identity, lifecycle, schedule, health, provenance, ownership hints, resource signals, and Provider-specific detail references.
+
+**Consequences:**
+
+- Provider-specific behavior remains available through typed detail without inheritance in the domain model.
+- Normalization retains encounter provenance required for deterministic compatibility output.
+
+#### FR-14: Report collection completeness
+
+Each refresh returns Observations together with explicit per-Collector completeness, duration, and diagnostic outcomes.
+
+**Consequences:**
+
+- `complete`, `partial`, `unavailable`, `denied`, `timed-out`, and `invalid-output` remain distinguishable.
+- Every Provider scope exposes its Collection Obligation and why it applies; an active Runtime Promise referencing that scope makes it required for reconciliation.
+- Reconciliation rules that require absence evidence do not claim certainty when the relevant Collector is incomplete.
+
+##### v1 Collection Obligation policy
+
+| Provider scope | Default obligation | Promotion and failure rules |
+| --- | --- | --- |
+| Invoking user's crontab | `required` | Missing command, denial, timeout, or invalid parse makes the Brief incomplete. An absent crontab under a successful query is complete empty evidence. |
+| `/etc/crontab` and `/etc/cron.d` | `required` | Successful `/etc/cron.d` enumeration is required. Enumeration denial or failure, an unreadable discovered file, or parse failure makes the Brief incomplete. |
+| Root crontab | `optional` | Becomes `required` when configured as required or referenced by an active Runtime Promise. Denial is always visible. |
+| System systemd manager | `required` | Manager unavailability, denial, or invalid output makes the Brief incomplete. |
+| Invoking user's systemd manager | `required` | No running user manager is a visible complete-empty or unavailable outcome according to the manager response, never silently omitted. |
+| Other users' systemd managers | `not-applicable` | Unsupported in v1 unless an explicitly configured local scope is added; a Runtime Promise referencing an unsupported scope yields `out-of-scope`. |
+| Active local Docker context | `optional` when no CLI, endpoint, containers, or Runtime Promise is detected; otherwise `required` | Detection or an active Runtime Promise promotes the scope to `required`. Additional contexts are excluded unless explicitly configured. |
+| Invoking user's default PM2 home | `optional` when neither PM2 nor a PM2 Runtime Promise is detected; otherwise `required` | A discovered PM2 daemon, home, or active Promise promotes the scope. |
+| Other users and additional PM2 homes | `not-applicable` | Unsupported in v1 unless explicitly configured; referenced unsupported homes yield `out-of-scope`. |
+| Direct processes visible to the local principal | `required` | Process-table failure makes the Brief incomplete. Per-field permission redaction is explicit but does not erase an otherwise stable Observation. |
+
+An active Runtime Promise can promote a supported `optional` scope to `required`; it cannot make an unsupported `not-applicable` scope appear observed. The Brief lists included and excluded users, managers, daemons, contexts, homes, and permission boundaries.
+
+#### FR-15: Inspect bounded Provider detail
+
+An Operator can inspect an Observation's Provider-appropriate status, schedule, provenance, identity, and bounded log or output detail.
+
+**Consequences:**
+
+- Detail is byte- and line-bounded and unsafe terminal controls are sanitized.
+- Inspection failures remain local to the selected Observation.
+
+#### FR-16: Preserve compatibility surfaces
+
+The replacement implementation preserves the established Python CLI's flat JSON, Prometheus, Markdown, table, inspection, executable-name, ordering, escaping, arguments, exit behavior, and explicit CLI-action behavior through a layered compatibility oracle unless a deliberate deviation is recorded and tested.
+
+**Consequences:**
+
+- The checked-in Python source and tests are inventoried into explicit behavioral contracts; source text alone is not an executable oracle.
+- A frozen deterministic fixture corpus covering every supported Provider, output, argument, ordering and escaping rule, partial-failure policy, and action-safety path must exist before replacement.
+- The current live-Host smoke suite validates integration behavior but cannot substitute for the fixture corpus; named deployed consumers receive separate end-to-end checks.
+- Every intentional deviation has a compatibility-ledger entry with rationale, version impact, replacement assertion, and affected-consumer disposition.
+- New Promise and reconciliation fields use additive or explicitly versioned contracts rather than silently changing legacy consumers.
+
+#### FR-17: Support strict collection policy
+
+`srvls` exposes visible partial-failure diagnostics and a strict mode with deterministic Collector-outcome-to-exit behavior.
+
+**Consequences:**
+
+- Default mode returns usable partial truth with diagnostics.
+- Strict mode fails according to documented completeness policy while preserving machine-readable error structure.
+
+#### FR-18: Correlate Runtime Promises and Observations
+
+`srvls` correlates Runtime Promises to Observations using Provider-native stable identities, declared locators, Project and Launch Mechanism evidence, and bounded secondary evidence.
+
+**Consequences:**
+
+- Every match records contributing evidence, conflicts, and confidence.
+- Weak name similarity alone cannot establish an action identity or a healthy finding.
+
+#### FR-19: Identify healthy intent
+
+An active Runtime Promise with the intended number of compatible running Observations and sufficient Collector completeness receives a healthy Reconciliation Finding.
+
+**Consequences:**
+
+- Health is not asserted when required Collectors are incomplete or identities conflict.
+- Additional hot or stale evidence remains visible alongside health only when logically compatible with policy.
+
+#### FR-20: Identify broken intent
+
+An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when the relevant Collection Obligations provide sufficient absence evidence.
+
+**Consequences:**
+
+- Incomplete collection yields `unknown` evidence rather than a false broken conclusion.
+- The finding retains last Heartbeat, Lease, Launch Mechanism, and candidate near-match evidence.
+
+#### FR-21: Identify orphaned Observations
+
+A running Observation with no matching Runtime Promise receives an orphaned Reconciliation Finding.
+
+**Consequences:**
+
+- Provider-managed preexisting resources may remain orphaned without being mislabeled Agent-created.
+- The Operator can see why no declaration matched and whether collection was complete.
+
+#### FR-22: Identify duplicate Observations
+
+When matching running Observations exceed a Runtime Promise's intended instance count, `srvls` emits duplicate Reconciliation Findings for the excess set without choosing a destructive target silently.
+
+**Consequences:**
+
+- Stable identities, start times, and matching evidence remain visible for comparison.
+- Duplicate classification never authorizes group-wide mutation.
+
+#### FR-23: Identify stale Runtimes
+
+`srvls` can classify a running Runtime stale using configured, explainable evidence of non-use or obsolescence.
+
+**Consequences:**
+
+- Missing Telemetry is not automatically proof of staleness.
+- The applied policy window and evidence source are part of the finding.
+
+#### FR-24: Identify hot Runtimes
+
+`srvls` can classify a Runtime hot when collected resource evidence crosses configured threshold or trend policy.
+
+**Consequences:**
+
+- The metric, sample time, threshold, and source are displayed.
+- A hot label does not imply the Runtime is safe to stop.
+
+#### FR-25: Identify unmanaged and abandoned Runtimes
+
+`srvls` emits unmanaged when an Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism, and abandoned when a surviving Observation outlives an ephemeral Lease, lost-Heartbeat grace, or intent explicitly closed as released, completed, or revoked.
+
+**Consequences:**
+
+- Persistent declarations without Durable Ownership remain unmanaged.
+- Abandoned findings retain the expiry or closure reason and the historical Promise match.
+- Lease expiry alone never stops the Runtime automatically.
+
+#### FR-26: Explain findings and Safe-to-stop Assessment
+
+Every attention-worthy Reconciliation Finding exposes classification rules, identity evidence, contradictory or missing evidence, confidence, ownership, purpose, expected lifetime, Launch Mechanism, and a Safe-to-stop Assessment with reasons.
+
+**Consequences:**
+
+- Insufficient evidence produces `unknown`, not `safe`.
+- The assessment is recalculated after refresh and before mutation.
+
+The v1 decision contract is conservative and deterministic:
+
+| Assessment | Required decision rule |
+| --- | --- |
+| `safe` | The exact Observation identity is fresh; every relevant required Collector is sufficient; no active or persistent Runtime Promise, known dependency, or other declared instance requires it; ownership, purpose, expected lifetime, and Launch Mechanism behavior are known; no Provider restart policy or manager will immediately recreate it; no conflicting operation is in flight; and the target is either released, completed, revoked, or expired, or is the exact excess instance of a duplicate set. |
+| `unsafe` | Fresh evidence proves an active or persistent Promise, known dependency, required instance, conflicting operation, or Provider recreation policy makes stopping contrary to declared intent or ineffective. |
+| `unknown` | Identity, ownership, purpose, lifetime, dependency, recreation behavior, Collector completeness, or freshness is missing, stale, ambiguous, or contradictory. |
+
+`safe` is scoped to the known runtime-liveness and manager-dependency evidence available to `srvls`; it is not a claim about arbitrary business side effects. Execution still requires FR-37 revalidation and the confirmation policy in FR-38.
+
+#### FR-27: Detect change through bounded Snapshots
+
+`srvls` stores bounded local Snapshots sufficient to report new, resolved, changed, and persisting Runtime Promises, Observations, and Reconciliation Findings within an Evidence Window from an explicitly Accepted Baseline to the current Snapshot.
+
+**Consequences:**
+
+- The Operator can explicitly accept a compatible current Snapshot as the next baseline through the TUI or a deterministic non-interactive command; ordinary refreshes and scheduled candidate Snapshots never advance it.
+- The Evidence Window retains the Accepted Baseline timestamp, current Snapshot timestamp, and configured timezone. TUI refreshes keep the start fixed until explicit acceptance.
+- A first run states that no baseline exists and does not invent a change set. An incompatible baseline is rejected and requires explicit acceptance of a replacement.
+- An incomplete Snapshot is ineligible for baseline acceptance by default. An explicit override records the missing scope, principal, timestamp, and reason in local audit history.
+- Retention and deletion are deterministic, configurable, and do not remove the active truth required for reconciliation.
+
+#### FR-28: Produce the Brief
+
+`srvls` produces a Brief answering what Agents created, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and which Runtimes carry duplicate, stale, abandoned, unmanaged, or hot findings.
+
+**Consequences:**
+
+- The summary includes collection completeness and counts without hiding multi-label findings.
+- The summary names the Accepted Baseline, current Snapshot, configured timezone, and any baseline-unavailable or incomplete-window condition.
+- Every summary item drills down to Runtime Promise, Observation, and evidence detail.
+
+#### FR-29: Organize attention and Stack context
+
+The default TUI presents a concise attention summary followed by deterministic Stack groups, with Project, Agent, Provider, and Reconciliation Finding filters and an explicit Ungrouped section.
+
+**Consequences:**
+
+- Stack labels, membership, confidence, and evidence are inspectable.
+- Ambiguous items remain visible in Ungrouped rather than being forced into a Stack.
+
+#### FR-30: Select interactive or non-interactive presentation
+
+`srvls` opens the TUI by default only when both input and output are interactive terminals, while redirected execution retains non-interactive table behavior.
+
+**Consequences:**
+
+- Explicit output flags always select the requested non-interactive format.
+- `--fzf` remains a deprecated alias to the TUI while the undocumented `--fzf-lines` surface is removed through the compatibility ledger.
+
+#### FR-31: Navigate and refine the TUI
+
+An Operator can navigate, expand or collapse Stacks, filter, search, refresh, inspect, open help, and return or quit entirely by keyboard.
+
+**Consequences:**
+
+- Focus and selection remain predictable as filters and refreshes change visible rows.
+- Refresh does not block navigation and visibly distinguishes fresh, refreshing, and stale content.
+
+#### FR-32: Inspect intent and truth together
+
+The TUI and CLI inspection surfaces show linked Runtime Promise, Heartbeat, Lease, Observation, Project, Agent, Launch Mechanism, reconciliation evidence, and bounded Provider detail.
+
+**Consequences:**
+
+- Unmatched declarations and unmatched Observations remain inspectable independently.
+- Opaque Plane, Git, and Telemetry references are displayed as references, not fetched or interpreted as truth.
+
+#### FR-33: Communicate without color or Unicode dependence
+
+Rows and summaries communicate Provider, identity, running state, health, freshness, pending work, and Reconciliation Findings using text plus optional semantic color and icons.
+
+**Consequences:**
+
+- `NO_COLOR`, monochrome, and deterministic ASCII fallbacks preserve meaning.
+- Unsafe control characters in untrusted Host data are sanitized before rendering.
+
+#### FR-34: Represent application and terminal states explicitly
+
+Loading, refreshing, stale, partial-failure, unavailable-Provider, empty, filtered-empty, pending-action, verified, executed-unverified, refused, timed-out, failed, and baseline-unavailable states each receive explicit visible treatment, including responsive behavior on small terminals.
+
+**Consequences:**
+
+- Small layouts collapse secondary detail before the primary list or essential status.
+- No state is represented only by animation, color, or disappearing content.
+
+#### FR-35: Provide a discoverable Action Menu
+
+Pressing `a` on an actionable Runtime Promise or Observation opens the Action Menu with supported start, stop, restart, and disable or delete operations; direct `s`, `R`, and `x` shortcuts remain where unambiguous, and `?` documents all bindings.
+
+**Consequences:**
+
+- Start has an explicit TUI path from a Runtime Promise even when no running Observation exists.
+- Unsupported or unsafe actions are absent or disabled with an explanation.
+
+#### FR-36: Plan supported lifecycle actions
+
+`srvls` can plan a start from an active Runtime Promise whose Launch Mechanism resolves to a supported Provider target. It can plan a stop, restart, and disable or delete operation for individual systemd, Docker, PM2, and direct-process Observations according to Provider capability. Cron Observations remain read-only in v1.
+
+**Consequences:**
+
+- A plan names the exact target, Provider-native operation, required privilege, expected effect, and unsupported limitations before execution.
+- Direct-process support is limited to identity-safe signals and cannot invent a start or restart path without a declared Launch Mechanism.
+
+#### FR-37: Revalidate identity before mutation
+
+Immediately before execution, `srvls` re-collects or verifies the selected Observation's canonical Provider identity, or revalidates the Runtime Promise, absence evidence, and Provider-native start target when no Observation exists.
+
+**Consequences:**
+
+- Stale, reused, missing, or ambiguous identities are refused without mutation.
+- Display names, Stack membership, and row position are never action identities.
+
+#### FR-38: Confirm destructive and uncertain actions
+
+The TUI requires confirmation for stop and disable or delete, names the exact Runtime and operation, and includes the current Safe-to-stop Assessment and uncertainty.
+
+**Consequences:**
+
+- PM2 deletion and persistent-scheduler disablement are visibly destructive.
+- Unknown safety does not prevent an explicit informed Operator choice, but it cannot be presented as safe.
+
+#### FR-39: Isolate asynchronous operations
+
+Each lifecycle operation has a unique operation identity, captures its source generation, suppresses duplicate submissions, and remains distinct from concurrent refreshes.
+
+**Consequences:**
+
+- An older refresh cannot overwrite newer action-verification truth.
+- UI cancellation or navigation does not silently duplicate or misattribute an in-flight operation.
+
+#### FR-40: Verify and report action outcomes
+
+After a lifecycle operation begins, `srvls` refreshes relevant truth and reports exactly one canonical Action Outcome: `verified`, `executed-unverified`, `refused`, `timed-out`, or `failed`.
+
+**Consequences:**
+
+- Command exit alone is not treated as verified state change.
+- Machine-readable and TUI outcomes identify the operation, target, evidence, and next safe step.
+- Diagnostics and reason codes attach to any outcome without creating aliases such as `completed-with-diagnostic` or `stale`.
+
+The terminal decision order is deterministic:
+
+| Precedence | Action Outcome | Decision rule |
+| --- | --- | --- |
+| 1 | `verified` | Fresh post-action evidence proves the planned postcondition for the exact target, regardless of command diagnostics. |
+| 2 | `refused` | No Provider operation was launched because confirmation, capability, authorization, duplicate-operation, or immediate identity revalidation failed. Pre-execution identity drift uses reason `stale-identity`. |
+| 3 | `timed-out` | Provider execution exceeded its hard deadline, termination and reaping were attempted, and the postcondition was not verified within the bounded operation. |
+| 4 | `failed` | The Provider invocation could not start, or fresh post-action evidence disproves the planned postcondition. |
+| 5 | `executed-unverified` | A Provider operation was launched but the postcondition can be neither proved nor disproved because evidence is incomplete or ambiguous, the verification window expires, or a replacement identity is observed. |
+
+Successful execution with diagnostics remains `verified` when the postcondition is proved. Post-execution replacement uses `executed-unverified` with a replacement reason; it is never reported as pre-execution `stale-identity`.
+
+#### FR-41: Keep groups read-only and privilege scoped
+
+Stack, Project, Agent, and Reconciliation Finding groups remain read-only in v1, and any required privilege is limited to the selected Provider operation.
+
+**Consequences:**
+
+- No group interaction silently widens an action target.
+- `srvls` never elevates the entire process or permits an interactive authorization prompt while terminal raw mode is active.
+
+#### FR-42: Build and install a verifiable release
+
+`srvls` can be built, versioned, checksum-verified, staged, smoke-tested, and installed as a standalone release artifact for the supported Host target.
+
+**Consequences:**
+
+- Activation occurs only after the staged binary passes required checks.
+- The installed binary reports version and compatibility information deterministically.
+
+#### FR-43: Upgrade, validate automation, and roll back
+
+An Operator can atomically upgrade `srvls`, validate existing metrics and Snapshot timer consumers, and roll back to the prior known-good target.
+
+**Consequences:**
+
+- The previous target remains identifiable until the new version and consumers validate.
+- Failed validation does not leave a partially replaced executable or an undocumented recovery procedure.
+
+
+**Total Functional Requirements: 43.**
+
+### Non-Functional Requirements
+
+#### NFR-1: Deterministic domain outcomes
+
+Identical normalized inputs, policy, and Accepted Baseline produce identical ordering, correlation, findings, attention rank, Safe-to-stop Assessment, and machine-readable serialization.
+
+#### NFR-2: Honest partial truth
+
+Collector, storage, inspection, and mutation failures remain explicit and scoped; the product never substitutes missing evidence with success, absence, or safety.
+
+#### NFR-3: Bounded refresh behavior
+
+Collectors run with bounded concurrency, hard subprocess deadlines, bounded output capture, forced termination on deadline, and unconditional child reaping so one unavailable Provider cannot impose sequential latency or hang the Brief.
+
+#### NFR-4: Host command safety
+
+All Host commands use typed arguments and argv-only execution with safe end-of-options behavior. Provider data is never interpolated into a shell command.
+
+#### NFR-5: Least privilege
+
+Collection and mutation use the least privilege needed for the selected Provider and scope. Whole-process elevation and interactive authorization while terminal raw mode is active are prohibited.
+
+#### NFR-6: Terminal restoration
+
+Raw mode, alternate screen, cursor, input state, and signal handling are restored on normal return, error, panic unwind, Ctrl-C, SIGINT, and SIGTERM paths.
+
+#### NFR-7: Clean machine interfaces
+
+Machine-readable stdout contains no ANSI, icons, progress, logs, or human diagnostics. Ordering, exit policy, encoding, and escaping are deterministic.
+
+#### NFR-8: Accessible terminal communication
+
+Status and focus are understandable without color, Unicode, animation, or a large terminal. Untrusted control characters are sanitized before display.
+
+#### NFR-9: Atomic and durable local state
+
+Runtime Promise, lifecycle event, Snapshot, and compatibility metadata writes are atomic, crash-safe, schema-versioned, and recoverable without accepting a partially written record as truth.
+
+#### NFR-10: Defensible Lease time semantics
+
+Lease duration calculations resist wall-clock rollback; displayed events retain wall time. Host restart, suspend, and clock discontinuity produce explicit revalidation or expiry behavior rather than extending ownership silently.
+
+#### NFR-11: Local data minimization
+
+State is local by default, permission-restricted, bounded by retention policy, and limited to fields needed for ownership, identity, reconciliation, audit, and compatibility. Secrets and unrestricted logs are excluded or redacted.
+
+#### NFR-12: Concurrency correctness
+
+Refresh generations and operation identities prevent stale refresh, late Collector, duplicate action, or concurrent state write from replacing newer truth or misattributing an outcome.
+
+#### NFR-13: Testability without Host mutation
+
+Domain rules, Collectors, correlation, presentations, actions, Lease behavior, and TUI states are verifiable with deterministic fixtures, fakes, goldens, and terminal backends; live-Host tests are opt-in.
+
+#### NFR-14: Brownfield compatibility
+
+The migration oracle is layered: an explicit inventory of established Python behavior, a frozen deterministic fixture and golden corpus, the current live-Host smoke suite, and end-to-end checks for named deployed consumers, including the exact project-owned Prometheus families. Intentional deviations require an explicit ledger entry, version impact, replacement assertion, and consumer disposition.
+
+#### NFR-15: Supported release baseline
+
+The initial release supports `x86_64-unknown-linux-gnu` on the verified Host baseline, a committed dependency lock, reproducible validation, checksum verification, and reversible installation.
+
+#### NFR-16: Configurable policy without hidden defaults
+
+Lease duration, Heartbeat grace, stale policy, hot thresholds, retention, Collector deadlines, and output bounds have documented defaults, validation, and provenance in findings; invalid configuration fails visibly.
+
+
+**Total Non-Functional Requirements: 16.**
+
+### Additional Requirements
+
+#### Target User, Jobs, Boundaries, and User Journeys
+
+The primary v1 user is a solo builder-operator who runs multiple projects and Agents on one Linux Host and needs a trustworthy handoff without reconstructing state from cron, systemd, Docker, PM2, process listings, logs, and Agent transcripts. Agents are secondary machine users: they declare, renew, inspect, and release Runtime Promises through deterministic non-interactive contracts.
+
+##### Jobs To Be Done
+
+- When beginning a work session, understand overnight runtime changes and attention items from one Brief.
+- When an Agent starts something that must outlive its immediate command, preserve purpose, ownership, lifetime, and termination intent.
+- When Host behavior is surprising, distinguish declared-but-missing work from unexplained, duplicate, stale, hot, unmanaged, or abandoned work.
+- Before stopping anything, understand its Project, Agent, purpose, Launch Mechanism, current identity, dependencies, and Safe-to-stop Assessment.
+- When a Provider is unavailable or evidence is incomplete, know exactly what `srvls` could not prove instead of receiving false confidence.
+- When upgrading `srvls`, preserve existing automation and recover quickly if validation fails.
+
+##### Non-Users in v1
+
+- Multi-tenant enterprise fleets requiring centralized identity, policy, and remote orchestration.
+- Teams seeking a replacement for systemd, cron, Docker, PM2, Plane, Git, or a Telemetry platform.
+- Operators who want unattended policy-based deletion or broad stack-wide mutation.
+- Non-Linux desktop and server operators.
+
+##### Key User Journeys
+
+###### UJ-1: Jarad receives the morning handoff
+
+- **Persona + context:** Jarad is a solo builder-operator returning after several Agents worked overnight.
+- **Entry state:** He opens `srvls` in an interactive terminal on the Host.
+- **Path:** The Brief first summarizes changes and attention counts, then presents Project and Stack groups. Jarad expands a Project, filters to abandoned and broken findings, and inspects the evidence behind one item.
+- **Climax:** Without opening five Provider tools, he can answer what changed, what should be alive, what is actually alive, and which findings need action.
+- **Resolution:** He leaves healthy work alone and opens the exact Runtime Promise or Observation behind each attention item.
+- **Edge case:** A Provider timed out; the Brief remains usable but labels the affected result incomplete and does not claim the Host is clean.
+
+###### UJ-2: An Agent declares and renews an overnight runtime
+
+- **Persona + context:** Ava is an autonomous coding Agent starting a Project development server that must survive until morning review.
+- **Entry state:** Ava has the Project identity, purpose, Launch Mechanism, runtime locator, and expected lifetime.
+- **Path:** Ava declares a Runtime Promise, receives its Promise ID and Lease expiry, launches the Runtime, sends Heartbeats while responsible, and records an opaque Plane or Git reference when useful.
+- **Climax:** The Runtime appears as healthy once the Promise and Observation reconcile.
+- **Resolution:** Ava either releases the Promise when done or leaves an explicit expiring Lease for morning review.
+- **Edge case:** Ava exits without release; renewal stops, the Lease expires, and a surviving Observation becomes abandoned rather than silently persistent.
+
+###### UJ-3: Jarad diagnoses a broken promise
+
+- **Persona + context:** Jarad expects a Project worker to be alive, but its Runtime Promise has no matching Observation.
+- **Entry state:** The Brief shows a broken finding and the last Heartbeat.
+- **Path:** Jarad inspects the declared purpose, Launch Mechanism, expected lifetime, last renewal, collector completeness, and candidate near-matches.
+- **Climax:** He can distinguish a true missing Runtime from a collector failure or identity mismatch.
+- **Resolution:** He starts the exact supported resource through the contextual Action Menu or returns to the owning Project with evidence.
+
+###### UJ-4: Jarad removes an abandoned runtime safely
+
+- **Persona + context:** A development server survived after its ephemeral Runtime Promise expired.
+- **Entry state:** The finding is abandoned with an Observation, expired Lease, prior Owner, and Safe-to-stop Assessment.
+- **Path:** Jarad inspects the evidence, opens the contextual Action Menu, reviews the resolved Provider-native operation, confirms the exact identity, and executes the action.
+- **Climax:** `srvls` revalidates identity, performs the scoped action, refreshes truth, and reports verified success or an explicit non-success outcome.
+- **Resolution:** The Observation disappears and the audit history records what happened without deleting unrelated Promise history.
+- **Edge case:** Identity changed between inspection and execution; `srvls` refuses the stale action.
+
+###### UJ-5: Jarad triages duplicate and hot runtime findings
+
+- **Persona + context:** Two Observations match a single Runtime Promise and one exceeds a configured resource threshold.
+- **Entry state:** The Brief displays duplicate and hot findings together rather than collapsing them into one ambiguous status.
+- **Path:** Jarad compares stable identities, start times, resource evidence, Agent provenance, and the expected instance count.
+- **Climax:** He can identify the intended instance and understand why the other is a duplicate candidate.
+- **Resolution:** He acts on one exact Observation or defers when the Safe-to-stop Assessment is unknown; group-wide mutation is unavailable.
+
+###### UJ-6: Jarad upgrades and recovers
+
+- **Persona + context:** Jarad installs a new `srvls` binary while existing timers consume its machine-readable output.
+- **Entry state:** A previous version is installed and known-good.
+- **Path:** The installer stages the new version, verifies its checksum, runs the compatibility smoke, atomically activates it, and validates scheduled consumers.
+- **Climax:** The upgrade either proves compatible or automatically preserves a clear rollback path.
+- **Resolution:** Jarad runs the new version or restores the previous target without reconstructing the installation manually.
+
+
+#### Canonical Glossary and Reconciliation Semantics
+
+- **Action Menu** — Contextual TUI surface listing only lifecycle actions supported for the selected Observation. Opened with `a`.
+- **Action Outcome** — Canonical terminal result of one lifecycle operation: `verified`, `executed-unverified`, `refused`, `timed-out`, or `failed`. Diagnostics and reason codes are retained metadata, not additional terminal outcomes.
+- **Agent** — Human-operated or autonomous actor that declares and owns a Runtime Promise. An Agent has a stable supplied identifier and display label.
+- **Accepted Baseline** — Snapshot an Operator explicitly accepted as the start of the next Evidence Window. Ordinary refreshes do not advance it.
+- **Brief** — Point-in-time morning handoff containing an Evidence Window, change summary, reconciliation findings, completeness, and drill-down paths.
+- **Collector** — Provider-specific read adapter that emits Observations and explicit collection diagnostics.
+- **Collection Obligation** — Per-Provider or per-source policy of `required`, `optional`, or `not-applicable` used to decide whether missing evidence makes a Brief incomplete.
+- **Durable Ownership** — An Owner and Launch Mechanism expected to remain valid beyond the creating Agent's session, such as a managed systemd unit with an accountable Project.
+- **Evidence Status** — Orthogonal conclusion about whether evidence for a Runtime Promise is `sufficient`, `incomplete`, `stale`, or `out-of-scope`.
+- **Evidence Window** — Closed comparison interval from an Accepted Baseline to the current Snapshot, with timestamps and configured timezone.
+- **Heartbeat** — Renewal evidence from an Agent that it still owns an active Runtime Promise.
+- **Host** — The single Linux machine observed and controlled by v1.
+- **Launch Mechanism** — Provider and invocation context responsible for starting and controlling a Runtime, such as systemd, Docker, PM2, cron, or a direct process.
+- **Lease** — Time-bounded validity of an ephemeral Runtime Promise. It expires unless renewed.
+- **Observation** — Provider-neutral evidence that a scheduled or running Runtime exists on the Host, with a stable Provider identity and provenance.
+- **Operator** — Human using the Brief, CLI, TUI, inspection, and lifecycle controls.
+- **Owner** — Accountable Agent or human identity responsible for a Runtime Promise.
+- **Promise Lifecycle** — Orthogonal state of a Runtime Promise: `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, or `closed`. Every `closed` state retains exactly one reason: `released`, `completed`, or `revoked`.
+- **Project** — Stable supplied identity and display label for the body of work a Runtime supports. External work or code references are optional opaque metadata.
+- **Promise ID** — Stable identifier returned when a Runtime Promise is declared.
+- **Provider** — Runtime or scheduler surface observed or controlled by `srvls`: cron, systemd, Docker, PM2, or direct Host processes in v1.
+- **Reconciliation Finding** — One or more evidence-backed classifications produced by comparing Runtime Promises, Heartbeats, Leases, and Observations. Findings may coexist.
+- **Runtime** — Scheduled or running Host resource created for a purpose.
+- **Runtime Promise** — Declaration that an Agent, working on a Project, started or expects a Runtime for a purpose and expects its scheduled or running presence to remain true until a termination condition. It includes ownership, lifetime, Launch Mechanism, and provenance. It does not assert arbitrary business or tool outcomes in v1.
+- **Safe-to-stop Assessment** — Conservative `safe`, `unsafe`, or `unknown` conclusion with reasons. It is decision support, never a guarantee.
+- **Snapshot** — Durable, bounded point-in-time record used to compare Briefs and audit reconciliations.
+- **Stack** — Deterministic read-only grouping of related Observations based on Provider-native, Project, source-location, and conservative name evidence.
+- **Telemetry** — External event and measurement systems. `srvls` may retain opaque references but does not replace them.
+
+##### Reconciliation Finding Vocabulary
+
+- **healthy** — An active Runtime Promise has the intended number of matching running Observations and no contradictory evidence.
+- **broken** — An active Runtime Promise expects a running Runtime but has no matching running Observation under complete-enough collection.
+- **orphaned** — A running Observation has no matching Runtime Promise.
+- **duplicate** — More matching Observations exist than the Runtime Promise's intended instance count.
+- **stale** — A running Observation lacks recent use evidence under configured policy while not being proven abandoned.
+- **hot** — A Runtime exceeds a configured resource threshold or trend rule.
+- **unmanaged** — An Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism.
+- **abandoned** — A running Observation remains after its Runtime Promise Lease expired, ownership Heartbeats were lost beyond grace, or intent was explicitly closed as released, completed, or revoked.
+
+These labels are not mutually exclusive. A Reconciliation Finding retains every applicable label and the evidence for each; presentation may assign an attention rank without discarding labels.
+
+##### Orthogonal Reconciliation Model
+
+Each active or historically relevant Runtime Promise is evaluated on four axes. Presentation can summarize them, but storage, filters, exports, and acceptance fixtures retain every axis.
+
+| Axis | Canonical values | Rule |
+| --- | --- | --- |
+| Promise Lifecycle | `lease-active`, `heartbeat-late`, `lease-expired`, `persistent-active`, `closed` | `heartbeat-late` begins when the declared renewal cadence plus grace is missed while the Lease remains valid. A Host boot-ID change expires an ephemeral Lease unless a valid renewal re-establishes ownership. `closed` requires a retained `released`, `completed`, or `revoked` reason. |
+| Evidence Status | `sufficient`, `incomplete`, `stale`, `out-of-scope` | Required Collection Obligations must be complete and fresh for `sufficient`. Unsupported or intentionally excluded scope is `out-of-scope`, never apparent absence. |
+| Promise Outcome | `healthy`, `broken`, `unresolved`, `inactive` | `healthy` and `broken` require sufficient evidence for active intent. `unresolved` covers active intent whose presence or absence evidence is incomplete, stale, or out-of-scope. Expired or closed intent is `inactive`; a surviving Observation is represented independently by an `abandoned` label. |
+| Observation labels | `orphaned`, `duplicate`, `stale`, `hot`, `unmanaged`, `abandoned` | Zero or more labels attach to exact Observations. `healthy` and `broken` remain Promise outcomes while all eight thesis-required terms remain visible in the combined Reconciliation Finding vocabulary. |
+
+Evaluation order is deterministic:
+
+1. Resolve Promise Lifecycle from declaration, renewal cadence, grace, Lease, closure event, boot identity, and time evidence.
+2. Resolve Evidence Status from Collection Obligations, Collector outcomes, freshness, and supported scope.
+3. Correlate identities only within supported evidence and derive Promise Outcome.
+4. Derive every applicable Observation label without using a label as mutation authorization.
+5. Calculate attention rank and Safe-to-stop Assessment from the retained axes and evidence.
+
+Expiry, Heartbeat, and closure transitions are explicit:
+
+- A late Heartbeat under a still-valid Lease yields `heartbeat-late`; a matching Observation is not yet abandoned.
+- A Lease-expired Runtime Promise has `inactive` Promise Outcome; each fresh matched surviving Observation receives `abandoned` with reason `lease-expired`.
+- A Runtime Promise closed as `released`, `completed`, or `revoked` has `inactive` Promise Outcome; each fresh matched surviving Observation receives `abandoned` with that closure reason.
+- An inactive Promise with no matched survivor remains inactive history. That absence is asserted only when the relevant Collection Obligations are sufficient.
+- An active-intent conclusion that depends on incomplete, stale, or out-of-scope evidence yields `unresolved` rather than healthy or broken. Closed or expired intent remains `inactive`, but incomplete evidence cannot prove that no survivor exists; an `abandoned` label still requires a fresh positive identity match.
+- Closure or expiry never constitutes mutation authorization.
+
+
+#### Non-Goals
+
+- `srvls` is not a scheduler, process supervisor, container runtime, service manager, or remote execution platform.
+- `srvls` does not replace Plane, Git, or Telemetry and does not infer runtime truth from those systems.
+- v1 does not perform unattended cleanup, policy-based auto-remediation, or lease-expiry termination.
+- v1 does not mutate entire Stacks, Projects, Agent groups, or Reconciliation Finding groups.
+- v1 does not provide a hosted control plane, web UI, multi-user authorization system, or distributed fleet view.
+- v1 does not retain unrestricted logs, command output, secrets, or full-fidelity Telemetry.
+- v1 does not guarantee that any Runtime is safe to stop; it provides a conservative evidence-backed assessment.
+- The approved replacement does not intentionally redesign established machine-readable contracts without a compatibility-ledger decision.
+
+
+#### MVP Scope
+
+##### Owner-Approved Inherited Constraints
+
+The Stack-first TUI, safe individual mutation, compatibility-led replacement of the Python CLI with one Rust binary, and supported install, validation, and rollback path are explicit owner-approved brownfield MVP constraints. They are not inferred from the runtime-promise thesis. Product-visible behavior remains specified here; internal mechanisms and library choices remain in `addendum.md` and the architecture artifact.
+
+##### In Scope
+
+- One Linux Host and one local Operator trust domain.
+- Runtime Promise declaration, Lease, Heartbeat, persistence, release, query, and local audit history.
+- Discovery across cron, systemd, Docker, PM2, and direct Host processes.
+- Explainable reconciliation with all eight required finding labels and lost-Heartbeat evidence.
+- Bounded Snapshots and change-since-prior-Brief reporting.
+- Interactive terminal Brief following the approved TUI direction plus deterministic table, JSON, Markdown, and Prometheus-compatible legacy outputs.
+- Exact-target, confirmed, identity-safe, verified lifecycle actions supported by each Provider.
+- Compatibility-led Rust migration, supported release artifact, atomic install or upgrade, automation validation, and rollback.
+
+##### Out of Scope for MVP
+
+- Remote Hosts or fleet-wide reconciliation; revisit after one-Host coverage and identity contracts are proven.
+- Automatic termination after Lease expiry; revisit only with field evidence that conservative review is insufficient.
+- Multi-Operator RBAC and remote Agent authentication; revisit with a networked control plane.
+- Deep Plane, Git, or Telemetry ingestion; v1 stores optional opaque references only.
+- Browser, desktop GUI, and mobile surfaces.
+- Windows and macOS Providers.
+- Guaranteed discovery of Supervisor, Process Compose, Podman, Kubernetes or CRI, additional Docker contexts, other users' systemd managers, or additional PM2 homes. A deliberately configured scope is supported only when an existing v1 Collector can observe it and reports its obligation honestly.
+- Durable manual Stack membership corrections or persistent Operator overrides of inferred Stack membership; v1 exposes evidence, confidence, and Ungrouped items instead.
+- Stack-wide or Project-wide lifecycle actions.
+
+
+#### Success Metrics and Counter-Metrics
+
+##### Primary
+
+- **SM-1: Complete morning answer set.** In the canonical acceptance scenarios, one Brief answers all eight questions in FR-28 and exposes any incomplete evidence. Validates FR-14 and FR-18 through FR-29.
+- **SM-2: Reconciliation correctness.** Every canonical fixture for healthy, broken, orphaned, duplicate, stale, hot, unmanaged, and abandoned produces the specified labels and evidence with no silent false certainty. Validates FR-18 through FR-26.
+- **SM-3: Safe action truthfulness.** Every mutation acceptance case ends in exactly one of verified, executed-unverified, refused, timed-out, or failed according to FR-40 precedence; none reports verified success without fresh post-action evidence. Validates FR-36 through FR-41.
+
+##### Secondary
+
+- **SM-4: Compatibility closure.** The frozen deterministic compatibility corpus, current live-Host smoke suite, and named deployed-consumer checks pass completely, or each intentional deviation has an approved ledger entry and replacement assertion. Validates FR-16, FR-17, FR-42, and FR-43.
+- **SM-5: Agent lifecycle closure.** Canonical Agent scenarios can declare, retry, renew, query, release, and observe Lease expiry deterministically without human parsing. Validates FR-1 through FR-7.
+- **SM-6: Explainable operator decisions.** In each core journey fixture, the Operator can reach the evidence and exact target from the Brief without issuing native Provider discovery commands. Provider-native commands are needed only after leaving `srvls` for remediation outside supported capabilities. Validates FR-26, FR-28 through FR-35, and FR-37.
+
+##### Counter-Metrics
+
+- **SM-C1: Do not optimize anomaly count.** More findings are not better; false positive or unsupported labels are defects. Counterbalances SM-1 and SM-2.
+- **SM-C2: Do not optimize speed by hiding incompleteness.** Faster refreshes cannot convert timed-out or denied Collectors into apparent absence. Counterbalances SM-1.
+- **SM-C3: Do not optimize cleanup volume.** Fewer running Runtimes is not a success measure, and broad automatic stopping is prohibited. Counterbalances SM-3.
+
+
+#### Safety, Privacy, and Compatibility Guardrails
+
+##### Safety
+
+- Reconciliation is read-only; lifecycle actions are separately planned and authorized.
+- Lease expiry, orphaned status, abandoned status, and `safe` assessment never trigger automatic mutation in v1.
+- Mutation targets exactly one revalidated Observation.
+- Unknown evidence remains unknown through the UI, exports, and action flow.
+
+##### Privacy and Data Governance
+
+- Runtime Promise metadata identifies purpose without requiring source code, prompts, secrets, or full command output.
+- Optional Plane, Git, and Telemetry references remain opaque identifiers or links.
+- Local history uses bounded retention and explicit deletion behavior.
+- Provider output and process command lines are treated as untrusted and potentially sensitive.
+
+##### Compatibility
+
+- Legacy consumers keep working during the Rust migration.
+- New reconciliation schemas are versioned and additive where practical.
+- The executable name remains `srvls`.
+- Provider identity and output ordering rules are public contracts once released.
+
+
+#### Integration Constraints
+
+- **Linux process and scheduler surfaces:** cron files and commands, system and user systemd managers, Docker daemon CLI or API surface, PM2, and the Host process table.
+- **Agent callers:** local deterministic CLI contracts for Runtime Promise lifecycle operations. A network service is not required in v1.
+- **Local durable state:** Runtime Promises, lifecycle events, policy/configuration, bounded Snapshots, and compatibility metadata.
+- **Existing automation:** `srvls-metrics` and `srvls-snapshot` systemd timer consumers and the established table, JSON, Markdown, and Prometheus outputs.
+- **Plane, Git, and Telemetry:** optional opaque references only. Their availability cannot determine Runtime health.
+
+
+#### Binding Risks and Mitigations
+
+| Risk | Product impact | Required mitigation |
+| --- | --- | --- |
+| Weak correlation creates false confidence | Wrong healthy, orphaned, or safe conclusion | Evidence-weighted matching, explicit confidence, completeness gates, and `unknown` safety |
+| Process identity is reused | Mutation targets a different Runtime | Provider-native identity plus birth evidence and immediate revalidation |
+| Agents stop renewing unexpectedly | Healthy work appears abandoned | Explicit grace policy, visible last Heartbeat, no automatic stop |
+| Provider failure looks like absence | False broken or clean Brief | Per-Collector completeness and absence rules that require sufficient evidence |
+| Local state corrupts or drifts | Intent and history become untrustworthy | Atomic schema-versioned writes, validation, recovery, and bounded Snapshots |
+| TUI hides uncertainty | Operator acts on misleading presentation | Textual state vocabulary, linked evidence, accessible fallbacks, explicit partial states |
+| Migration breaks automation | Existing metrics or snapshots fail | Compatibility corpus, staged smoke, consumer validation, atomic activation, rollback |
+| Product expands into orchestration | Safety and scope explode | Non-goals, read-only groups, one-Host MVP, no auto-remediation |
+
+
+#### Open Questions and Downstream Closure Obligations
+
+No phase-blocking product questions remain for UX, architecture, or epic planning. Post-MVP candidates are bounded in Section 6.3 and require new evidence before scope expansion.
+
+Two non-blocking evidence obligations have explicit owners and gates:
+
+| Closure item | Owner | Required evidence and decision | Closure gate |
+| --- | --- | --- | --- |
+| Operator-impact measure | Product Owner | Compare the current Provider-by-Provider morning reconstruction journey with the canonical Brief journey; approve a baseline, target, measurement window, and collection method without treating Host inventory counts as user impact. | Required before beta evaluation; not a blocker for UX, architecture, or implementation planning. |
+| Operational acceptance budgets | UX owns user-visible refresh and feedback expectations; Architecture owns Collector deadlines, output caps, retention, Heartbeat grace, and action-verification limits. | Use canonical-Host measurements, deterministic fixture sizes, privacy and safety constraints, and supported-Host capabilities to publish defaults, valid ranges, and acceptance checks. | Required in canonical UX and architecture contracts and their stories before implementation readiness can report `READY`. |
+
+##### Assumptions Index
+
+No unresolved inline assumptions remain. Fast-path defaults and their rationale are recorded in `.memlog.md`; downstream implementation decisions are isolated in `addendum.md`.
+
+#### Binding PRD Addendum Directions
+
+This addendum preserves user-supplied implementation direction and readiness corrections that constrain downstream UX, architecture, and story planning. It is not a substitute for product requirements in `prd.md`.
+
+##### Approved Technical Direction
+
+- Deliver one Rust binary initially, preserving the one-tool operator experience.
+- Keep a hexagonal core: domain and application policy do not depend on host commands, terminal rendering, argument parsing, or export serialization.
+- Use an Elm-style ratatui shell with explicit model, message, update, view, and effect boundaries.
+- Keep Strategy, Adapter, and Command as explicit variation seams; prefer composition for normalized inventory and reconciliation projections.
+- Build a layered migration oracle from the checked-in Python behavior inventory, a frozen deterministic fixture and golden corpus, `tests/test_smoke.sh` as live-Host integration evidence, and end-to-end checks for named deployed consumers. Any deliberate deviation belongs in an explicit compatibility ledger.
+- Preserve deterministic non-interactive table, JSON, Prometheus, Markdown, inspection, executable-name, and explicit-action behavior until an approved requirement changes it.
+
+##### Mandatory Planning Corrections
+
+- Put the Rust 2024 crate bootstrap, module boundaries, committed lockfile, baseline harness, formatting, linting, locked tests, MSRV 1.88, and current-stable CI gates before provider implementation.
+- Separate total bounded subprocess execution from concurrent provider orchestration and outcome policy.
+- Define an explicit TUI start interaction or consistently scope start to a non-TUI surface.
+- Separate mutation initiation and confirmation from asynchronous execution, race handling, verification, and outcome rendering.
+
+##### Legacy Requirement Reconciliation
+
+The 2026-07-15 epic artifact used non-canonical `FR1` through `FR18` identifiers. The canonical PRD retires those identifiers and maps their intent as follows.
+
+| Legacy ID | Canonical requirement(s) | Disposition |
+| --- | --- | --- |
+| FR1 | FR-8 | Cron collection preserved |
+| FR2 | FR-9 | systemd collection preserved |
+| FR3 | FR-10 | Docker collection preserved |
+| FR4 | FR-11 | PM2 collection preserved |
+| FR5 | FR-13 | Provider-neutral normalization preserved |
+| FR6 | FR-14 | Collection completeness and diagnostics preserved |
+| FR7 | FR-30 | Interactive default and redirected table behavior preserved |
+| FR8 | FR-29 | Deterministic Stack grouping preserved and placed after attention summary |
+| FR9 | FR-29 | Stack confidence, evidence, and Ungrouped behavior preserved |
+| FR10 | FR-31, FR-34 | Navigation, refresh, help, inspection entry, and small-terminal behavior preserved |
+| FR11 | FR-33 | Semantic color, icon, text, `NO_COLOR`, and ASCII behavior preserved |
+| FR12 | FR-15, FR-32 | Bounded Provider detail preserved and linked to declared intent |
+| FR13 | FR-35 through FR-40 | Individual lifecycle actions preserved and decomposed into interaction, planning, identity, execution, and verification contracts |
+| FR14 | FR-37 through FR-41 | Confirmation, stale protection, and read-only groups preserved |
+| FR15 | FR-16 | Layered Python-behavior compatibility preserved |
+| FR16 | FR-30 | Deprecated `--fzf` alias and `--fzf-lines` removal preserved |
+| FR17 | FR-14, FR-17 | Partial diagnostics and strict outcome policy preserved |
+| FR18 | FR-42, FR-43 | Release, install, validation, upgrade, and rollback preserved and split |
+
+Legacy `NFR1` through `NFR10` are reconciled into canonical `NFR-1` through `NFR-16` plus the Approved Technical Direction above. The old `UX-DR1` through `UX-DR8` identifiers remain legacy candidate inputs until the dedicated UX contract is created and approved; that final UX contract will supersede them as the downstream UX source while this PRD remains the canonical product source.
+
+##### Architecture Decisions to Resolve Downstream
+
+- Durable format and location for Runtime Promise records, observations, reconciliation snapshots, and audit history.
+- Agent-facing declaration, heartbeat, renewal, release, and query contracts.
+- Lease-clock and expiry semantics across agent exit, host restart, suspend, and clock discontinuity.
+- Evidence-weighting and identity rules that correlate declarations to cron, systemd, Docker, PM2, and process observations.
+- Retention boundaries that support morning change detection without turning srvls into a general telemetry store.
+
+### PRD Completeness Assessment
+
+The canonical PRD package is structurally complete for this extraction step: it defines 43 unique sequential Functional Requirements (FR-1 through FR-43), 16 unique sequential Non-Functional Requirements (NFR-1 through NFR-16), six user journeys (UJ-1 through UJ-6), six success metrics (SM-1 through SM-6), three counter-metrics (SM-C1 through SM-C3), explicit non-goals and MVP boundaries, safety/privacy/compatibility guardrails, integration constraints, risks and mitigations, and downstream design constraints.
+
+PRD completeness is qualified by two explicit, non-phase-blocking evidence obligations. The Product Owner must establish the operator-impact measure before beta evaluation. UX and Architecture must publish operational acceptance budgets, defaults, valid ranges, and acceptance checks in their canonical contracts and stories before implementation readiness can report `READY`. The PRD intentionally delegates five concrete design decisions to downstream architecture: durable record formats and locations; Agent-facing lifecycle contracts; Lease-clock semantics; evidence-weighting and identity rules; and retention boundaries. The legacy UX decision identifiers also remain candidate inputs until superseded by the approved dedicated UX contract. These are recorded closure obligations and delegated design decisions, not missing FR or NFR identifiers.
+
+Epic coverage validation is explicitly deferred to the later BMAD epic-coverage step. This Step 2 assessment makes no judgment about whether any current epic or story covers the extracted requirements, closure obligations, or addendum directions.
+
+## Epic Coverage Validation
+
+### Coverage Matrix
+
+| FR ID | PRD Requirement | Canonical Epic / Story Owner(s) | Status |
+| --- | --- | --- | --- |
+| FR-1 | An Agent or Operator can declare a Runtime Promise containing Agent, Project, Runtime locator, purpose, Launch Mechanism, expected lifetime or termination condition, Owner, intended instance count, persistence choice, and optional opaque Plane, Git, or Telemetry references. | Epic 2 / Story 2.2; Epic 2 / Story 2.6 | Covered |
+| FR-2 | `srvls` records the declaration source, creation time, supplied Agent and Project identities, and subsequent lifecycle events without silently rewriting history. | Epic 2 / Story 2.2; Epic 2 / Story 2.6 | Covered |
+| FR-3 | A newly declared Runtime Promise receives a finite Lease unless the caller explicitly requests persistent intent. | Epic 2 / Story 2.3; Epic 2 / Story 2.6 | Covered |
+| FR-4 | An owning Agent can renew an active Lease and provide a Heartbeat associated with the Promise ID. | Epic 2 / Story 2.4; Epic 2 / Story 2.6 | Covered |
+| FR-5 | An authorized Agent or Operator can mark a Runtime Promise released, completed, or revoked with reason and time. | Epic 2 / Story 2.5; Epic 2 / Story 2.6 | Covered |
+| FR-6 | An Agent or Operator can opt a Runtime Promise into persistence only while supplying Durable Ownership and a Launch Mechanism that can be inspected later. | Epic 2 / Story 2.3; Epic 2 / Story 2.6 | Covered |
+| FR-7 | All declaration, query, renewal, release, and validation operations are available non-interactively with deterministic machine-readable responses and exit behavior. | Epic 2 / Story 2.1; Epic 2 / Story 2.2; Epic 2 / Story 2.3; Epic 2 / Story 2.4; Epic 2 / Story 2.5; Epic 2 / Story 2.6 | Covered |
+| FR-8 | `srvls` collects user, root, `/etc/crontab`, and `/etc/cron.d` entries with schedule, command identity, source location, user context, and provenance. | Epic 3 / Story 3.4; Epic 3 / Story 3.11 | Covered |
+| FR-9 | `srvls` collects system and user services and timers with full unit identity, enablement, runtime state, health, schedule, and provenance. | Epic 3 / Story 3.5; Epic 3 / Story 3.11 | Covered |
+| FR-10 | `srvls` collects containers with immutable identity, runtime state, health, restart policy, image, Compose Project, labels, and working-directory evidence when available. | Epic 3 / Story 3.6; Epic 3 / Story 3.11 | Covered |
+| FR-11 | `srvls` collects PM2 processes with stable observed identity, runtime state, restart count, namespace, script, working directory, and start-time evidence. | Epic 3 / Story 3.7; Epic 3 / Story 3.11 | Covered |
+| FR-12 | `srvls` collects direct Host process Observations needed to reconcile Agent-created Runtimes that are not owned by cron, systemd, Docker, or PM2. | Epic 3 / Story 3.8; Epic 3 / Story 3.11 | Covered |
+| FR-13 | Every Collector emits a Provider-neutral Observation composed from identity, lifecycle, schedule, health, provenance, ownership hints, resource signals, and Provider-specific detail references. | Epic 3 / Story 3.9; Epic 3 / Story 3.11 | Covered |
+| FR-14 | Each refresh returns Observations together with explicit per-Collector completeness, duration, and diagnostic outcomes. | Epic 3 / Story 3.1; Epic 3 / Story 3.2; Epic 3 / Story 3.3; Epic 3 / Story 3.4; Epic 3 / Story 3.5; Epic 3 / Story 3.6; Epic 3 / Story 3.7; Epic 3 / Story 3.8; Epic 3 / Story 3.9; Epic 3 / Story 3.10; Epic 3 / Story 3.11 | Covered |
+| FR-15 | An Operator can inspect an Observation's Provider-appropriate status, schedule, provenance, identity, and bounded log or output detail. | Epic 3 / Story 3.11 | Covered |
+| FR-16 | The replacement implementation preserves the established Python CLI's flat JSON, Prometheus, Markdown, table, inspection, executable-name, ordering, escaping, arguments, exit behavior, and explicit CLI-action behavior through a layered compatibility oracle unless a deliberate deviation is recorded and tested. | Epic 1 / Story 1.1; Epic 1 / Story 1.2; Epic 1 / Story 1.3; Epic 1 / Story 1.4; Epic 1 / Story 1.5; Epic 1 / Story 1.6; Epic 1 / Story 1.7; Epic 1 / Story 1.8; Epic 1 / Story 1.9; Epic 1 / Story 1.10; Epic 3 / Story 3.11 | Covered |
+| FR-17 | `srvls` exposes visible partial-failure diagnostics and a strict mode with deterministic Collector-outcome-to-exit behavior. | Epic 3 / Story 3.10; Epic 3 / Story 3.11 | Covered |
+| FR-18 | `srvls` correlates Runtime Promises to Observations using Provider-native stable identities, declared locators, Project and Launch Mechanism evidence, and bounded secondary evidence. | Epic 4 / Story 4.1; Epic 4 / Story 4.10 | Covered |
+| FR-19 | An active Runtime Promise with the intended number of compatible running Observations and sufficient Collector completeness receives a healthy Reconciliation Finding. | Epic 4 / Story 4.2; Epic 4 / Story 4.10 | Covered |
+| FR-20 | An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when the relevant Collection Obligations provide sufficient absence evidence. | Epic 4 / Story 4.2; Epic 4 / Story 4.10 | Covered |
+| FR-21 | A running Observation with no matching Runtime Promise receives an orphaned Reconciliation Finding. | Epic 4 / Story 4.3; Epic 4 / Story 4.10 | Covered |
+| FR-22 | When matching running Observations exceed a Runtime Promise's intended instance count, `srvls` emits duplicate Reconciliation Findings for the excess set without choosing a destructive target silently. | Epic 4 / Story 4.3; Epic 4 / Story 4.10 | Covered |
+| FR-23 | `srvls` can classify a running Runtime stale using configured, explainable evidence of non-use or obsolescence. | Epic 4 / Story 4.4; Epic 4 / Story 4.10 | Covered |
+| FR-24 | `srvls` can classify a Runtime hot when collected resource evidence crosses configured threshold or trend policy. | Epic 4 / Story 4.4; Epic 4 / Story 4.10 | Covered |
+| FR-25 | `srvls` emits unmanaged when an Agent-created Runtime lacks Durable Ownership or a reliable Launch Mechanism, and abandoned when a surviving Observation outlives an ephemeral Lease, lost-Heartbeat grace, or intent explicitly closed as released, completed, or revoked. | Epic 4 / Story 4.5; Epic 4 / Story 4.10 | Covered |
+| FR-26 | Every attention-worthy Reconciliation Finding exposes classification rules, identity evidence, contradictory or missing evidence, confidence, ownership, purpose, expected lifetime, Launch Mechanism, and a Safe-to-stop Assessment with reasons. | Epic 4 / Story 4.1; Epic 4 / Story 4.2; Epic 4 / Story 4.3; Epic 4 / Story 4.4; Epic 4 / Story 4.5; Epic 4 / Story 4.6; Epic 4 / Story 4.7; Epic 4 / Story 4.8; Epic 4 / Story 4.9; Epic 4 / Story 4.10; Epic 6 / Story 6.4 | Covered |
+| FR-27 | `srvls` stores bounded local Snapshots sufficient to report new, resolved, changed, and persisting Runtime Promises, Observations, and Reconciliation Findings within an Evidence Window from an explicitly Accepted Baseline to the current Snapshot. | Epic 4 / Story 4.7; Epic 4 / Story 4.8; Epic 4 / Story 4.10; Epic 5 / Story 5.10 | Covered |
+| FR-28 | `srvls` produces a Brief answering what Agents created, what changed, what should be running, what is actually running, what is missing, what is unexplained, which Heartbeats were lost, and which Runtimes carry duplicate, stale, abandoned, unmanaged, or hot findings. | Epic 4 / Story 4.9; Epic 4 / Story 4.10; Epic 5 / Story 5.10 | Covered |
+| FR-29 | The default TUI presents a concise attention summary followed by deterministic Stack groups, with Project, Agent, Provider, and Reconciliation Finding filters and an explicit Ungrouped section. | Epic 4 / Story 4.10; Epic 5 / Story 5.10 | Covered |
+| FR-30 | `srvls` opens the TUI by default only when both input and output are interactive terminals, while redirected execution retains non-interactive table behavior. | Epic 5 / Story 5.1; Epic 5 / Story 5.10 | Covered |
+| FR-31 | An Operator can navigate, expand or collapse Stacks, filter, search, refresh, inspect, open help, and return or quit entirely by keyboard. | Epic 5 / Story 5.3; Epic 5 / Story 5.10 | Covered |
+| FR-32 | The TUI and CLI inspection surfaces show linked Runtime Promise, Heartbeat, Lease, Observation, Project, Agent, Launch Mechanism, reconciliation evidence, and bounded Provider detail. | Epic 5 / Story 5.4; Epic 5 / Story 5.5; Epic 5 / Story 5.10 | Covered |
+| FR-33 | Rows and summaries communicate Provider, identity, running state, health, freshness, pending work, and Reconciliation Findings using text plus optional semantic color and icons. | Epic 5 / Story 5.7; Epic 5 / Story 5.10 | Covered |
+| FR-34 | Loading, refreshing, stale, partial-failure, unavailable-Provider, empty, filtered-empty, pending-action, verified, executed-unverified, refused, timed-out, failed, and baseline-unavailable states each receive explicit visible treatment, including responsive behavior on small terminals. | Epic 5 / Story 5.1; Epic 5 / Story 5.2; Epic 5 / Story 5.3; Epic 5 / Story 5.4; Epic 5 / Story 5.5; Epic 5 / Story 5.6; Epic 5 / Story 5.7; Epic 5 / Story 5.8; Epic 5 / Story 5.9 | Covered |
+| FR-35 | Pressing `a` on an actionable Runtime Promise or Observation opens the Action Menu with supported start, stop, restart, and disable or delete operations; direct `s`, `R`, and `x` shortcuts remain where unambiguous, and `?` documents all bindings. | Epic 6 / Story 6.2; Epic 6 / Story 6.13 | Covered |
+| FR-36 | `srvls` can plan a start from an active Runtime Promise whose Launch Mechanism resolves to a supported Provider target. It can plan a stop, restart, and disable or delete operation for individual systemd, Docker, PM2, and direct-process Observations according to Provider capability. Cron Observations remain read-only in v1. | Epic 6 / Story 6.1; Epic 6 / Story 6.13 | Covered |
+| FR-37 | Immediately before execution, `srvls` re-collects or verifies the selected Observation's canonical Provider identity, or revalidates the Runtime Promise, absence evidence, and Provider-native start target when no Observation exists. | Epic 6 / Story 6.4; Epic 6 / Story 6.13 | Covered |
+| FR-38 | The TUI requires confirmation for stop and disable or delete, names the exact Runtime and operation, and includes the current Safe-to-stop Assessment and uncertainty. | Epic 6 / Story 6.3; Epic 6 / Story 6.13 | Covered |
+| FR-39 | Each lifecycle operation has a unique operation identity, captures its source generation, suppresses duplicate submissions, and remains distinct from concurrent refreshes. | Epic 6 / Story 6.6; Epic 6 / Story 6.13 | Covered |
+| FR-40 | After a lifecycle operation begins, `srvls` refreshes relevant truth and reports exactly one canonical Action Outcome: `verified`, `executed-unverified`, `refused`, `timed-out`, or `failed`. | Epic 6 / Story 6.1; Epic 6 / Story 6.2; Epic 6 / Story 6.3; Epic 6 / Story 6.4; Epic 6 / Story 6.5; Epic 6 / Story 6.6; Epic 6 / Story 6.7; Epic 6 / Story 6.8; Epic 6 / Story 6.9; Epic 6 / Story 6.10; Epic 6 / Story 6.11; Epic 6 / Story 6.12 | Covered |
+| FR-41 | Stack, Project, Agent, and Reconciliation Finding groups remain read-only in v1, and any required privilege is limited to the selected Provider operation. | Epic 6 / Story 6.2; Epic 6 / Story 6.13 | Covered |
+| FR-42 | `srvls` can be built, versioned, checksum-verified, staged, smoke-tested, and installed as a standalone release artifact for the supported Host target. | Epic 7 / Story 7.1; Epic 7 / Story 7.15 | Covered |
+| FR-43 | An Operator can atomically upgrade `srvls`, validate existing metrics and Snapshot timer consumers, and roll back to the prior known-good target. | Epic 7 / Story 7.1; Epic 7 / Story 7.2; Epic 7 / Story 7.3; Epic 7 / Story 7.4; Epic 7 / Story 7.5; Epic 7 / Story 7.6; Epic 7 / Story 7.7; Epic 7 / Story 7.8; Epic 7 / Story 7.9; Epic 7 / Story 7.10; Epic 7 / Story 7.11; Epic 7 / Story 7.12; Epic 7 / Story 7.13; Epic 7 / Story 7.14; Epic 7 / Story 7.15 | Covered |
+
+### Missing Requirements
+
+None
+
+### Coverage Statistics
+
+- Total PRD FRs: 43
+- FRs covered in epics: 43
+- Coverage percentage: 100.00%
+- Missing PRD FRs: 0
+- Extra epic FR IDs: 0
+
+### Reciprocal Validation
+
+All 43 PRD FRs have nonempty owner sets; every named owner exists as a canonical story definition; every owner story reciprocally cites its FR; and the epic functional inventory, reciprocal story requirement lists, and requirement-coverage keys contain zero extra FR IDs.
+
+## UX Alignment Assessment
+
+### UX Document Status
+
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md` — **Found** and final; it defines the terminal-native visual semantics, textual state treatments, responsive collapse order, and 16-component visual contract.
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md` — **Found** and final; it defines the interaction, state, accessibility, responsive, lifecycle-safety, compatibility, non-interactive, and acceptance-budget contracts.
+- The documents agree on all 16 component names: `brief-summary`, `completeness-banner`, `attention-row`, `group-row`, `runtime-detail`, `evidence-table`, `provider-detail`, `filter-bar`, `action-menu`, `confirmation-dialog`, `operation-status`, `baseline-dialog`, `help-overlay`, `finding-marker`, `machine-result`, and `install-phase`. DESIGN.md owns visual semantics and EXPERIENCE.md owns behavior, with no duplicate owner or component conflict.
+
+**UX to PRD:** The UX source-traceability tables contain one named coverage row for every canonical requirement extracted above: UJ-1 through UJ-6 (6/6), FR-1 through FR-43 (43/43), and NFR-1 through NFR-16 (16/16), with no missing or extra identifier.
+
+| PRD scope | Auditable UX coverage | Architecture landing | Result |
+| --- | --- | --- | --- |
+| UJ-1 | UX-IA-1 through UX-IA-5 and Key Flow UJ-1 | AD-5, AD-7, AD-18, AD-20 through AD-21, AD-24 through AD-25 | Aligned |
+| UJ-2 | UX-IP-9 and Key Flow UJ-2 | AD-13, AD-16 through AD-17, AD-19 through AD-21, AD-24 | Aligned |
+| UJ-3 | UX-IA-3, UX-IA-6, UX-IP-4, and Key Flow UJ-3 | AD-5 through AD-6, AD-13, AD-18, AD-20 through AD-22 | Aligned |
+| UJ-4 | UX-IP-5, UX-IP-7, and Key Flow UJ-4 | AD-6, AD-13 through AD-16, AD-18, AD-20 through AD-22, AD-24 | Aligned |
+| UJ-5 | UX-FND-2, UX-FND-5, and Key Flow UJ-5 | AD-4 through AD-5, AD-16, AD-18, AD-20 through AD-21, AD-25 | Aligned |
+| UJ-6 | UX-IP-8, UX-CP-16, and Key Flow UJ-6 | AD-3, AD-7, AD-9, AD-11 through AD-12, AD-16, AD-23 through AD-24 | Aligned |
+| FR-1 through FR-7 | Agent Promise lifecycle, provenance, Lease/Heartbeat, closure, persistence, and deterministic machine contracts | Promise application service under AD-2, AD-3, AD-13, AD-16 through AD-17, AD-19 through AD-21, AD-24 | 7/7 aligned |
+| FR-8 through FR-17 | Collector scope/completeness, normalized and bounded detail, legacy compatibility, and strict policy | Host adapters and collection/legacy presenters under AD-3, AD-5, AD-9 through AD-11, AD-13, AD-15, AD-20 through AD-21, AD-24 through AD-25 | 10/10 aligned |
+| FR-18 through FR-27 | Correlation, all Promise/Observation findings, Safe-to-stop, Snapshots, and Accepted Baseline | Reconciliation and baseline services under AD-2, AD-5, AD-13, AD-16 through AD-21, AD-24 through AD-25 | 10/10 aligned |
+| FR-28 through FR-35 | Brief, attention/Stack exploration, terminal routing, keyboard refinement, inspection, explicit states, and Action Menu | Brief/grouping/planning/presentation under AD-4 through AD-8, AD-11, AD-13 through AD-16, AD-18 through AD-22, AD-24 through AD-25 | 8/8 aligned |
+| FR-36 through FR-41 | Exact-target planning, confirmation, immediate revalidation, isolated asynchronous execution, canonical outcomes, and read-only groups | Action domain/application/adapters under AD-6, AD-10, AD-13 through AD-16, AD-20, AD-22, AD-24 | 6/6 aligned |
+| FR-42 through FR-43 | Verifiable release, atomic upgrade, consumer validation, known-good retention, and rollback | Release application and recovery under AD-3, AD-7, AD-9, AD-11 through AD-12, AD-16, AD-23 through AD-24 | 2/2 aligned |
+| NFR-1 through NFR-2 | Deterministic outcomes and honest partial truth | AD-2, AD-5, AD-11, AD-18, AD-21, AD-24 | 2/2 aligned |
+| NFR-3 through NFR-7 | Bounded refresh, argv-only Host safety, least privilege, terminal restoration, and clean machine interfaces | AD-3, AD-6 through AD-10, AD-14 through AD-15, AD-20 through AD-22, AD-25 | 5/5 aligned |
+| NFR-8 | Text-first accessible terminal communication and complete human-linear alternative | UX-A11Y-1 through UX-A11Y-5, SR-A11Y-1, UX-RP-1 through UX-RP-6, UX-IP-11; AD-7, AD-8, AD-11, AD-14 | Aligned |
+| NFR-9 through NFR-12 | Atomic durable state, Lease time semantics, data minimization, and concurrency correctness | AD-10, AD-13 through AD-25 | 4/4 aligned |
+| NFR-13 through NFR-16 | Fixture testability, brownfield compatibility, supported release, and visible validated policy | AD-9, AD-11 through AD-12, AD-19 through AD-20, AD-23 through AD-24 | 4/4 aligned |
+
+**State, lifecycle, and platform validation:** UX-ST-1 through UX-ST-18 explicitly cover loading, refreshing, stale, partial/unavailable evidence, empty/filtered-empty, pending, all five terminal Action Outcomes, identity drift, baseline availability, bounded detail, and invalid configuration; UX-ST-19 preserves focus by exact identity; UX-ST-20 keeps controls conservative. UX-IP-4 through UX-IP-7 and UX-IP-10 require one exact identity and generation, Cancel-first confirmation, typed acknowledgement for unknown safety, duplicate suppression, pre-execution revalidation, typed Provider execution, fresh correlated verification, one canonical outcome, durable audit, and phase-correct exit/signal behavior. AD-5, AD-6, AD-10, AD-13 through AD-16, and AD-22 supply those boundaries without widening actions to Stack, Project, Agent, or finding groups.
+
+**Accessibility, responsive, and compatibility validation:** UX-A11Y-1 through UX-A11Y-5 plus SR-A11Y-1 preserve meaning in text, NO_COLOR, ASCII, monochrome, keyboard-only, hostile-input, no-animation, terminal-restoration, and human-linear paths. UX-RP-1 through UX-RP-6 define full (120x30), compact (80x24), narrow (60x20), below-minimum startup, below-minimum resize, and redirected/TERM=dumb behavior; exact identity, states, labels, completeness, focus, and action safety survive collapse. UX-FND-6, UX-IP-1, UX-IP-8 through UX-IP-12, UX-IA-10, UX-IA-12, and UX-RP-6 preserve legacy table/JSON/Prometheus/Markdown/inspection and explicit-action behavior while adding deterministic `--linear` and Agent surfaces; machine stdout contains no ANSI, cursor control, progress, icons, logs, prose diagnostics, or nondeterministic ordering. AD-7 through AD-9, AD-11 through AD-12, AD-14, and AD-23 through AD-24 support these contracts. No web, mobile, graphical, external-fzf, hard-coded-theme, animation, or other unsupported UI assumption appears.
+
+**UX to architecture acceptance budgets:** ARCH-HOST-1 uses the same canonical fixture (2,000 Observations, 500 Runtime Promises, eight Collector scopes, 500 attention-bearing exact items, and bounded Provider detail), ratatui `TestBackend`, a release build, 30 measured iterations after warm-up, and a constrained four-vCPU/8-GiB Linux/glibc-2.42 profile. AD-11 gates all canonical UX states and budgets; AD-19 rejects values outside UX ranges; AD-20 exposes separate operational limits and provenance; the architecture retains every UX default and valid range unchanged.
+
+| Budget | UX contract | ARCH-HOST-1 and corresponding architecture boundary | Result |
+| --- | --- | --- | --- |
+| UX-BUD-1 | Local key/focus/overlay/filter feedback: 100 ms p95; valid 50–150 ms p95 | ARCH-HOST-1; AD-8 text/style rendering, AD-14 single Update/View owner, AD-11 TestBackend measurement | Aligned |
+| UX-BUD-2 | Refresh acknowledgement: 100 ms; valid 50–150 ms | ARCH-HOST-1; AD-5 stale-while-refreshing Snapshot truth, AD-10 generation admission/coalescing, AD-14 model update | Aligned |
+| UX-BUD-3 | Slow-refresh disclosure: 2,000 ms; valid 1,000–5,000 ms | ARCH-HOST-1; AD-5 completeness/obligation truth, AD-10 bounded concurrent collection, AD-20 Collector limits, AD-14 responsive navigation | Aligned |
+| UX-BUD-4 | Action-submit acknowledgement: 100 ms; valid 50–150 ms | ARCH-HOST-1; AD-6 exact-target command, AD-22 durable OperationId handoff/duplicate suppression, AD-14 status rendering | Aligned |
+| UX-BUD-5 | Pending progress refresh: 1,000 ms; valid 500–2,000 ms | ARCH-HOST-1; AD-14 durable phase rendering, AD-22 operation-state authority, AD-20 independently bounded verification polling | Aligned |
+| UX-BUD-6 | Terminal outcome rendering: 100 ms after architecture emission; valid 50–150 ms | ARCH-HOST-1; AD-6 FR-40 outcome precedence, AD-22 sole terminal CAS, AD-14 durable outcome rendering | Aligned |
+| UX-BUD-7 | Resize response: 100 ms p95; valid 50–150 ms p95 | ARCH-HOST-1; AD-8 UX-owned responsive semantics, AD-14 terminal/model ownership, AD-11 TestBackend geometry fixtures | Aligned |
+
+### Alignment Issues
+
+None. DESIGN.md and EXPERIENCE.md align with UJ-1 through UJ-6, FR-1 through FR-43, NFR-1 through NFR-16, and ARCH-HOST-1. No unsupported UI assumptions, component conflicts, lifecycle-safety conflicts, compatibility conflicts, or performance/Host-budget gaps were found.
+
+### Warnings
+
+None. Both canonical UX documents are Found and complete; no missing-UX, accessibility, responsive/minimum-terminal, lifecycle-safety, compatibility/non-interactive, or architecture-support warning applies.
+
+## Epic Quality Review
+
+### Validation Summary
+
+**Step 5 result:** PASS. The complete canonical `epics.md` was reviewed from first byte through EOF: all seven epics and all 75 stories were evaluated in canonical order, with zero sampled or skipped stories.
+
+| Epic | User-value outcome | Stories | Dependency edges | GWT criteria / approval rows | Result |
+| --- | --- | ---: | ---: | ---: | --- |
+| 1 — Trust the Rust replacement before it touches Host truth | Operators and maintainers gain non-mutating replacement trust before Provider or release mutation. | 10 | 9 | 20 | Pass |
+| 2 — Let Agents own runtime intent deterministically | Agents gain a retry-safe Runtime Promise lifecycle. | 6 | 6 | 12 | Pass |
+| 3 — See the actual work running on the Host | Operators gain bounded Provider evidence with explicit completeness. | 11 | 11 | 22 | Pass |
+| 4 — Reconcile intended and actual runtime truth | Operators gain explainable findings, safety assessments, Snapshots, baselines, and a Brief. | 10 | 10 | 20 | Pass |
+| 5 — Navigate one accessible terminal product | Operators gain accessible, responsive exploration and recovery in one terminal product. | 10 | 10 | 20 | Pass |
+| 6 — Act on one exact runtime safely | Operators gain exact-target planning, execution, verification, and recovery. | 13 | 14 | 26 | Pass |
+| 7 — Upgrade and recover the installed pair without split truth | Operators gain crash-convergent install, upgrade, validation, recovery, and rollback. | 15 | 15 | 30 | Pass |
+| **Total** | **Seven independently valuable, user-centric increments** | **75** | **75** | **150** | **Pass** |
+
+All seven titles and goals state an Agent, Operator, or maintainer outcome rather than a technical milestone. Each epic provides a usable increment on completion, consumes only outputs from earlier epics, and has no dependency on a later epic.
+
+**Story order and structure:** The canonical sequences are 1.1–1.10, 2.1–2.6, 3.1–3.11, 4.1–4.10, 5.1–5.10, 6.1–6.13, and 7.1–7.15. All 75 IDs are unique and sequential. Every story has one nonempty `As a`, `I want`, and `So that` statement and exactly one each of Implementation Boundary, Requirement Mapping, Dependencies, Validation Expectations, Out of Scope, and Acceptance Criteria. Every Requirement Mapping and owning-oracle declaration is nonempty, so traceability remains explicit.
+
+**Acceptance criteria and approval correspondence:** Every story has exactly two independently executable Given/When/Then criteria: one positive `P01` row and one negative `N01` row, for exactly 150 GWT criteria. The `srvls-story-acceptance-registry-v1` declares and contains exactly 150 rows, all 150 row IDs are unique and in canonical story/P01/N01 order, every `criterionMarkdown` value occurs byte-for-byte in its owning story, and all 150 SHA-256 values recompute. Story-to-criterion-to-approval correspondence is therefore 150/150 with zero missing, duplicate, stale, or dangling rows.
+
+**Dependency graph:** The complete graph contains exactly 75 declared edges. Story 1.1 is the sole root; 73 stories declare one predecessor; Story 6.13 declares the two earlier predecessors Story 2.6 and Story 6.12. Every referenced owner exists. All 75 edges point to a lower canonical story index, yielding zero forward edges, zero self edges, zero missing targets, and zero circular components. Per-epic edge counts are 9, 6, 11, 10, 10, 14, and 15 respectively.
+
+**Sizing and independent completion:** All 75 stories define one bounded outcome with an explicit non-goal and independently testable positive and negative behavior. Composition and aggregate-gate stories remain bounded to wiring or validation and explicitly refuse to re-own earlier implementation. No story requires future work to satisfy its own acceptance criteria, and no story is an indivisible epic-sized implementation milestone.
+
+**Brownfield, database, starter, and integration timing:** Brownfield compatibility arrives before replacement behavior through Stories 1.2, 1.3, and 1.10; Provider work follows only after the foundation gate; exact existing-consumer discovery precedes release preimages in Story 7.4, pair migration follows in Story 7.6, and the exact-artifact consumer/Host smoke closes Story 7.15. Story 1.6 creates only the fail-closed SQLite foundation, while Story 1.7 provides aggregate-neutral primitives and explicitly leaves concrete Promise, plan, operation, baseline, Snapshot, collection, and release schemas with their owning stories; there is no all-entities-upfront database violation. The architecture prescribes a direct Rust 2024 binary-workspace bootstrap rather than an external starter template, and Story 1.1 is the first story and owns that bootstrap, resolver 3, Rust 1.88 MSRV, moving-stable, lockfile, and early CI applicability.
+
+**Planning quarantine, compatibility, integration, release, and architecture evidence:** Every canonical command below exited 0. Individual execution was followed by the aggregate execution, and `git status --short` remained clean after all gates.
+
+| Gate | Canonical command | Exact result |
+| --- | --- | --- |
+| Planning quarantine | `python3 tests/validate_planning_quarantine.py` | PASS — 2 exact globs, 1 canonical artifact, and 1 byte-exact retired archive. |
+| Story fixture approval | `python3 tests/validate_story_fixture_approvals.py` | PASS — 75 stories and 150 canonical-criterion-bound rows. |
+| Story approval mutation regression | `python3 tests/validate_story_approval_regressions.py` | PASS — the hermetic dependency/approval chain and all fail-closed mutations passed. |
+| Frozen compatibility oracle | `bash tests/compat/validate.sh` | PASS — Provider, output, CLI, inspection, action, source-pin, immutable-hash, and AD-9 checks; 90 inherited rows plus 4 approved deviations. |
+| Contract oracles | `python3 tests/fixtures/contracts/validate.py` | `contract oracles: PASS`. |
+| Release oracles | `python3 tests/fixtures/contracts/release-transaction-v1/validate_oracles.py` | PASS — 11 crash cuts, 7 complete chains, 15 standalone authorities, 4 traces, 1 result, live lock/handoff proofs, positive two-pair FirstInstall proof, and all declared release mutation suites. |
+| Live smoke | `bash tests/test_smoke.sh` | PASS — 292 JSON items, 14 Prometheus samples, Markdown and table output, real cron inspection, and hostile-name injection safety. |
+| Architecture aggregate | `bash tests/validate_architecture_contracts.sh` | `architecture contract gate: PASS` after rerunning every gate above plus transition-script compilation. |
+
+### Critical Violations
+
+**Finding count: 0.** No technical epic, later-epic dependency, forward story dependency, circular dependency, missing dependency owner, or independently incompletable epic-sized story was found.
+
+### Major Issues
+
+**Finding count: 0.** No vague or unbound acceptance criterion, future-story requirement, story-sizing defect, brownfield integration timing defect, all-entities-upfront database violation, starter-bootstrap gap, approval correspondence defect, or release/compatibility gate failure was found.
+
+### Minor Concerns
+
+**Finding count: 0.** No numbering, formatting, required-section, persona/value/outcome, traceability, quarantine, fixture, mutation, contract, smoke, or documentation gap was found.
+
+### Actionable Recommendations
+
+**Remediation action count: 0.** No Step 5 remediation is required. Preserve the canonical story order, C-23 pre-assignment approval, planning quarantine, and `bash tests/validate_architecture_contracts.sh` aggregate gate as implementation proceeds.
+
+## Summary and Recommendations
+
+**Assessment Date:** 2026-07-18
+**Assessor:** Taskforce Themis
+
+The readiness report and all six canonical inputs were independently revalidated end-to-end. The evidence remains internally consistent: the PRD defines 43 FRs, 16 NFRs, and six user journeys; reciprocal story coverage is 43 of 43 (100.00%) with zero missing or extra FR IDs; UX and architecture align across all named requirements, UX-BUD-1 through UX-BUD-7, and ARCH-HOST-1; and the implementation plan contains seven user-value epics, 75 sequential stories, 75 earlier-only dependency edges, and 150 GWT criteria bound to 150 approval rows. Every named planning, approval, compatibility, contract, release, smoke, and architecture aggregate gate passes. The canonical epic package's recorded user-directed path override and Story 1.10 quarantine ownership reconcile the architecture's pre-regeneration planning-root tombstone state while retaining all runtime architecture contracts.
+
+### Overall Readiness Status
+
+**READY**
+
+Implementation may begin under the approved canonical sequence and gate contracts.
+
+### Critical Issues Requiring Immediate Action
+
+There are zero critical issues requiring action before implementation.
+
+### Recommended Next Steps
+
+1. Begin implementation at Story 1.1, preserve the canonical story order, and admit only dependencies on already completed earlier stories.
+2. Before assigning any story, enforce Contract C-23 independent approval of both its P01 and N01 rows and retain the approved fixture bindings throughout implementation and completion validation.
+3. Keep the planning quarantine (`python3 tests/validate_planning_quarantine.py`), story approval (`python3 tests/validate_story_fixture_approvals.py` and `python3 tests/validate_story_approval_regressions.py`), compatibility (`bash tests/compat/validate.sh`), contract (`python3 tests/fixtures/contracts/validate.py`), release (`python3 tests/fixtures/contracts/release-transaction-v1/validate_oracles.py`), smoke (`bash tests/test_smoke.sh`), and aggregate architecture (`bash tests/validate_architecture_contracts.sh`) gates green.
+4. Preserve exact-target identity and pre-execution revalidation, the no-automatic-mutation contract, conservative safety and least privilege, privacy through bounded and redacted local data, text-first keyboard and linear accessibility, and frozen brownfield compatibility.
+5. Have the Product Owner establish the PRD operator-impact measure before beta evaluation and track it as a beta measurement prerequisite, not an implementation-readiness blocker.
+
+### Final Note
+
+This assessment confirms zero Critical, zero Major, and zero Minor issues across functional coverage, UX/architecture alignment, and epic/story quality. The current artifact set is ready for implementation beginning with Story 1.1 under the approved order and gates.

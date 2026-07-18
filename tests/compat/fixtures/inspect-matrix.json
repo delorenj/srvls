@@ -1,0 +1,79 @@
+{
+  "schema": "srvls-legacy-fixture-v1",
+  "matrix_id": "inspect-matrix",
+  "defaults": {
+    "env": {"USER": "fixture-user"},
+    "home": "/home/fixture",
+    "fixed_now": "2026-07-17T12:34:56+00:00",
+    "loadavg": [1.25, 2.5, 3.75],
+    "which": {},
+    "files": {
+      "/etc/cron.d/hostile": "* * * * * deploy /opt/hostile;$(boom)\" --from-file\n"
+    },
+    "commands": [
+      {
+        "argv": ["docker", "inspect", "target name;$(boom)\"", "--format", "{{.Name}} {{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}}\nimage: {{.Config.Image}}\ncompose: {{index .Config.Labels \"com.docker.compose.project.working_dir\"}}"],
+        "stdout": "/demo running restart=always\nimage: example/image:1\ncompose: /srv/demo\n",
+        "stderr": "dropped-inspect-stderr\n"
+      },
+      {
+        "argv": ["docker", "logs", "--tail", "15", "target name;$(boom)\""],
+        "stdout": "stdout-log\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-tail\n",
+        "stderr": "stderr-log\n"
+      },
+      {
+        "argv": ["systemctl", "--user", "status", "target name;$(boom)\"", "--no-pager", "-n", "8"],
+        "stdout": "u01\nu02\nu03\nu04\nu05\nu06\nu07\nu08\nu09\nu10\nu11\nu12\nu13\nu14\nu15\nu16\nu17\nu18\nu19\nu20\nu21\nu22\nu23\nu24\nu25\nu26\nu27\nu28\nu29\nu30\nu31-dropped\n",
+        "stderr": "dropped-user-status-stderr\n"
+      },
+      {
+        "argv": ["systemctl", "status", "target name;$(boom)\"", "--no-pager", "-n", "8"],
+        "stdout": "s01\ns02\ns03\ns04\ns05\ns06\ns07\ns08\ns09\ns10\ns11\ns12\ns13\ns14\ns15\ns16\ns17\ns18\ns19\ns20\ns21\ns22\ns23\ns24\ns25\ns26\ns27\ns28\ns29\ns30\ns31-dropped\n",
+        "stderr": "dropped-system-status-stderr\n"
+      },
+      {
+        "argv": ["pm2", "describe", "target name;$(boom)\""],
+        "stdout": "p01\np02\np03\np04\np05\np06\np07\np08\np09\np10\np11\np12\np13\np14\np15\np16\np17\np18\np19\np20\np21\np22\np23\np24\np25\np26\np27\np28\np29\np30\np31-dropped\n",
+        "stderr": "dropped-pm2-stderr\n"
+      },
+      {
+        "argv": ["crontab", "-l"],
+        "stdout": "* * * * * /opt/hostile;$(boom)\" --from-user\n"
+      },
+      {"argv": ["sudo", "-n", "crontab", "-l"], "stdout": ""}
+    ],
+    "default_command": {
+      "error": "file-not-found",
+      "message": "[Errno 2] fixture inspect command not found"
+    }
+  },
+  "environments": {
+    "unavailable": {
+      "commands": [],
+      "default_command": {
+        "error": "file-not-found",
+        "message": "[Errno 2] fixture inspect command not found"
+      }
+    },
+    "timeout": {
+      "commands": [],
+      "default_command": {
+        "error": "timeout",
+        "message": "fixture inspect timeout"
+      }
+    }
+  },
+  "cases": [
+    {"id": "inspect.docker-hostile-and-merged-logs", "operation": {"kind": "inspect", "type": "docker", "name": "target name;$(boom)\""}},
+    {"id": "inspect.user-service-hostile", "operation": {"kind": "inspect", "type": "usr-svc", "name": "target name;$(boom)\""}},
+    {"id": "inspect.user-timer-hostile", "operation": {"kind": "inspect", "type": "usr-timer", "name": "target name;$(boom)\""}},
+    {"id": "inspect.system-service-hostile", "operation": {"kind": "inspect", "type": "sys-svc", "name": "target name;$(boom)\""}},
+    {"id": "inspect.system-timer-hostile", "operation": {"kind": "inspect", "type": "sys-timer", "name": "target name;$(boom)\""}},
+    {"id": "inspect.pm2-hostile", "operation": {"kind": "inspect", "type": "pm2", "name": "target name;$(boom)\""}},
+    {"id": "inspect.cron-hostile", "operation": {"kind": "inspect", "type": "cron", "name": "hostile;$(boom)\""}},
+    {"id": "inspect.unknown-success-empty", "operation": {"kind": "inspect", "type": "mystery", "name": "target name;$(boom)\""}},
+    {"id": "inspect.docker-unavailable-still-separator", "environment": "unavailable", "operation": {"kind": "inspect", "type": "docker", "name": "target name;$(boom)\""}},
+    {"id": "inspect.pm2-absent-success-empty", "environment": "unavailable", "operation": {"kind": "inspect", "type": "pm2", "name": "target name;$(boom)\""}},
+    {"id": "inspect.system-timeout-success-empty", "environment": "timeout", "operation": {"kind": "inspect", "type": "sys-svc", "name": "target name;$(boom)\""}}
+  ]
+}

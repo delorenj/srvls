@@ -31,7 +31,7 @@ variables:
 
   # Source files (file-system only)
   epics_location: "{planning_artifacts}" # Directory containing epic*.md files
-  epics_pattern: "epic*.md" # Pattern to find epic files
+  epics_pattern: "*epic*.md" # Exact whole-document discovery pattern
 
   # Output configuration
   status_file: "{implementation_artifacts}/sprint-status.yaml"

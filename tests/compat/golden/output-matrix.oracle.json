@@ -1,0 +1,1195 @@
+{
+  "cases": [
+    {
+      "case_id": "output.table",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag \"a|b\"\nmalformed\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "0 2 * * * /root/bin/root-job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"zeta.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Zeta\"},{\"unit\":\"inactive-enabled.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skip.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"},{\"unit\":\"evil\\u001b[31m\\\"|name.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"line\\nbreak\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"zeta.service\",\"state\":\"enabled\"},{\"unit_file\":\"inactive-enabled.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skip.service\",\"state\":\"disabled\"},{\"unit_file\":\"evil\\u001b[31m\\\"|name.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"system.timer\",\"next\":2000000000,\"activates\":\"zeta.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user\\tname.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"User\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"user\\tname.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user.timer\",\"next\":null,\"activates\":\"user\\tname.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\ncafebabe\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef",
+            "cafebabe"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "/dock\"er\\bad|x\trunning\tunhealthy\talways\tstack\t/srv/stack|one\t30s\n/plain\texited\t-\tno\tplain-project\t\t-\n"
+          },
+          "text": true,
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"name\":\"pm2|bad\\\"\\\\\\u001b\",\"pm2_env\":{\"status\":\"errored\",\"restart_time\":7,\"pm_cwd\":\"/srv/pm2|cwd\",\"pm_exec_path\":\"/srv/pm2/app.js\"}}]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "TYPE       NAME                      STATE               SCHED             SOURCE\n---------------------------------------------------------------------------------\ncron       user-job                  scheduled           */5 * * * *       crontab:fixture-user\ncron       root-job                  scheduled           0 2 * * *         crontab:root\ncron       system-job                scheduled           0 1 * * *         /etc/crontab\ncron       a|job                     scheduled           15 3 * * *        /etc/cron.d/a-first\nsys-svc    zeta.service              active/running                        enabled\nsys-svc    inactive-enabled.service  inactive/dead                         enabled-runtime\nsys-svc    evil\u001b[31m\"|name.service   failed/failed                         enabled\nsys-timer  system.timer              waiting             next 01-01 00:33  zeta.service\nusr-svc    user\tname.service         active/running                        enabled\nusr-timer  user.timer                inactive                              user\tname.service\ndocker     dock\"er\\bad|x             running(unhealthy)  hc:30s            /srv/stack|one\ndocker     plain                     exited                                plain-project\npm2        pm2|bad\"\\\u001b                errored             restarts:7        /srv/pm2|cwd\n\n13 items (1 failed, 1 unhealthy)\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "output.json",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag \"a|b\"\nmalformed\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "0 2 * * * /root/bin/root-job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"zeta.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Zeta\"},{\"unit\":\"inactive-enabled.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skip.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"},{\"unit\":\"evil\\u001b[31m\\\"|name.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"line\\nbreak\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"zeta.service\",\"state\":\"enabled\"},{\"unit_file\":\"inactive-enabled.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skip.service\",\"state\":\"disabled\"},{\"unit_file\":\"evil\\u001b[31m\\\"|name.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"system.timer\",\"next\":2000000000,\"activates\":\"zeta.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user\\tname.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"User\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"user\\tname.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user.timer\",\"next\":null,\"activates\":\"user\\tname.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\ncafebabe\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef",
+            "cafebabe"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "/dock\"er\\bad|x\trunning\tunhealthy\talways\tstack\t/srv/stack|one\t30s\n/plain\texited\t-\tno\tplain-project\t\t-\n"
+          },
+          "text": true,
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"name\":\"pm2|bad\\\"\\\\\\u001b\",\"pm2_env\":{\"status\":\"errored\",\"restart_time\":7,\"pm_cwd\":\"/srv/pm2|cwd\",\"pm_exec_path\":\"/srv/pm2/app.js\"}}]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--json"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "[\n  {\n    \"type\": \"cron\",\n    \"name\": \"user-job\",\n    \"state\": \"scheduled\",\n    \"schedule\": \"*/5 * * * *\",\n    \"source\": \"crontab:fixture-user\",\n    \"detail\": \"/usr/local/bin/user-job --flag \\\"a|b\\\"\"\n  },\n  {\n    \"type\": \"cron\",\n    \"name\": \"root-job\",\n    \"state\": \"scheduled\",\n    \"schedule\": \"0 2 * * *\",\n    \"source\": \"crontab:root\",\n    \"detail\": \"/root/bin/root-job\"\n  },\n  {\n    \"type\": \"cron\",\n    \"name\": \"system-job\",\n    \"state\": \"scheduled\",\n    \"schedule\": \"0 1 * * *\",\n    \"source\": \"/etc/crontab\",\n    \"detail\": \"/usr/local/sbin/system-job --arg\"\n  },\n  {\n    \"type\": \"cron\",\n    \"name\": \"a|job\",\n    \"state\": \"scheduled\",\n    \"schedule\": \"15 3 * * *\",\n    \"source\": \"/etc/cron.d/a-first\",\n    \"detail\": \"/opt/jobs/a|job --raw=\\\\\\\\path\"\n  },\n  {\n    \"type\": \"sys-svc\",\n    \"name\": \"zeta.service\",\n    \"state\": \"active/running\",\n    \"schedule\": \"\",\n    \"source\": \"enabled\",\n    \"detail\": \"Zeta\"\n  },\n  {\n    \"type\": \"sys-svc\",\n    \"name\": \"inactive-enabled.service\",\n    \"state\": \"inactive/dead\",\n    \"schedule\": \"\",\n    \"source\": \"enabled-runtime\",\n    \"detail\": \"Retained\"\n  },\n  {\n    \"type\": \"sys-svc\",\n    \"name\": \"evil\\u001b[31m\\\"|name.service\",\n    \"state\": \"failed/failed\",\n    \"schedule\": \"\",\n    \"source\": \"enabled\",\n    \"detail\": \"line\\nbreak\"\n  },\n  {\n    \"type\": \"sys-timer\",\n    \"name\": \"system.timer\",\n    \"state\": \"waiting\",\n    \"schedule\": \"next 01-01 00:33\",\n    \"source\": \"zeta.service\",\n    \"detail\": \"\"\n  },\n  {\n    \"type\": \"usr-svc\",\n    \"name\": \"user\\tname.service\",\n    \"state\": \"active/running\",\n    \"schedule\": \"\",\n    \"source\": \"enabled\",\n    \"detail\": \"User\"\n  },\n  {\n    \"type\": \"usr-timer\",\n    \"name\": \"user.timer\",\n    \"state\": \"inactive\",\n    \"schedule\": \"\",\n    \"source\": \"user\\tname.service\",\n    \"detail\": \"\"\n  },\n  {\n    \"type\": \"docker\",\n    \"name\": \"dock\\\"er\\\\bad|x\",\n    \"state\": \"running(unhealthy)\",\n    \"schedule\": \"hc:30s\",\n    \"source\": \"/srv/stack|one\",\n    \"detail\": \"restart=always\"\n  },\n  {\n    \"type\": \"docker\",\n    \"name\": \"plain\",\n    \"state\": \"exited\",\n    \"schedule\": \"\",\n    \"source\": \"plain-project\",\n    \"detail\": \"restart=no\"\n  },\n  {\n    \"type\": \"pm2\",\n    \"name\": \"pm2|bad\\\"\\\\\\u001b\",\n    \"state\": \"errored\",\n    \"schedule\": \"restarts:7\",\n    \"source\": \"/srv/pm2|cwd\",\n    \"detail\": \"/srv/pm2/app.js\"\n  }\n]\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "output.prometheus",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag \"a|b\"\nmalformed\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "0 2 * * * /root/bin/root-job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"zeta.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Zeta\"},{\"unit\":\"inactive-enabled.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skip.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"},{\"unit\":\"evil\\u001b[31m\\\"|name.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"line\\nbreak\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"zeta.service\",\"state\":\"enabled\"},{\"unit_file\":\"inactive-enabled.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skip.service\",\"state\":\"disabled\"},{\"unit_file\":\"evil\\u001b[31m\\\"|name.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"system.timer\",\"next\":2000000000,\"activates\":\"zeta.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user\\tname.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"User\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"user\\tname.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user.timer\",\"next\":null,\"activates\":\"user\\tname.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\ncafebabe\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef",
+            "cafebabe"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "/dock\"er\\bad|x\trunning\tunhealthy\talways\tstack\t/srv/stack|one\t30s\n/plain\texited\t-\tno\tplain-project\t\t-\n"
+          },
+          "text": true,
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"name\":\"pm2|bad\\\"\\\\\\u001b\",\"pm2_env\":{\"status\":\"errored\",\"restart_time\":7,\"pm_cwd\":\"/srv/pm2|cwd\",\"pm_exec_path\":\"/srv/pm2/app.js\"}}]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--prom"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "# HELP srvls_items Background task inventory counts by type and state\n# TYPE srvls_items gauge\nsrvls_items{type=\"cron\",state=\"scheduled\"} 4\nsrvls_items{type=\"docker\",state=\"exited\"} 1\nsrvls_items{type=\"docker\",state=\"running\"} 1\nsrvls_items{type=\"pm2\",state=\"errored\"} 1\nsrvls_items{type=\"sys-svc\",state=\"active\"} 1\nsrvls_items{type=\"sys-svc\",state=\"failed\"} 1\nsrvls_items{type=\"sys-svc\",state=\"inactive\"} 1\nsrvls_items{type=\"sys-timer\",state=\"waiting\"} 1\nsrvls_items{type=\"usr-svc\",state=\"active\"} 1\nsrvls_items{type=\"usr-timer\",state=\"inactive\"} 1\n# HELP srvls_unit_problem Units in failed/unhealthy/restarting/errored state (1=problem)\n# TYPE srvls_unit_problem gauge\nsrvls_unit_problem{type=\"sys-svc\",name=\"evil\u001b[31m|name.service\"} 1\nsrvls_unit_problem{type=\"docker\",name=\"docker\\bad|x\"} 1\nsrvls_unit_problem{type=\"pm2\",name=\"pm2|bad\\\u001b\"} 1\n# HELP srvls_loadavg System load average\n# TYPE srvls_loadavg gauge\nsrvls_loadavg{window=\"1m\"} 1.25\nsrvls_loadavg{window=\"5m\"} 2.50\nsrvls_loadavg{window=\"15m\"} 3.75\n# HELP srvls_collect_timestamp_seconds Unix time of this collection\n# TYPE srvls_collect_timestamp_seconds gauge\nsrvls_collect_timestamp_seconds 1784291696\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "output.markdown",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag \"a|b\"\nmalformed\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "0 2 * * * /root/bin/root-job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"zeta.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Zeta\"},{\"unit\":\"inactive-enabled.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skip.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"},{\"unit\":\"evil\\u001b[31m\\\"|name.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"line\\nbreak\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"zeta.service\",\"state\":\"enabled\"},{\"unit_file\":\"inactive-enabled.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skip.service\",\"state\":\"disabled\"},{\"unit_file\":\"evil\\u001b[31m\\\"|name.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"system.timer\",\"next\":2000000000,\"activates\":\"zeta.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user\\tname.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"User\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"user\\tname.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user.timer\",\"next\":null,\"activates\":\"user\\tname.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\ncafebabe\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef",
+            "cafebabe"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "/dock\"er\\bad|x\trunning\tunhealthy\talways\tstack\t/srv/stack|one\t30s\n/plain\texited\t-\tno\tplain-project\t\t-\n"
+          },
+          "text": true,
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"name\":\"pm2|bad\\\"\\\\\\u001b\",\"pm2_env\":{\"status\":\"errored\",\"restart_time\":7,\"pm_cwd\":\"/srv/pm2|cwd\",\"pm_exec_path\":\"/srv/pm2/app.js\"}}]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--md"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "# Background Task Inventory \u2014 2026-07-17 12:34 UTC\n\n## cron (4)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| a|job | scheduled | 15 3 * * * | /etc/cron.d/a-first |\n| root-job | scheduled | 0 2 * * * | crontab:root |\n| system-job | scheduled | 0 1 * * * | /etc/crontab |\n| user-job | scheduled | */5 * * * * | crontab:fixture-user |\n\n## docker (2)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| dock\"er\\bad|x | running(unhealthy) | hc:30s | /srv/stack|one |\n| plain | exited |  | plain-project |\n\n## pm2 (1)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| pm2|bad\"\\\u001b | errored | restarts:7 | /srv/pm2|cwd |\n\n## sys-svc (3)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| evil\u001b[31m\"|name.service | failed/failed |  | enabled |\n| inactive-enabled.service | inactive/dead |  | enabled-runtime |\n| zeta.service | active/running |  | enabled |\n\n## sys-timer (1)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| system.timer | waiting | next 01-01 00:33 | zeta.service |\n\n## usr-svc (1)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| user\tname.service | active/running |  | enabled |\n\n## usr-timer (1)\n\n| name | state | schedule | source |\n|---|---|---|---|\n| user.timer | inactive |  | user\tname.service |\n\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    },
+    {
+      "case_id": "output.fzf-lines",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "MAILTO=ops@example.test\n*/5 * * * * /usr/local/bin/user-job --flag \"a|b\"\nmalformed\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "0 2 * * * /root/bin/root-job\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"zeta.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"Zeta\"},{\"unit\":\"inactive-enabled.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Retained\"},{\"unit\":\"skip.service\",\"active\":\"inactive\",\"sub\":\"dead\",\"description\":\"Skipped\"},{\"unit\":\"evil\\u001b[31m\\\"|name.service\",\"active\":\"failed\",\"sub\":\"failed\",\"description\":\"line\\nbreak\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"zeta.service\",\"state\":\"enabled\"},{\"unit_file\":\"inactive-enabled.service\",\"state\":\"enabled-runtime\"},{\"unit_file\":\"skip.service\",\"state\":\"disabled\"},{\"unit_file\":\"evil\\u001b[31m\\\"|name.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"system.timer\",\"next\":2000000000,\"activates\":\"zeta.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user\\tname.service\",\"active\":\"active\",\"sub\":\"running\",\"description\":\"User\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-unit-files",
+            "--type=service",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit_file\":\"user\\tname.service\",\"state\":\"enabled\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "list-timers",
+            "--all",
+            "--output=json",
+            "--no-pager"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"unit\":\"user.timer\",\"next\":null,\"activates\":\"user\\tname.service\"}]"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "ps",
+            "-a",
+            "--format",
+            "{{.ID}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "deadbeef\ncafebabe\n"
+          },
+          "text": true,
+          "timeout": 20
+        },
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "--format",
+            "{{.Name}}\t{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}-{{end}}\t{{.HostConfig.RestartPolicy.Name}}\t{{index .Config.Labels \"com.docker.compose.project\"}}\t{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}\t{{if .Config.Healthcheck}}{{.Config.Healthcheck.Interval}}{{else}}-{{end}}",
+            "deadbeef",
+            "cafebabe"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "/dock\"er\\bad|x\trunning\tunhealthy\talways\tstack\t/srv/stack|one\t30s\n/plain\texited\t-\tno\tplain-project\t\t-\n"
+          },
+          "text": true,
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "pm2",
+            "jlist"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "[{\"name\":\"pm2|bad\\\"\\\\\\u001b\",\"pm2_env\":{\"status\":\"errored\",\"restart_time\":7,\"pm_cwd\":\"/srv/pm2|cwd\",\"pm_exec_path\":\"/srv/pm2/app.js\"}}]"
+          },
+          "text": true,
+          "timeout": 20
+        }
+      ],
+      "operation": {
+        "argv": [
+          "--fzf-lines"
+        ],
+        "kind": "main"
+      },
+      "stderr": "",
+      "stdout": "cron\tuser-job\tscheduled\tcrontab:fixture-user\ncron\troot-job\tscheduled\tcrontab:root\ncron\tsystem-job\tscheduled\t/etc/crontab\ncron\ta|job\tscheduled\t/etc/cron.d/a-first\nsys-svc\tzeta.service\tactive/running\tenabled\nsys-svc\tinactive-enabled.service\tinactive/dead\tenabled-runtime\nsys-svc\tevil\u001b[31m\"|name.service\tfailed/failed\tenabled\nsys-timer\tsystem.timer\twaiting\tzeta.service\nusr-svc\tuser\tname.service\tactive/running\tenabled\nusr-timer\tuser.timer\tinactive\tuser\tname.service\ndocker\tdock\"er\\bad|x\trunning(unhealthy)\t/srv/stack|one\ndocker\tplain\texited\tplain-project\npm2\tpm2|bad\"\\\u001b\terrored\t/srv/pm2|cwd\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": [
+        {
+          "name": "pm2",
+          "result": "/usr/bin/pm2"
+        }
+      ]
+    }
+  ],
+  "fixture": {
+    "matrix_id": "output-matrix",
+    "path": "fixtures/output-matrix.json",
+    "sha256": "bbb7062593e125140de70cc1ca16d7c66d889f17541687ed72d1c9eba97dce18"
+  },
+  "schema": "srvls-legacy-oracle-result-v1",
+  "source": {
+    "frozen_parent": "598eb0ccd0ad37a9432a2132a14d75aeea0f9f47",
+    "git_blob_sha1": "aebb996d1341fc44afe513126ca6553815faa904",
+    "path": "srvls",
+    "sha256": "06a7e312fba5f2ca03e99181cc208d7abd9ac4688f26ea0f8c89ee19eb9e8b62",
+    "size": 13388
+  },
+  "volatile_substitutions": [
+    {
+      "id": "clock.utc-now",
+      "rule": "datetime.now() is fixture-owned UTC instead of capture wall time"
+    },
+    {
+      "id": "clock.timer-local-rendering",
+      "rule": "datetime.fromtimestamp() renders in UTC instead of host local time"
+    },
+    {
+      "id": "host.load-average",
+      "rule": "os.getloadavg() is the fixture triple [1.25, 2.5, 3.75] unless overridden"
+    },
+    {
+      "id": "host.identity-and-paths",
+      "rule": "HOME, USER, PATH lookup, virtual /etc files, and tool presence are fixture-owned"
+    },
+    {
+      "id": "source.absolute-path",
+      "rule": "the frozen source __file__ and os.path.abspath(__file__) are /opt/srvls/srvls"
+    },
+    {
+      "id": "host.subprocess-results",
+      "rule": "stdout, stderr, exit, missing, denied, and timeout outcomes are fixture-owned"
+    },
+    {
+      "id": "python.traceback",
+      "rule": "unhandled tracebacks normalize to exception type and message; version, frame path, and line rendering are excluded"
+    }
+  ]
+}

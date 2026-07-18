@@ -1,0 +1,475 @@
+{
+  "cases": [
+    {
+      "case_id": "inspect.docker-hostile-and-merged-logs",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "target name;$(boom)\"",
+            "--format",
+            "{{.Name}} {{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}}\nimage: {{.Config.Image}}\ncompose: {{index .Config.Labels \"com.docker.compose.project.working_dir\"}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "dropped-inspect-stderr\n",
+            "stdout": "/demo running restart=always\nimage: example/image:1\ncompose: /srv/demo\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "logs",
+            "--tail",
+            "15",
+            "target name;$(boom)\""
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "stderr-log\n",
+            "stdout": "stdout-log\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-tail\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "docker"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "/demo running restart=always\nimage: example/image:1\ncompose: /srv/demo\n--- recent logs ---\nstdout-log\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\nstderr-log\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.user-service-hostile",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "status",
+            "target name;$(boom)\"",
+            "--no-pager",
+            "-n",
+            "8"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "dropped-user-status-stderr\n",
+            "stdout": "u01\nu02\nu03\nu04\nu05\nu06\nu07\nu08\nu09\nu10\nu11\nu12\nu13\nu14\nu15\nu16\nu17\nu18\nu19\nu20\nu21\nu22\nu23\nu24\nu25\nu26\nu27\nu28\nu29\nu30\nu31-dropped\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "usr-svc"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "u01\nu02\nu03\nu04\nu05\nu06\nu07\nu08\nu09\nu10\nu11\nu12\nu13\nu14\nu15\nu16\nu17\nu18\nu19\nu20\nu21\nu22\nu23\nu24\nu25\nu26\nu27\nu28\nu29\nu30\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.user-timer-hostile",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "--user",
+            "status",
+            "target name;$(boom)\"",
+            "--no-pager",
+            "-n",
+            "8"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "dropped-user-status-stderr\n",
+            "stdout": "u01\nu02\nu03\nu04\nu05\nu06\nu07\nu08\nu09\nu10\nu11\nu12\nu13\nu14\nu15\nu16\nu17\nu18\nu19\nu20\nu21\nu22\nu23\nu24\nu25\nu26\nu27\nu28\nu29\nu30\nu31-dropped\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "usr-timer"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "u01\nu02\nu03\nu04\nu05\nu06\nu07\nu08\nu09\nu10\nu11\nu12\nu13\nu14\nu15\nu16\nu17\nu18\nu19\nu20\nu21\nu22\nu23\nu24\nu25\nu26\nu27\nu28\nu29\nu30\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.system-service-hostile",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "status",
+            "target name;$(boom)\"",
+            "--no-pager",
+            "-n",
+            "8"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "dropped-system-status-stderr\n",
+            "stdout": "s01\ns02\ns03\ns04\ns05\ns06\ns07\ns08\ns09\ns10\ns11\ns12\ns13\ns14\ns15\ns16\ns17\ns18\ns19\ns20\ns21\ns22\ns23\ns24\ns25\ns26\ns27\ns28\ns29\ns30\ns31-dropped\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "sys-svc"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "s01\ns02\ns03\ns04\ns05\ns06\ns07\ns08\ns09\ns10\ns11\ns12\ns13\ns14\ns15\ns16\ns17\ns18\ns19\ns20\ns21\ns22\ns23\ns24\ns25\ns26\ns27\ns28\ns29\ns30\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.system-timer-hostile",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "status",
+            "target name;$(boom)\"",
+            "--no-pager",
+            "-n",
+            "8"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "dropped-system-status-stderr\n",
+            "stdout": "s01\ns02\ns03\ns04\ns05\ns06\ns07\ns08\ns09\ns10\ns11\ns12\ns13\ns14\ns15\ns16\ns17\ns18\ns19\ns20\ns21\ns22\ns23\ns24\ns25\ns26\ns27\ns28\ns29\ns30\ns31-dropped\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "sys-timer"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "s01\ns02\ns03\ns04\ns05\ns06\ns07\ns08\ns09\ns10\ns11\ns12\ns13\ns14\ns15\ns16\ns17\ns18\ns19\ns20\ns21\ns22\ns23\ns24\ns25\ns26\ns27\ns28\ns29\ns30\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.pm2-hostile",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "describe",
+            "target name;$(boom)\""
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "dropped-pm2-stderr\n",
+            "stdout": "p01\np02\np03\np04\np05\np06\np07\np08\np09\np10\np11\np12\np13\np14\np15\np16\np17\np18\np19\np20\np21\np22\np23\np24\np25\np26\np27\np28\np29\np30\np31-dropped\n"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "pm2"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "p01\np02\np03\np04\np05\np06\np07\np08\np09\np10\np11\np12\np13\np14\np15\np16\np17\np18\np19\np20\np21\np22\np23\np24\np25\np26\np27\np28\np29\np30\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.cron-hostile",
+      "external_calls": [
+        {
+          "argv": [
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": "* * * * * /opt/hostile;$(boom)\" --from-user\n"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "sudo",
+            "-n",
+            "crontab",
+            "-l"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "kind": "completed",
+            "returncode": 0,
+            "stderr": "",
+            "stdout": ""
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "hostile;$(boom)\"",
+        "type": "cron"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "crontab:fixture-user:  * * * * *  /opt/hostile;$(boom)\" --from-user\n/etc/cron.d/hostile:  * * * * *  /opt/hostile;$(boom)\" --from-file\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.unknown-success-empty",
+      "external_calls": [],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "mystery"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.docker-unavailable-still-separator",
+      "external_calls": [
+        {
+          "argv": [
+            "docker",
+            "inspect",
+            "target name;$(boom)\"",
+            "--format",
+            "{{.Name}} {{.State.Status}} restart={{.HostConfig.RestartPolicy.Name}}\nimage: {{.Config.Image}}\ncompose: {{index .Config.Labels \"com.docker.compose.project.working_dir\"}}"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture inspect command not found"
+          },
+          "text": true,
+          "timeout": 15
+        },
+        {
+          "argv": [
+            "docker",
+            "logs",
+            "--tail",
+            "15",
+            "target name;$(boom)\""
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture inspect command not found"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "docker"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "--- recent logs ---\n",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.pm2-absent-success-empty",
+      "external_calls": [
+        {
+          "argv": [
+            "pm2",
+            "describe",
+            "target name;$(boom)\""
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "file-not-found",
+            "kind": "error",
+            "message": "[Errno 2] fixture inspect command not found"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "pm2"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    },
+    {
+      "case_id": "inspect.system-timeout-success-empty",
+      "external_calls": [
+        {
+          "argv": [
+            "systemctl",
+            "status",
+            "target name;$(boom)\"",
+            "--no-pager",
+            "-n",
+            "8"
+          ],
+          "capture_output": true,
+          "input": null,
+          "outcome": {
+            "error": "timeout",
+            "kind": "error",
+            "message": "fixture inspect timeout"
+          },
+          "text": true,
+          "timeout": 15
+        }
+      ],
+      "operation": {
+        "kind": "inspect",
+        "name": "target name;$(boom)\"",
+        "type": "sys-svc"
+      },
+      "return_value": 0,
+      "stderr": "",
+      "stdout": "",
+      "termination": {
+        "kind": "return"
+      },
+      "which_calls": []
+    }
+  ],
+  "fixture": {
+    "matrix_id": "inspect-matrix",
+    "path": "fixtures/inspect-matrix.json",
+    "sha256": "658cd883e5f72d28470151c2aca0db3bb7a2433d5e4bb38fabfe6ab0175610d7"
+  },
+  "schema": "srvls-legacy-oracle-result-v1",
+  "source": {
+    "frozen_parent": "598eb0ccd0ad37a9432a2132a14d75aeea0f9f47",
+    "git_blob_sha1": "aebb996d1341fc44afe513126ca6553815faa904",
+    "path": "srvls",
+    "sha256": "06a7e312fba5f2ca03e99181cc208d7abd9ac4688f26ea0f8c89ee19eb9e8b62",
+    "size": 13388
+  },
+  "volatile_substitutions": [
+    {
+      "id": "clock.utc-now",
+      "rule": "datetime.now() is fixture-owned UTC instead of capture wall time"
+    },
+    {
+      "id": "clock.timer-local-rendering",
+      "rule": "datetime.fromtimestamp() renders in UTC instead of host local time"
+    },
+    {
+      "id": "host.load-average",
+      "rule": "os.getloadavg() is the fixture triple [1.25, 2.5, 3.75] unless overridden"
+    },
+    {
+      "id": "host.identity-and-paths",
+      "rule": "HOME, USER, PATH lookup, virtual /etc files, and tool presence are fixture-owned"
+    },
+    {
+      "id": "source.absolute-path",
+      "rule": "the frozen source __file__ and os.path.abspath(__file__) are /opt/srvls/srvls"
+    },
+    {
+      "id": "host.subprocess-results",
+      "rule": "stdout, stderr, exit, missing, denied, and timeout outcomes are fixture-owned"
+    },
+    {
+      "id": "python.traceback",
+      "rule": "unhandled tracebacks normalize to exception type and message; version, frame path, and line rendering are excluded"
+    }
+  ]
+}

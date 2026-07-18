@@ -1,0 +1,12 @@
+# PRD Prose Review — srvls Runtime Promise Reconciliation and Morning Handoff
+
+| Original Text | Revised Text | Changes |
+| --- | --- | --- |
+| “Late, unauthorized, malformed, released, or unknown renewals return distinct deterministic outcomes.” | “Late, unauthorized, or malformed renewals, and renewals for a released or unknown Promise ID, return distinct deterministic outcomes.” | Removes the false implication that a renewal itself can be “released” or “unknown” and identifies the affected Promise ID. |
+| “An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when absence evidence is complete enough.” | “An active Runtime Promise expecting a running Runtime with no matching running Observation receives a broken Reconciliation Finding when the relevant Collection Obligations provide sufficient absence evidence.” | Replaces vague sufficiency language with the canonical completeness mechanism. |
+| “what is duplicated, stale, abandoned, unmanaged, or resource-hot” (§ 1); “what is duplicate, stale, abandoned, unmanaged, or hot” (FR-28) | “which Runtimes carry duplicate, stale, abandoned, unmanaged, or hot findings” | Fixes the mixed noun/adjective construction and uses the canonical finding vocabulary consistently. |
+| “`srvls` can plan start … It can plan stop, restart, and disable or delete …” | “`srvls` can plan a start … It can plan a stop, restart, and disable or delete operation …” | Adds missing articles and makes the shared object of the action list explicit. |
+| “because verification is incomplete, ambiguous, expired, or observes a replacement identity” | “because evidence is incomplete or ambiguous, the verification window expires, or a replacement identity is observed” | Fixes the overloaded subject and clarifies what expires and what is observed. |
+| “Identical normalized inputs, policy, and baseline …” | “Identical normalized inputs, policy, and Accepted Baseline …” | Uses the defined domain term and removes ambiguity with other baselines. |
+| “bounded output, termination, and unconditional child reaping” | “bounded output capture, forced termination on deadline, and unconditional child reaping” | Names what is bounded and when termination occurs. |
+| “Runtime Promise metadata should identify purpose …” | “Runtime Promise metadata identifies purpose …” | Removes an unnecessary normative hedge because FR-1 already requires purpose. |
