@@ -2,7 +2,12 @@
 stepsCompleted:
   - step-01-document-discovery
 inputDocuments:
+  - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md
+  - _bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md
+  - _bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/ARCHITECTURE-SPINE.md
   - _bmad-output/planning-artifacts/epics.md
+  - _bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md
+  - _bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md
 ---
 
 # Implementation Readiness Assessment Report
@@ -12,59 +17,44 @@ inputDocuments:
 
 ## Step 1: Document Discovery
 
-Discovery was limited to the Step 1 filename patterns in `_bmad-output/planning-artifacts` and file metadata. Planning-document contents were not read or analyzed.
+Discovery was limited to the Step 1 filename patterns, explicit user clarification, path existence, and file metadata. Planning-document contents were not read or analyzed.
 
-### PRD Files Found
+### Generic Step 1 Pattern Results
 
-**Whole Documents:**
+The generic Step 1 filename patterns discovered only the root `_bmad-output/planning-artifacts/epics.md`. They did not discover the established nested PRD, architecture, or UX packages. Explicit user clarification selected those established nested packages together with the root epics document as the canonical Step 1 inputs.
 
-- None found matching `*prd*.md`.
+### Canonical Inventory
 
-**Sharded Documents:**
+#### PRD
 
-- None found matching `*prd*/index.md`; no related shard files were inventoried.
+- `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md` (58,303 bytes; modified 2026-07-18 05:31:12.796884745 -0400)
+- `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md` (4,639 bytes; modified 2026-07-18 05:31:12.796884745 -0400)
 
-### Architecture Files Found
+#### Architecture
 
-**Whole Documents:**
+- `_bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/ARCHITECTURE-SPINE.md` (245,683 bytes; modified 2026-07-18 05:31:12.791307121 -0400)
 
-- None found matching `*architecture*.md`.
+#### Epics & Stories
 
-**Sharded Documents:**
+- `_bmad-output/planning-artifacts/epics.md` (220,630 bytes; modified 2026-07-18 05:31:12.794894554 -0400)
 
-- None found matching `*architecture*/index.md`; no related shard files were inventoried.
+#### UX Design
 
-### Epics & Stories Files Found
-
-**Whole Documents:**
-
-- `epics.md` (220630 bytes; modified 2026-07-18 05:18:15.853542550 -0400)
-
-**Sharded Documents:**
-
-- None found matching `*epic*/index.md`; no related shard files were inventoried.
-
-### UX Design Files Found
-
-**Whole Documents:**
-
-- None found matching `*ux*.md`.
-
-**Sharded Documents:**
-
-- None found matching `*ux*/index.md`; no related shard files were inventoried.
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md` (13,854 bytes; modified 2026-07-18 05:31:12.800878223 -0400)
+- `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md` (54,284 bytes; modified 2026-07-18 05:31:12.800878223 -0400)
 
 ### Duplicate and Missing Findings
 
-- **Whole/sharded duplicates:** None found for PRD, Architecture, Epics & Stories, or UX Design.
-- **Missing required document classes:** PRD, Architecture, and UX Design.
-- **Present required document class:** Epics & Stories, as one whole document.
+- **Missing required document classes:** None after explicit user clarification; PRD, Architecture, Epics & Stories, and UX Design are all represented by the selected canonical inputs.
+- **Duplicate canonical documents:** None. Supporting reviews and memlogs are excluded and are not duplicate canonical documents.
 
 ### Canonical Selections
 
-- **PRD:** No matching input available.
-- **Architecture:** No matching input available.
-- **Epics & Stories:** `_bmad-output/planning-artifacts/epics.md`
-- **UX Design:** No matching input available.
+1. **PRD:** `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/prd.md`
+2. **PRD addendum:** `_bmad-output/planning-artifacts/prds/prd-srvls-2026-07-16/addendum.md`
+3. **Architecture:** `_bmad-output/planning-artifacts/architecture/architecture-srvls-2026-07-14/ARCHITECTURE-SPINE.md`
+4. **Epics & Stories:** `_bmad-output/planning-artifacts/epics.md`
+5. **UX design:** `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/DESIGN.md`
+6. **UX experience:** `_bmad-output/planning-artifacts/ux-designs/ux-srvls-2026-07-16/EXPERIENCE.md`
 
-The sole discovered whole input was selected because no conflicting sharded format exists. Step 1 is complete; the missing document classes remain warnings for any later assessment stage.
+Step 1 is complete as a document-inventory correction only. No document contents or later workflow steps were read or analyzed.
