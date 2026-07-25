@@ -8,6 +8,11 @@
 
 ## Active work
 
+- [ ] Generate BMAD project context, then create sprint planning status — **CLAIMED by Agent Buttercup (Session: agent-buttercup-context; Branch: feature-agent-buttercup-project-context)**
+  - [ ] Complete project-context Step 1 discovery and initialize the context artifact — **IN PROGRESS**
+  - [ ] Generate project-specific agent rules after the required user `[C]` checkpoint
+  - [ ] Generate and validate BMAD sprint status after project context completes
+
 - [x] Reconcile BMAD initialization through canonical PRD, UX contracts, architecture, epics/stories, and implementation readiness — **COMPLETED by Team Argus (2026-07-18; Implementation Readiness: READY; Report: `_bmad-output/planning-artifacts/implementation-readiness-report-2026-07-18.md`)**
   - [x] Complete BMAD Implementation Readiness Step 1 document discovery — **COMPLETED by Doctor Von Code (Session: doctor-von-code-themis-step1; Commit: caf9f09)**
     - [x] Correct Step 1 inventory with user-selected nested canonical packages — **COMPLETED by WidgetWhisperer (Session: widgetwhisperer-themis-inventory-correction; Commit: 2428cc5)**
