@@ -19,3 +19,4 @@ node_modules
 {output_folder}/
 __pycache__/
 *.pyc
+worktrees
