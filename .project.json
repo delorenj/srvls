@@ -11,12 +11,5 @@
     "board_url": "https://plane.delo.sh/33god/projects/83135f29-324f-47a5-9bc4-2d80f234455a/issues/",
     "state": "active"
   },
-  "agents": {},
-  "automation": {
-    "reconcile": {
-      "enabled": false,
-      "grace_hours": 0,
-      "auto_review": true
-    }
-  }
+  "agents": {}
 }
