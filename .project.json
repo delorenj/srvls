@@ -1,15 +1,19 @@
 {
   "project_name": "Srvls",
   "project_description": "",
-  "project_slug": "srvls",
   "repo_path": "/home/delorenj/code/srvls",
   "ticket_provider": {
     "type": "plane",
-    "workspace": "33god",
-    "identifier": "SRVL",
+    "state": "linked",
     "board_id": "83135f29-324f-47a5-9bc4-2d80f234455a",
     "board_url": "https://plane.delo.sh/33god/projects/83135f29-324f-47a5-9bc4-2d80f234455a/issues/",
-    "state": "active"
+    "workspace": "33god",
+    "identifier": "SRVL",
+    "identifier_source": "provider",
+    "identifier_fetched_at": "2026-09-23T04:36:24.166Z",
+    "board_confirmed_at": "2026-09-23T04:36:24.166Z"
   },
-  "agents": {}
+  "agents": {},
+  "project_id": "srvls",
+  "updated_at": "2026-09-23T04:36:24.166Z"
 }
