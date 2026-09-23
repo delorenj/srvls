@@ -20,3 +20,6 @@ node_modules
 __pycache__/
 *.pyc
 worktrees
+
+# Canonical agent config lives in .agents; generated skill projections stay local.
+/.agents/skills
