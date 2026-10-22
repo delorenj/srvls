@@ -14,5 +14,13 @@
   },
   "agents": {},
   "project_id": "srvls",
-  "updated_at": "2026-09-23T04:36:24.166Z"
+  "updated_at": "2026-09-23T04:36:24.166Z",
+  "bmad": {
+    "companion": {
+      "adapter": {
+        "module": "./.agents/skills/g33-33god-integration/scripts/g33_pjangler_bridge.mjs",
+        "exportName": "g33Companion"
+      }
+    }
+  }
 }
