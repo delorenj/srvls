@@ -107,12 +107,24 @@ source file and line). System-scope (`sys-*`) actions go through `sudo`.
 
 ## Integration pattern: metrics + nightly snapshots
 
-How this runs in production on big-chungus — two systemd user timers:
+How this runs in production on big-chungus — two systemd user services,
+**scheduled by candybar** (33GOD cron framework) since 2026-10-26 (migration
+wave 7.7): the `.timer` units are retired and carry a RETIRED notice;
+candybar's systemd runner starts the `.service` units (`*/5 * * * *` and
+`10 4 * * *`). The cutover record and rollback commands live in the candybar
+repo's `deploy/migration/ledger.yaml`.
 
-The unit files are host-managed rather than deployable assets in this repo.
-Their normalized 2026-07-17 source/candidate contracts and two-pair rollback
-direction are frozen by
+The unit files are tracked in **delorenj/infra** under `systemd/user/`
+(`srvls-metrics.{service,timer}`, `srvls-snapshot.{service,timer}`), symlinked
+into `~/.config/systemd/user/`. Do not hand-copy the snippets below onto the
+host; they are kept here as the historical reference. Their normalized
+2026-07-17 source/candidate contracts and two-pair rollback direction are
+frozen by
 `tests/fixtures/contracts/release-transaction-v1/brownfield-consumer-pairs.json`.
+
+srvls itself reads the candybar registry API (`$CANDYBAR_API_URL`, default
+`http://127.0.0.1:8700`) as a `candybar` item type, so jobs migrated off cron
+and timers still appear in every output mode.
 
 **1. Prometheus textfile collector, every 5 minutes** (`srvls-metrics.timer`):
 

@@ -14,7 +14,7 @@ Modes:
   srvls inspect T NAME  detail view for one item (used by fzf preview)
   srvls stop|restart|start|disable T NAME
 
-Types: cron, sys-svc, sys-timer, usr-svc, usr-timer, docker, pm2
+Types: cron, sys-svc, sys-timer, usr-svc, usr-timer, docker, pm2, candybar
 """
 
 import json
@@ -23,9 +23,11 @@ import re
 import shutil
 import subprocess
 import sys
+import urllib.request
 from datetime import datetime, timezone
 
 HOME = os.path.expanduser("~")
+CANDYBAR_API = os.environ.get("CANDYBAR_API_URL", "http://127.0.0.1:8700")
 
 
 def run(cmd, timeout=15):
@@ -186,9 +188,38 @@ def collect_pm2():
     return items
 
 
+def collect_candybar():
+    """Candybar-registry jobs (33GOD cron framework). The REST API is the
+    source of truth; jobs migrated off cron/systemd timers live here now, so
+    without this collector the inventory under-reports."""
+    items = []
+    try:
+        with urllib.request.urlopen(
+            CANDYBAR_API.rstrip("/") + "/candybars", timeout=5
+        ) as r:
+            bars = json.loads(r.read().decode())
+    except Exception:
+        return items
+    for c in bars:
+        sched = c.get("schedule") or ""
+        tz = c.get("timezone") or ""
+        if tz and tz != "UTC":
+            sched = f"{sched} ({tz})"
+        runner = c.get("runner") or {}
+        what = runner.get("unit") or runner.get("job_id") or c.get("entrypoint") or ""
+        items.append({
+            "type": "candybar", "name": c.get("name", "?"),
+            "state": "enabled" if c.get("enabled", True) else "disabled",
+            "schedule": sched,
+            "source": f"candybar:{what}" if what else "candybar",
+            "detail": c.get("description", ""),
+        })
+    return items
+
+
 def collect_all():
     return collect_cron() + _systemd("system") + _systemd("user") \
-        + collect_docker() + collect_pm2()
+        + collect_docker() + collect_pm2() + collect_candybar()
 
 
 # ------------------------------------------------------------------- outputs
@@ -311,6 +342,26 @@ def inspect(typ, name):
         for i in collect_cron():
             if i["name"] == name or i["detail"].startswith(name):
                 print(f"{i['source']}:  {i['schedule']}  {i['detail']}")
+    elif typ == "candybar":
+        try:
+            with urllib.request.urlopen(
+                CANDYBAR_API.rstrip("/") + "/candybars", timeout=5
+            ) as r:
+                for c in json.loads(r.read().decode()):
+                    if c.get("name") == name:
+                        print(json.dumps(c, indent=2))
+                        cid = c.get("id")
+                        if cid:
+                            with urllib.request.urlopen(
+                                CANDYBAR_API.rstrip("/")
+                                + f"/candybars/{cid}/invocations?limit=5",
+                                timeout=5,
+                            ) as r2:
+                                inv = json.loads(r2.read().decode())
+                            print("--- recent invocations ---")
+                            print(json.dumps(inv, indent=2)[:4000])
+        except Exception as exc:
+            print(f"candybar API unreachable at {CANDYBAR_API}: {exc}")
     return 0
 
 
